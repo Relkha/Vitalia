@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitalia - À propos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --fond: #F9F5EC;
+      --nav-footer: #A8BCA1;
+      --texte: #2E2E2E;
+      --section: #F2E8CF;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--fond);
+      color: var(--texte);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: var(--nav-footer);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      font-family: 'Rufina', serif;
+      font-size: 2rem;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    nav ul li {
+      margin-left: 1.5rem;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: var(--texte);
+      font-weight: 500;
+      padding: 0.5rem;
+      display: inline-block;
+    }
+
+    main {
+      flex: 1;
+      background-color: var(--fond);
+      padding: 3rem 2rem;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    h1 {
+      font-family: 'Rufina', serif;
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .about-text {
+      background-color: var(--section);
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      line-height: 1.7;
+      font-size: 1.1rem;
+    }
+
+    footer {
+      background-color: var(--nav-footer);
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Vitalia</div>
+    <nav>
+      <ul>
+        <li><a href="/">Accueil</a></li>
+        <li><a href="#">À propos</a></li>
+        <li><a href="#">Nos services</a></li>
+        <li><a href="/contact">Contact</a></li>
+        <li><a href="#">Connexion</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h1>À propos de Vitalia</h1>
+    <div class="about-text">
+      <p>
+        Vitalia est une plateforme numérique intelligente conçue pour accompagner le fonctionnement d'une maison de retraite moderne.
+        Fondé dans le cadre d’un projet académique en développement web, Vitalia vise à améliorer la qualité de vie des résidents tout en
+        facilitant le travail du personnel soignant et administratif.
+      </p>
+      <p>
+        Grâce à l'intégration d'objets connectés (bracelets de santé, capteurs de présence, thermostats intelligents...), nous proposons
+        une solution centralisée permettant de gérer les soins, les visites, les plannings et les ressources de manière intuitive et sécurisée.
+        La plateforme s’adapte à chaque profil utilisateur : du simple visiteur jusqu’au directeur de l’établissement, chacun accède à des
+        modules spécifiques selon ses besoins et responsabilités.
+      </p>
+      <p>
+        Vitalia place la technologie au service du bien-être, avec une interface simple, moderne, responsive et accessible. Nous croyons
+        qu’un environnement bien géré améliore non seulement le confort, mais aussi la sérénité des résidents, des familles et du personnel.
+      </p>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2025 Vitalia. Tous droits réservés.
+  </footer>
+</body>
+</html>
