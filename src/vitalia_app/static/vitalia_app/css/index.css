@@ -1,0 +1,200 @@
+:root {
+  --fond: #F9F5EC;
+  --nav-footer: #A8BCA1;
+  --texte: #2E2E2E;
+  --section: #F2E8CF;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-image: url('/static/vitalia_app/images/fond_index.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: var(--texte);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+
+header {
+  background-color: var(--nav-footer);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.logo {
+  font-family: 'Rufina', serif;
+  font-size: 2rem;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+nav ul li {
+  margin-left: 1.5rem;
+  font-family: 'Roboto', sans-serif;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: var(--texte);
+  font-weight: 500;
+  padding: 0.5rem;
+  display: inline-block;
+}
+
+/* Zone de contenu à gauche */
+main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 4rem 2rem;
+}
+
+.hero {
+  background-color: rgba(255, 255, 255, 0.85);
+  padding: 2rem 3rem;
+  border-radius: 12px;
+  max-width: 600px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  text-align: left;
+  animation: fadeInUp 0.8s ease-out;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero h1 {
+  font-family: 'Rufina', serif;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.hero p {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.hero-images {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.hero-images img {
+  max-width: 150px;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.cta-buttons a {
+  display: inline-block;
+  margin: 0.5rem 0.5rem 0 0;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--section);
+  color: var(--texte);
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.cta-buttons a:hover {
+  background-color: #e2d5b8;
+}
+
+footer {
+  background-color: var(--nav-footer);
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+}
+
+.avis-section {
+  background-color: var(--section);
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.avis-section h2 {
+  font-family: 'Rufina', serif;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: var(--texte);
+}
+
+
+.avis-flottants {
+  position: relative;
+  z-index: 10;
+  margin-top: 2rem;
+  padding: 3rem 2rem;
+  backdrop-filter: blur(4px);
+  background-color: rgba(255, 255, 255, 0.1); /* effet "flottant" */
+}
+
+.avis-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.avis-container blockquote {
+  max-width: 300px;
+  padding: 1.5rem;
+  border-left: 4px solid var(--nav-footer);
+  color: var(--texte);
+  font-style: italic;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  background-color: rgba(255, 255, 255, 0.6); /* léger fond blanc transparent */
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  backdrop-filter: blur(3px);
+}
+
+.avis-container blockquote span {
+  display: block;
+  margin-top: 1rem;
+  font-weight: bold;
+  font-style: normal;
+  font-family: 'Roboto', sans-serif;
+  text-align: right;
+}
+
+
+

@@ -1,0 +1,137 @@
+:root {
+  --fond: #F9F5EC;
+  --nav-footer: #A8BCA1;
+  --texte: #2E2E2E;
+  --section: #F2E8CF;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--fond);
+  color: var(--texte);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+header {
+  background-color: var(--nav-footer);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.logo {
+  font-family: 'Rufina', serif;
+  font-size: 2rem;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+nav ul li {
+  margin-left: 1.5rem;
+  font-family: 'Roboto', sans-serif;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: var(--texte);
+  font-weight: 500;
+  padding: 0.5rem;
+  display: inline-block;
+}
+
+/* Hero banner */
+.hero-banner {
+  position: relative;
+  height: 400px;
+  overflow: hidden;
+}
+
+.hero-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.7);
+}
+
+.hero-text {
+  position: absolute;
+  top: 50%;
+  left: 5%;
+  transform: translateY(-50%);
+  color: white;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.hero-text h1 {
+  font-family: 'Rufina', serif;
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.hero-text p {
+  font-size: 1.25rem;
+  max-width: 600px;
+}
+
+/* Main content */
+main.about {
+  max-width: 900px;
+  margin: auto;
+  padding: 3rem 2rem;
+  line-height: 1.8;
+}
+
+.about section {
+  margin-bottom: 3rem;
+}
+
+.about h2 {
+  font-size: 2rem;
+  font-family: 'Rufina', serif;
+  margin-bottom: 1rem;
+  color: #4b4b4b;
+}
+
+.about ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+}
+
+blockquote {
+  font-style: italic;
+  background-color: var(--section);
+  padding: 1.5rem;
+  border-left: 5px solid var(--nav-footer);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+blockquote span {
+  display: block;
+  margin-top: 1rem;
+  text-align: right;
+  font-weight: bold;
+}
+
+/* Footer */
+footer {
+  background-color: var(--nav-footer);
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+}
