@@ -62,5 +62,30 @@ python manage.py migrate
 ```
 Cela mettra en place les tables nécessaires à votre projet.
 
+Créer une nouvelle branche à votre nom, autre que la branche "master" (et penser à désactiver l'environnement avec la cmde ci-dessous)
+
 ## Accéder à l'application
 Après avoir lancé le serveur, ouvrez votre navigateur et accédez à l'adresse localhost ou celle fournie dans le terminal.
+
+## Utilisation de l'environnement
+Pour faire un nouveau commit (depuis votre IDE)
+
+```bash
+git add .
+```
+
+puis
+
+```bash
+git commit  -m "le commentaire"
+```
+
+Pour obtenir le dernier commit (depuis votre IDE)
+
+```bash
+git pull
+```
+## Désactiver l'environnement
+
+Pour désactiver l'environnement depuis le clavier :ctrl+c
+
