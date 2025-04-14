@@ -62,12 +62,28 @@ python manage.py migrate
 ```
 Cela mettra en place les tables nécessaires à votre projet.
 
+
+## Branche et commit pour GitHub
+
 Créer une nouvelle branche à votre nom, autre que la branche "master" (et penser à désactiver l'environnement avec la cmde ci-dessous)
 
-## Accéder à l'application
-Après avoir lancé le serveur, ouvrez votre navigateur et accédez à l'adresse localhost ou celle fournie dans le terminal.
+1. (première fois) -> pour commit la branche sur GitHub depuis votre IDE
 
-## Utilisation de l'environnement
+```bash
+git branch
+```
+
+Vous allez voir un * devant votre nouvelle branche, genre :
+
+"*" ma-nouvelle-branche
+
+2. Pousse ta branche vers GitHub :
+
+```bash
+git push -u origin ma-nouvelle-branche
+```
+
+
 Pour faire un nouveau commit (depuis votre IDE)
 
 ```bash
@@ -85,6 +101,10 @@ Pour obtenir le dernier commit (depuis votre IDE)
 ```bash
 git pull
 ```
+
+## Accéder à l'application
+Après avoir lancé le serveur, ouvrez votre navigateur et accédez à l'adresse localhost ou celle fournie dans le terminal.
+
 ## Désactiver l'environnement
 
 Pour désactiver l'environnement depuis le clavier : ctrl+c
