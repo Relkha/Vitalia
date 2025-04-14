@@ -4,7 +4,17 @@ Ce projet est une application Django. Suivez les instructions ci-dessous pour co
 
 ## Prérequis
 
-- Python 3.9
+- Python 3.9 : 
+Pour installer python 3.9 : 
+```bash
+sudo apt install software-properties-common
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt install python3.9
+```
+Pour verifier l'instalation :
+```bash
+python3.9 --version
+```
 - Pip
 
 ## Installation de l'environnement
@@ -14,18 +24,23 @@ Ce projet est une application Django. Suivez les instructions ci-dessous pour co
    ```bash
    git clone <URL_DU_REPOSITORY>
    cd <nom_du_dossier_du_projet>
-Installez les dépendances nécessaires :
+
+2. installer l'environnement virtuel :
 ```bash
-pip install -r requirements.txt
+python 3.9 -m venv .env
 ```
 ## Configuration de l'environnement virtuel
-
 Activez l'environnement virtuel :
 
 Sur Mac/Linux :
 ```bash
 source .env/bin/activate
 ```
+Installez les dépendances nécessaires :
+```bash
+pip install -r requirements.txt
+```
+
 ## Lancer le serveur de développement local
 Accédez au répertoire src :
 
