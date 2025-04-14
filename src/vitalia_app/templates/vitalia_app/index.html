@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  {% load static %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitalia - Bienvenue</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'vitalia_app/css/index.css' %}">
+</head>
+<body>
+
+  <header>
+    <div class="logo">Vitalia</div>
+    <nav>
+      <ul>
+        <li><a href="/">Accueil</a></li>
+        <li><a href="/a_propos">À propos</a></li>
+        <li><a href="#">Nos services</a></li>
+        <li><a href="/contact">Contact</a></li>
+        <li><a href="/connexion">Connexion</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+  <div class="hero">
+    <h1>Bienvenue chez Vitalia</h1>
+    <p>
+      Bien plus qu’une maison de retraite : un lieu de vie chaleureux, moderne et sécurisé, pensé pour le bien-être de vos proches et le confort de nos équipes.
+    </p>
+
+    <div class="cta-buttons">
+      <a href="/a_propos">Découvrir nos services</a>
+      <a href="#">Créer un compte</a>
+    </div>
+  </div>
+</main>
+
+<section class="avis-flottants">
+  <div class="avis-container">
+    <blockquote>
+      “Une équipe exceptionnelle, à l’écoute et toujours souriante. Ma maman est enfin sereine.”
+      <span>– Julie L.</span>
+    </blockquote>
+    <blockquote>
+      “Le cadre est magnifique, les activités variées… Mon père se sent chez lui.”
+      <span>– Marc R.</span>
+    </blockquote>
+    <blockquote>
+      “Merci à toute l’équipe de Vitalia pour votre professionnalisme et votre humanité.”
+      <span>– Claire D.</span>
+    </blockquote>
+  </div>
+</section>
+
+
+<footer>
+  <p>&copy; 2025 Vitalia. Tous droits réservés.</p>
+  <p><small>Conçu avec bienveillance et modernité.</small></p>
+</footer>
+
