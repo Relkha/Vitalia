@@ -9,7 +9,7 @@ Pour installer python 3.9 :
 ```bash
 sudo apt install software-properties-common
 sudo add-apt-repository ppa:deadsnakes/ppa
-sudo apt install python3.9
+sudo apt install python3.9 python3.9-venv python3.9-dev
 ```
 Pour verifier l'instalation :
 ```bash
