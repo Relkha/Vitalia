@@ -75,7 +75,7 @@ git branch
 
 Vous allez voir un * devant votre nouvelle branche, genre :
 
-* ma-nouvelle-branche
+"*" ma-nouvelle-branche
 
 2. Pousse ta branche vers GitHub :
 
