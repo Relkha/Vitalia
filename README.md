@@ -87,5 +87,5 @@ git pull
 ```
 ## Désactiver l'environnement
 
-Pour désactiver l'environnement depuis le clavier :ctrl+c
+Pour désactiver l'environnement depuis le clavier : ctrl+c
 
