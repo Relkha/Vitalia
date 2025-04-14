@@ -123,3 +123,19 @@ STATIC_URL = ('/static/')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'vitalia_app/static'),
 ]
+
+
+#Pour le formulaire de contact
+
+#Pour envoyer sur une adresse mail host
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+#pour faire des test en recevant le résultat du formulaire de contact via le terminal
+MAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'adressemail@gmail.com
+EMAIL_HOST_PASSWORD = 'mot_de_passe_ou_cle_api'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
