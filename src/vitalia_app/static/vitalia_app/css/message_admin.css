@@ -3,6 +3,9 @@
   --nav-footer: #A8BCA1;
   --texte: #2E2E2E;
   --section: #F2E8CF;
+  --border-radius: 10px;
+  --box-shadow: rgba(0, 0, 0, 0.1);
+  --hover-color: #ddd;
 }
 
 * {
@@ -55,9 +58,8 @@ nav ul li a {
 
 main {
   flex: 1;
-  background-color: var(--fond);
   padding: 3rem 2rem;
-  max-width: 800px;
+  max-width: 1200px; /* Augmenter la largeur du contenu principal */
   margin: auto;
 }
 
@@ -68,42 +70,66 @@ h1 {
   margin-bottom: 2rem;
 }
 
-form {
+.messages-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.message-card {
   background-color: var(--section);
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
+  padding: 2rem; /* Augmenter le padding */
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 16px var(--box-shadow);
   font-family: 'Roboto', sans-serif;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-input, textarea {
+.message-card:hover {
+  transform: scale(1.02); /* Effet de survol */
+  box-shadow: 0 8px 24px var(--box-shadow);
+}
+
+.message-card p {
+  margin-bottom: 0.8rem; /* Espacement entre les paragraphes */
+}
+
+.message-card .date {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 1rem;
+}
+
+textarea {
   width: 100%;
-  padding: 0.75rem;
-  margin-bottom: 1.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-family: 'Inter', sans-serif;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  resize: vertical;
+  margin-top: 1rem;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+textarea:focus {
+  border-color: var(--nav-footer);
 }
 
 button {
-  background-color: var(--nav-footer);
-  color: var(--texte);
-  font-weight: bold;
-  padding: 0.75rem 1.5rem;
+  background-color: #7f9d85;
+  color: white;
+  padding: 0.8rem 2rem;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--border-radius);
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.2s ease;
+  font-family: 'Roboto', sans-serif;
+  font-size: 1rem;
+  margin-top: 1rem;
 }
 
 button:hover {
-  background-color: #96aa8e;
+  background-color: var(--nav-footer);
 }
 
 footer {
@@ -124,3 +150,4 @@ footer p {
 footer a {
   text-align: right; /* Assure que le lien est aligné à droite */
 }
+
