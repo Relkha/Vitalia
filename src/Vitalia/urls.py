@@ -15,12 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from vitalia_app.views import index, propos, contact, connexion
+from vitalia_app import views
+from vitalia_app.views import index, propos, contact, connexion, message_admin
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',index, name='index'),
     path('a_propos/', propos),
     path('contact/', contact),
-    path('connexion/', connexion)
-]
+    path('connexion/', connexion),
+    path('messages/', message_admin),
+    path('repondre/<int:message_id>/', views.repondre_message, name='repondre_message'),]

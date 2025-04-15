@@ -139,6 +139,18 @@ footer {
   text-align: center;
   padding: 1rem;
   font-size: 0.9rem;
+  
+  display: flex;
+  justify-content: space-between; /* Aligne les éléments aux deux extrémités */
+  align-items: center; /* Aligne verticalement le contenu */
+}
+
+footer p {
+  margin: 0; /* Évite la marge par défaut du <p> */
+}
+
+footer a {
+  text-align: right; /* Assure que le lien est aligné à droite */
 }
 
 .avis-section {
