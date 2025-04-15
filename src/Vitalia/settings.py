@@ -127,15 +127,13 @@ STATICFILES_DIRS = [
 
 #Pour le formulaire de contact
 
-#Pour envoyer sur une adresse mail host
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
 #pour faire des test en recevant le résultat du formulaire de contact via le terminal
-MAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+#MAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp-relay.brevo.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'adressemail@gmail.com'
-EMAIL_HOST_PASSWORD = 'mot_de_passe_ou_cle_api'
+EMAIL_HOST_USER = '8a86bc001@smtp-brevo.com'  # celui lié à Brevo
+EMAIL_HOST_PASSWORD = 'IfazW7kEtScARsgx'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

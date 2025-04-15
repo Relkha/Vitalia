@@ -17,20 +17,23 @@ def contact(request):
         if form.is_valid():
             nom = form.cleaned_data['nom']
             email = form.cleaned_data['email']
+            objet = form.cleaned_data['objet']
             message = form.cleaned_data['message']
 
-            # Envoi de l'email
+            full_message = f"Objet : {objet}\n\nMessage : {message}"
+
             send_mail(
-                subject=f"Nouveau message de {nom}",
-                message=message,
+                subject=f"Nouveau message de {nom} - {objet}",
+                message=full_message,
                 from_email=email,
-                recipient_list=['matheo.arondeau@gmail.com'],  # Change ça pour ton adresse email
+                recipient_list=['matheo.arondeau@gmail.com'],
             )
             return render(request, "contact.html", {
-                'form': ContactForm(), 
-                'success': True  # Affichage d'un message de succès
+                'form': ContactForm(),
+                'success': True
             })
     else:
         form = ContactForm()
 
     return render(request, "contact.html", {'form': form})
+    
