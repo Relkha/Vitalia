@@ -37,7 +37,7 @@ def contact(request):
             send_mail(
                 subject=f"Nouveau message de {nom} - {objet}",
                 message=full_message,
-                from_email=settings.DEFAULT_FROM_EMAIL,
+                from_email=email,
                 recipient_list=['matheo.arondeau@gmail.com', email],  # Ajouter ton adresse dans les destinataires
             )
 
