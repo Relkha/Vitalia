@@ -26,7 +26,7 @@ def contact(request):
                 subject=f"Nouveau message de {nom} - {objet}",
                 message=full_message,
                 from_email=email,
-                recipient_list=['matheo.arondeau@gmail.com'],
+                recipient_list=['matheo.arondeau@gmail.com'], # Pour recevoir les mails résultant du formulaire de contact, mettez votre adresse mail
             )
             return render(request, "contact.html", {
                 'form': ContactForm(),
@@ -36,4 +36,3 @@ def contact(request):
         form = ContactForm()
 
     return render(request, "contact.html", {'form': form})
-    
