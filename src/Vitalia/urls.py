@@ -19,10 +19,10 @@ from vitalia_app import views
 from vitalia_app.views import index, propos, contact, connexion, message_admin
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls, name = 'admin'),
     path('',index, name='index'),
-    path('a_propos/', propos),
-    path('contact/', contact),
-    path('connexion/', connexion),
-    path('messages/', message_admin),
+    path('a_propos/', propos, name ='a_propos'),
+    path('contact/', contact, name = 'contact'),
+    path('connexion/', connexion, name = 'connexion'),
+    path('messages/', message_admin, name = 'message_admin'),
     path('repondre/<int:message_id>/', views.repondre_message, name='repondre_message'),]

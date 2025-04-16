@@ -1,20 +1,47 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-  {% load static %}
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vitalia - À propos</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'vitalia_app/css/connexion.css' %}">
-</head>
-<body>
+  <head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vitalia - Connexion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'vitalia_app/css/contact.css' %}">
+  </head>
+  <body>
+    <header>
+      <div class="logo">Vitalia</div>
+      <nav>
+        <ul>
+          <li><a href="/">Accueil</a></li>
+          <li><a href="/a_propos">À propos</a></li>
+          <li><a href="#">Nos services</a></li>
+          <li><a href="/contact">Contact</a></li>
+          <li><a href="#">Connexion</a></li>
+        </ul>
+      </nav>
+    </header>
 
+    <main>
+      <h1>Connexion</h1>
 
+      {% if error %}
+      <p style="color: red;">{{ error }}</p>
+      {% endif %}
+      {% if success %}
+      <p style="color: green;">{{ success }}</p>
+      {% endif %}
 
-  <footer>
-    <p>&copy; 2025 Vitalia. Tous droits réservés. Projet CY Tech.</p>
-    <a href="/messages">Admin</a>
-  </footer>
-</body>
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Envoyer</button>
+      </form>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 Vitalia. Tous droits réservés. Projet CY Tech.</p>
+      <a href="/messages">Admin</a>
+    </footer>
+  </body>
 </html>

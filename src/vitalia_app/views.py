@@ -1,9 +1,10 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
 from django.core.mail import send_mail
-from .forms import ContactForm
-from .models import MessageContact
+from .forms import ContactForm, ConnexionForm
+from .models.MessageContact import MessageContact
 
 def index(request):
     return render(request, "index.html")
@@ -11,8 +12,24 @@ def index(request):
 def propos(request):
     return render(request, "a_propos.html")
 
-def connexion(request) :
-    return render(request, 'connexion.html')
+def connexion(request):
+    if request.method == "POST":
+        form = ConnexionForm(request.POST)
+        if form.is_valid():
+            nom = form.cleaned_data['Nom']
+            mdp = form.cleaned_data['mdp']
+
+            user = authenticate(request, username=nom, password=mdp)
+            if user is not None:
+                login(request, user)
+                return redirect('index')  # Change "home" par le nom de ta vue d’accueil
+            else:
+                error = "Identifiants incorrects. Veuillez réessayer."
+                return render(request, 'connexion.html', {'form': form, 'error': error})
+    else:
+        form = ConnexionForm()
+
+    return render(request, 'connexion.html', {'form': form})
 
 
 def contact(request):
@@ -51,13 +68,13 @@ def contact(request):
 
     return render(request, "contact.html", {'form': form})
 
-# @login_required
+#@login_required
 def message_admin(request):
     messages = MessageContact.objects.order_by('-date_envoi') # "-" pour afficher les messgaes du plus récent au plus ancien
     return render(request, 'vitalia_app/message_admin.html', {'messages': messages})
 
 @csrf_exempt  # uniquement pour test
-#@login_required
+# @login_required
 def repondre_message(request, message_id):
     if request.method == 'POST':
         reponse = request.POST.get('reponse')

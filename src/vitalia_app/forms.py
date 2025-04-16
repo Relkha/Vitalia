@@ -14,3 +14,9 @@ class ContactForm(forms.Form):
     email = forms.EmailField(label="Adresse e-mail")
     objet = forms.ChoiceField(choices=OBJET_CHOICES, label="Objet de la demande")
     message = forms.CharField(widget=forms.Textarea, label="Votre message")
+
+class ConnexionForm(forms.Form):
+    Nom = forms.CharField(max_length=100, label="Nom d'utilisateur")
+    mdp = forms.CharField(max_length=100, label="Mot de passe", widget=forms.PasswordInput)
+
+
