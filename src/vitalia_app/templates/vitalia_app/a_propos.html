@@ -17,7 +17,17 @@
         <li><a href="/a_propos">À propos</a></li>
         <li><a href="#">Nos services</a></li>
         <li><a href="/contact">Contact</a></li>
-        <li><a href="#">Connexion</a></li>
+        {% if user.is_authenticated and user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
+        <li><a href="/admin">Admin</a></li>
+        {% endif %}
+        {% if user.is_authenticated and user.groups.first.name != "Visiteur du site" %}
+        <li><a href="{%url 'dashboard'%}">Dashboard</a></li>
+        {% endif %}
+        {% if user.is_authenticated %}
+        <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
+        {% else %}
+        <li><a href="{% url 'connexion' %}">Connexion</a></li>
+        {% endif %}
       </ul>
     </nav>
   </header>
@@ -73,8 +83,7 @@
   </main>
 
   <footer>
-    <p>&copy; 2025 Vitalia. Tous droits réservés.  Projet CY Tech.</p>
-    <a href="/messages">Admin</a>
+    <p>&copy; 2025 Vitalia. Tous droits réservés. Projet CY Tech.</p>
   </footer>
 </body>
 </html>

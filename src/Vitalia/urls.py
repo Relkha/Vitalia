@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from vitalia_app import views
-from vitalia_app.views import index, propos, contact, connexion, message_admin
+from vitalia_app.views import index, propos, contact, connexion, message_admin, dashboard
 
 urlpatterns = [
     path('admin/', admin.site.urls, name = 'admin'),
@@ -25,4 +25,6 @@ urlpatterns = [
     path('contact/', contact, name = 'contact'),
     path('connexion/', connexion, name = 'connexion'),
     path('messages/', message_admin, name = 'message_admin'),
-    path('repondre/<int:message_id>/', views.repondre_message, name='repondre_message'),]
+    path('repondre/<int:message_id>/', views.repondre_message, name='repondre_message'),
+    path('dashboard/', dashboard, name = 'dashboard' ),
+    path('logout/', views.deconnexion, name='deconnexion'),  ]

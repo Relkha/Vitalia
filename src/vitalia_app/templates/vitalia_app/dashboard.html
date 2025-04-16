@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Tableau de bord - Vitalia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'vitalia_app/css/dashboard.css' %}">
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <h1>Vitalia - Tableau de bord</h1>
+        </div>
+        <nav>
+            <ul>
+                {% if user.is_authenticated and user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
+                <li><a href="/admin">Admin</a></li>
+                {% endif %}
+                <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
+
+            </ul>
+        </nav>
+
+    </header>
+    <!NE PAS OUBLIER DE MODIFIER TOUS LES URL DE REDIRECTION>
+    <main class="container mt-4">
+        <h2>Bienvenue, {{ user.username }} ({{ role }})</h2>
+
+        {% if is_admin or is_directeur %}
+        <div class="card">
+            <h2>Gestion des utilisateurs</h2>
+            <a href="{% url 'index' %}" class="btn">Accéder</a>
+        </div>
+        <div class="card">
+            <h2>Message</h2>
+            <a href="{% url 'message_admin' %}" class="btn">Accéder</a>
+        </div>
+        {% endif %}
+
+        {% if is_chef_infirmier %}
+        <div class="card">
+            <h2>Créer les plannings</h2>
+            <a href="{% url 'index' %}" class="btn">Créer un planning</a>
+        </div>
+        {% elif is_infirmier or is_aide_soignant or is_menage or is_retraite %}
+        <div class="card">
+            <h2>Mon planning</h2>
+            <a href="{% url 'index' %}" class="btn">Voir</a>
+        </div>
+        {% endif %}
+
+        {% if is_admin or is_directeur %}
+        <div class="card">
+            <h2>Dossiers médicaux</h2>
+            <a href="{% url 'index' %}" class="btn">Consulter</a>
+        </div>
+
+        {% elif is_infirmier %}
+        <div class="card">
+            <h2>Notes médicales</h2>
+            <a href="{% url 'index' %}" class="btn">Ajouter des notes</a>
+        </div>
+        {% elif is_aide_soignant %}
+        <div class="card">
+            <h2>Observations</h2>
+            <a href="{% url 'index' %}" class="btn">Voir les infos</a>
+        </div>
+        {% endif %}
+
+        {% if is_admin or is_directeur or is_chef_infirmier or is_infirmier or is_menage or is_retraite %}
+        <div class="card">
+            <h2>Objets connectés</h2>
+            <a href="{% url 'index' %}" class="btn">Gérer ou consulter</a>
+        </div>
+        {% endif %}
+
+        {% if is_admin or is_directeur or is_medical %}
+        <div class="card">
+            <h2>Alertes d'urgence</h2>
+            <a href="{% url 'index' %}" class="btn">Voir les alertes</a>
+        </div>
+        {% endif %}
+
+        {% if is_visiteur_resident %}
+        <div class="card">
+            <h2>Mes visites</h2>
+            <a href="{% url 'index' %}" class="btn">Réserver / Modifier</a>
+        </div>
+        {% elif is_retraite %}
+        <div class="card">
+            <h2>Visites programmées</h2>
+            <a href="{% url 'index' %}" class="btn">Voir les horaires</a>
+        </div>
+        {% elif is_reception %}
+        <div class="card">
+            <h2>Accueil des visiteurs</h2>
+            <a href="{% url 'index' %}" class="btn">Gérer les entrées</a>
+        </div>
+        {% endif %}
+    </main>
+
+    <footer>
+        <p>© 2025 Vitalia. Tous droits réservés.</p>
+    </footer>
+
+</body>
+</html>

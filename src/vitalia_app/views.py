@@ -1,10 +1,11 @@
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
 from django.core.mail import send_mail
 from .forms import ContactForm, ConnexionForm
 from .models.MessageContact import MessageContact
+from .models.Profil import Profil
 
 def index(request):
     return render(request, "index.html")
@@ -12,6 +13,9 @@ def index(request):
 def propos(request):
     return render(request, "a_propos.html")
 
+def deconnexion(request):
+    logout(request)
+    return render(request, 'deconnexion.html')
 def connexion(request):
     if request.method == "POST":
         form = ConnexionForm(request.POST)
@@ -22,7 +26,7 @@ def connexion(request):
             user = authenticate(request, username=nom, password=mdp)
             if user is not None:
                 login(request, user)
-                return redirect('index')  # Change "home" par le nom de ta vue d’accueil
+                return redirect('dashboard')  # Change "home" par le nom de ta vue d’accueil
             else:
                 error = "Identifiants incorrects. Veuillez réessayer."
                 return render(request, 'connexion.html', {'form': form, 'error': error})
@@ -87,3 +91,35 @@ def repondre_message(request, message_id):
             recipient_list=[message.email],
         )
         return redirect('/messages/')
+
+def dashboard(request):
+    user = request.user
+
+    # Crée un profil s'il n'existe pas encore (logique métier)
+    if not hasattr(user, "profil"):
+        Profil.objects.create(user=user)
+
+    # Récupère le groupe (rôle) principal de l'utilisateur
+    role = user.groups.first().name if user.groups.exists() else "Aucun"
+
+    context = {
+        "role": role,
+        "is_admin": role == "Responsable du site",
+        "is_directeur": role == "Directeur",
+        "is_chef_infirmier": role == "Chef des infirmiers",
+        "is_infirmier": role == "Infirmier",
+        "is_aide_soignant": role == "Aide-soignant",
+        "is_menage": role == "Ménage",
+        "is_reception": role == "Réceptionniste",
+        "is_visiteur_resident": role == "Visiteur des résidents",
+        "is_retraite": role == "Retraité",
+        "is_medical": role in ["Infirmier", "Chef des infirmiers", "Aide-soignant"],
+        "can_manage_visites": role in ["Réceptionniste", "Visiteur des résidents", "Retraité"],
+    }
+
+    if role == "Visiteur du site":
+        return render(request, "index.html", context)
+    else:
+        return render(request, "dashboard.html", context)
+
+

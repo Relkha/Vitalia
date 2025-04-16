@@ -137,3 +137,5 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = '8a86bc001@smtp-brevo.com'  # celui lié à Brevo
 EMAIL_HOST_PASSWORD = 'IfazW7kEtScARsgx'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+LOGIN_REDIRECT_URL = '/dashboard/'
