@@ -1,0 +1,23 @@
+<h1>Objets connectés accessibles</h1>
+
+{% for entry in objets %}
+  <div style="border:1px solid #ccc; margin:10px; padding:10px;">
+    <h2>{{ entry.objet.name }}</h2>
+    <p>{{ entry.objet.description }}</p>
+
+    <div>
+      {% if 'read' in entry.permissions %}
+        <button>📖 Consulter</button>
+      {% endif %}
+      {% if 'configure' in entry.permissions %}
+        <button>⚙️ Configurer</button>
+      {% endif %}
+      {% if 'send_alert' in entry.permissions %}
+        <button>🚨 Envoyer une alerte</button>
+      {% endif %}
+      {% if 'view_logs' in entry.permissions %}
+        <button>📊 Voir les logs</button>
+      {% endif %}
+    </div>
+  </div>
+{% endfor %}

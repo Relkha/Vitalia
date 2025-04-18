@@ -6,6 +6,7 @@ from django.core.mail import send_mail
 from .forms import ContactForm, ConnexionForm
 from .models.MessageContact import MessageContact
 from .models.Profil import Profil
+from .models.Objets import ObjectPermission,ConnectedObject,PermissionType
 
 def index(request):
     return render(request, "index.html")
@@ -122,4 +123,20 @@ def dashboard(request):
     else:
         return render(request, "dashboard.html", context)
 
+@login_required
+def connected_objects(request):
+    user_groups = request.user.groups.all()
+    object_permissions = ObjectPermission.objects.filter(group__in=user_groups).select_related('connected_object').prefetch_related('permissions')
 
+    objets_affichables = {}
+
+    for op in object_permissions:
+        obj = op.connected_object
+        if obj.id not in objets_affichables:
+            objets_affichables[obj.id] = {
+                "objet": obj,
+                "permissions": set()
+            }
+        objets_affichables[obj.id]["permissions"].update(p.code for p in op.permissions.all())
+
+    return render(request, 'connected_objets.html', {"objets": objets_affichables.values()})
