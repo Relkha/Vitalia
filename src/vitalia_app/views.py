@@ -7,6 +7,10 @@ from .forms import ContactForm, ConnexionForm
 from .models.MessageContact import MessageContact
 from .models.Profil import Profil
 from .models.Objets import ObjectPermission,ConnectedObject,PermissionType
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .models import Event
+from .serializers import EventSerializer
 
 def index(request):
     return render(request, "index.html")
@@ -140,3 +144,10 @@ def connected_objects(request):
         objets_affichables[obj.id]["permissions"].update(p.code for p in op.permissions.all())
 
     return render(request, 'connected_objets.html', {"objets": objets_affichables.values()})
+
+
+
+#@login_required
+def event_list(request):
+    return render(request, 'vitalia_app/planning_infirmier.html')
+
