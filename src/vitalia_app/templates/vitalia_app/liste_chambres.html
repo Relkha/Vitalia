@@ -38,7 +38,7 @@
 
   <div class="search-bar">
     <form method="GET" action="">
-      <input type="text" name="q" placeholder="Rechercher par N° de chambre ou résident..." value="{{ request.GET.q }}">
+      <input type="text" name="q" placeholder="Rechercher par N° de chambre ou par résident..." value="{{ request.GET.q }}">
       <button type="submit">Rechercher</button>
     </form>
   </div>
@@ -59,10 +59,8 @@
         <td>{{ chambre.get_statut_display }}</td>
         <td>{% if chambre.resident %}{{ chambre.resident.nom }} {{ chambre.resident.prenom }}{% else %}-{% endif %}</td>
         <td>
-            {% comment %} Enelver les commentaires quand la page de controle des objets sera dispo et changer l'url de destination detail chambre
-            <a href="{% url 'detail_chambre' chambre.id %}" class="detail-button">Voir Détail</a> 
-            {% endcomment %}
-            
+          <a href="#" class="action-button voir">Voir</a>
+          <a href="#" class="action-button modifier">Modifier</a>
         </td>
       </tr>
       {% empty %}

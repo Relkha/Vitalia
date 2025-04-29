@@ -6,85 +6,85 @@
     --accent: #C3D8B2;
     --danger: #E27D60;
     --info: #84A59D;
-  }
-  
-  * {
+}
+
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-  }
-  
-  body {
+}
+
+body {
     font-family: 'Inter', sans-serif;
     background-color: var(--fond);
     color: var(--texte);
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-  }
-  
-  header {
+}
+
+header {
     background-color: var(--nav-footer);
     padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-  }
-  
-  header .logo {
+}
+
+header .logo {
     font-family: 'Rufina', serif;
     font-size: 2rem;
     color: var(--texte);
-  }
-  
-  nav ul {
+}
+
+nav ul {
     list-style: none;
     display: flex;
     flex-wrap: wrap;
-  }
-  
-  nav ul li {
+}
+
+nav ul li {
     margin-left: 1.5rem;
     font-family: 'Roboto', sans-serif;
-  }
-  
-  nav ul li a {
+}
+
+nav ul li a {
     text-decoration: none;
     color: var(--texte);
     font-weight: 500;
     padding: 0.5rem;
     display: inline-block;
-  }
-  
-  main {
+}
+
+main {
     flex: 1;
     padding: 2rem;
-  }
-  
-  h1 {
+}
+
+h1 {
     text-align: center;
     margin-bottom: 2rem;
     font-family: 'Rufina', serif;
     font-size: 2rem;
     color: var(--texte);
-  }
-  
-  .search-bar {
+}
+
+.search-bar {
     display: flex;
     justify-content: center;
     margin-bottom: 2rem;
-  }
-  
-  .search-bar input[type="text"] {
+}
+
+.search-bar input[type="text"] {
     width: 300px;
     padding: 8px;
     border: 1px solid var(--accent);
     border-radius: 6px;
     background-color: var(--section);
-  }
-  
-  .search-bar button {
+}
+
+.search-bar button {
     padding: 8px 16px;
     background-color: var(--nav-footer);
     color: var(--texte);
@@ -94,13 +94,13 @@
     cursor: pointer;
     font-weight: bold;
     transition: background-color 0.2s;
-  }
-  
-  .search-bar button:hover {
+}
+
+.search-bar button:hover {
     background-color: #96aa8e;
-  }
-  
-  .chambre-table {
+}
+
+.chambre-table {
     width: 90%;
     margin: auto;
     border-collapse: collapse;
@@ -108,40 +108,25 @@
     box-shadow: 0 3px 8px rgba(0,0,0,0.08);
     border-radius: 8px;
     overflow: hidden;
-  }
-  
-  .chambre-table th, .chambre-table td {
+}
+
+.chambre-table th, .chambre-table td {
     border: 1px solid #ddd;
     padding: 12px;
     text-align: center;
-  }
-  
-  .chambre-table th {
+}
+
+.chambre-table th {
     background-color: var(--info);
     color: var(--fond);
     font-family: 'Roboto', sans-serif;
-  }
-  
-  .chambre-table td {
+}
+
+.chambre-table td {
     font-family: 'Inter', sans-serif;
-  }
-  
-  .detail-button {
-    background-color: var(--nav-footer);
-    color: var(--texte);
-    padding: 6px 12px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: bold;
-    display: inline-block;
-    transition: background-color 0.2s;
-  }
-  
-  .detail-button:hover {
-    background-color: #96aa8e;
-  }
-  
-  footer {
+}
+
+footer {
     background-color: var(--nav-footer);
     text-align: center;
     padding: 1rem;
@@ -149,32 +134,35 @@
     font-size: 0.9rem;
     color: var(--texte);
     font-family: 'Roboto', sans-serif;
-  }
-  
+}
 
-
-  .detail-button {
-    background-color: var(--nav-footer);
-    color: var(--texte);
-    padding: 6px 12px;
+.action-button {
+    display: inline-block;
+    padding: 8px 16px;
+    margin: 4px;
+    font-weight: 600;
     border-radius: 6px;
     text-decoration: none;
-    font-weight: bold;
-    display: inline-block;
-    transition: background-color 0.2s;
-  }
-  
-  .detail-button:hover {
-    background-color: #96aa8e;
-  }
-  
-  footer {
-    background-color: var(--nav-footer);
-    text-align: center;
-    padding: 1rem;
-    margin-top: auto;
-    font-size: 0.9rem;
-    color: var(--texte);
-    font-family: 'Roboto', sans-serif;
-  }
-  
+    transition: background-color 0.3s ease, box-shadow 0.2s ease;
+    color: var(--fond);
+    border: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.action-button.voir {
+    background-color: var(--info);
+}
+
+.action-button.voir:hover {
+    background-color: #6f8f88;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.action-button.modifier {
+    background-color: var(--danger);
+}
+
+.action-button.modifier:hover {
+    background-color: #cf6b52;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
