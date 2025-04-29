@@ -1,4 +1,5 @@
 from django import forms
+from .models.Evenement import Evenement
 
 class ContactForm(forms.Form):
     OBJET_CHOICES = [
@@ -18,5 +19,13 @@ class ContactForm(forms.Form):
 class ConnexionForm(forms.Form):
     Nom = forms.CharField(max_length=100, label="Nom d'utilisateur")
     mdp = forms.CharField(max_length=100, label="Mot de passe", widget=forms.PasswordInput)
+
+
+
+
+class EvenementForm(forms.ModelForm):
+    class Meta:
+        model = Evenement
+        fields = ['user', 'subject', 'start_time', 'end_time']
 
 

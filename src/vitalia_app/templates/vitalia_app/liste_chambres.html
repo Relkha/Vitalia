@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  {% load static %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liste des Chambres</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'vitalia_app/css/liste_chambres.css' %}">
+</head>
+<body>
+
+<header>
+  <div class="logo">Vitalia</div>
+  <nav>
+    <ul>
+      <li><a href="/">Accueil</a></li>
+      <li><a href="/a_propos">À propos</a></li>
+      <li><a href="#">Nos services</a></li>
+      <li><a href="/contact">Contact</a></li>
+      {% if user.is_authenticated and user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
+      <li><a href="/admin">Admin</a></li>
+      {% endif %}
+      {% if user.is_authenticated and user.groups.first.name != "Visiteur du site" %}
+      <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+      {% endif %}
+      {% if user.is_authenticated %}
+      <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
+      {% else %}
+      <li><a href="{% url 'connexion' %}">Connexion</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <h1>Liste des Chambres</h1>
+
+  <div class="search-bar">
+    <form method="GET" action="">
+      <input type="text" name="q" placeholder="Rechercher par N° de chambre ou résident..." value="{{ request.GET.q }}">
+      <button type="submit">Rechercher</button>
+    </form>
+  </div>
+
+  <table class="chambre-table">
+    <thead>
+      <tr>
+        <th>N° Chambre</th>
+        <th>Statut</th>
+        <th>Résident</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for chambre in chambres %}
+      <tr>
+        <td>{{ chambre.numero }}</td>
+        <td>{{ chambre.get_statut_display }}</td>
+        <td>{% if chambre.resident %}{{ chambre.resident.nom }} {{ chambre.resident.prenom }}{% else %}-{% endif %}</td>
+        <td>
+            {% comment %} Enelver les commentaires quand la page de controle des objets sera dispo et changer l'url de destination detail chambre
+            <a href="{% url 'detail_chambre' chambre.id %}" class="detail-button">Voir Détail</a> 
+            {% endcomment %}
+            
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4">Aucune chambre trouvée.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</main>
+
+<footer>
+  <p>&copy; 2025 Vitalia. Tous droits réservés. Projet CY Tech.</p>
+  <p><small>Conçu avec bienveillance et modernité.</small></p>
+</footer>
+
+
+</body>
+</html>

@@ -42,13 +42,25 @@
 
         {% if is_chef_infirmier %}
         <div class="card">
-            <h2>Créer les plannings</h2>
-            <a href="{% url 'index' %}" class="btn">Créer un planning</a>
+            <h2>Créer les plannings du personnel</h2>
+            <a href="{% url 'event_list' %}" class="btn">Créer un planning</a>
         </div>
         {% elif is_infirmier or is_aide_soignant or is_menage or is_retraite %}
         <div class="card">
-            <h2>Mon planning</h2>
-            <a href="{% url 'index' %}" class="btn">Voir</a>
+            <h2>Mon planning pro</h2>
+            <a href="{% url 'planning_individuel' %}" class="btn">Voir</a>
+        </div>
+        {% endif %}
+
+        {% if is_admin or is_directeur or is_chef_infirmier or is_infirmier %}
+        <div class="card">
+            <h2>Voir le planning des résidents</h2>
+            <a href="{% url 'planning_residents' %}" class="btn">Voir le planning</a>
+        </div>
+        {% elif is_retraite %}
+        <div class="card">
+            <h2>Mon planning résident</h2>
+            <a href="{% url 'mon_planning_resident' %}" class="btn">Voir mon planning</a>
         </div>
         {% endif %}
 

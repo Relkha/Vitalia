@@ -1,99 +1,98 @@
 :root {
-    --fond: #F9F5EC;
-    --nav-footer: #A8BCA1;
-    --texte: #2E2E2E;
-    --section: #F2E8CF;
-  }
-  
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-  
-  body {
-    font-family: 'Inter', sans-serif;
-    background-color: var(--fond);
-    color: var(--texte);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  header {
-    background-color: var(--nav-footer);
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-  
-  .logo {
-    font-family: 'Rufina', serif;
-    font-size: 2rem;
-  }
-  
-  nav ul {
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-  }
-  
-  nav ul li {
-    margin-left: 1.5rem;
-    font-family: 'Roboto', sans-serif;
-  }
-  
-  nav ul li a {
-    text-decoration: none;
-    color: var(--texte);
-    font-weight: 500;
-    padding: 0.5rem;
-    display: inline-block;
-  }
-  
-  main {
-    flex: 1;
-    background-color: var(--fond);
-    padding: 2rem;
-    max-width: 1200px;
-    margin: auto;
-  }
-  
-  /* Planning (calendrier) */
-  #schedule {
-    background-color: var(--section);
-    padding: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    margin-bottom: 2rem;
-  }
-  
-  /* Ajout de marges pour les titres, si tu en ajoutes */
-  h1 {
-    font-family: 'Rufina', serif;
-    font-size: 2.5rem;
-    text-align: center;
-    margin: 2rem 0;
-  }
-  
-  /* Footer */
-  footer {
-    background-color: var(--nav-footer);
-    text-align: center;
-    padding: 1rem;
-    font-size: 0.9rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  footer p {
-    margin: 0;
-  }
-  
-  footer a {
-    text-align: right;
-  }
-  
+  --fond: #F9F5EC;
+  --nav-footer: #A8BCA1;
+  --texte: #2E2E2E;
+  --section: #F2E8CF;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--fond);
+  color: var(--texte);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background-color: var(--nav-footer);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.logo {
+  font-family: 'Rufina', serif;
+  font-size: 2rem;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+nav ul li {
+  margin-left: 1.5rem;
+  font-family: 'Roboto', sans-serif;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: var(--texte);
+  font-weight: 500;
+  padding: 0.5rem;
+  display: inline-block;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+
+#schedule {
+  flex: 1;
+  min-height: 600px;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  background-color: var(--section);
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+h1 {
+  font-family: 'Rufina', serif;
+  font-size: 2.5rem;
+  text-align: center;
+  margin: 2rem 0;
+}
+
+footer {
+  background-color: var(--nav-footer);
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+footer p {
+  margin: 0;
+}
+
+footer a {
+  text-align: right;
+}

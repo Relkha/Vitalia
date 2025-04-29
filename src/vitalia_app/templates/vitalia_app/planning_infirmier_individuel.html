@@ -4,7 +4,7 @@
   {% load static %}
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vitalia - Bienvenue</title>
+  <title>Planning Individuel</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'vitalia_app/css/planning.css' %}">
   <link href="https://cdn.syncfusion.com/ej2/25.1.35/material.css" rel="stylesheet" />
@@ -35,7 +35,11 @@
   </nav>
 </header>
 
-<div id="schedule"></div>
+<main>
+  <h1>Mon Planning</h1>
+
+  <div id="schedule"></div>
+</main>
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
@@ -44,15 +48,25 @@
     ej.base.enableRipple(true);
 
     ej.schedule.Schedule.Inject(
-      ej.schedule.TimelineViews,
+      ej.schedule.TimelineViews, 
       ej.schedule.TimelineMonth
     );
 
     var scheduleObj = new ej.schedule.Schedule({
-      height: '550px',
+      height: '700px',
       width: '100%',
       selectedDate: new Date(),
-      views: ['TimelineDay', 'TimelineWeek', 'TimelineMonth'],
+      currentView: 'TimelineDay',
+      views: [
+        { option: 'TimelineDay', displayName: "Aujourd'hui" },
+        { option: 'TimelineWeek', displayName: 'Semaine' },
+        { option: 'TimelineMonth', displayName: 'Mois' }
+      ],
+      timeScale: {
+        enable: true,
+        interval: 60, // 1h par colonne
+        slotCount: 1
+      },
       group: {
         resources: ['Employes']
       },
@@ -62,9 +76,7 @@
         name: 'Employes',
         allowMultiple: false,
         dataSource: [
-          { text: 'Alice', id: 1, color: '#ffaa00' },
-          { text: 'Bob', id: 2, color: '#f8a398' },
-          { text: 'Charlie', id: 3, color: '#7499e1' }
+          { text: "{{ user.username }}", id: {{ user_id }}, color: '#ffaa00' }
         ],
         textField: 'text',
         idField: 'id',
@@ -72,24 +84,14 @@
       }],
       eventSettings: {
         dataSource: [
+          {% for event in events %}
           {
-            Subject: 'Consultation',
-            StartTime: new Date(2025, 3, 10, 10, 0),
-            EndTime: new Date(2025, 3, 10, 12, 0),
-            EmployeId: 1
+            Subject: "{{ event.subject }}",
+            StartTime: new Date("{{ event.start_time|date:'Y-m-d H:i:s' }}"),
+            EndTime: new Date("{{ event.end_time|date:'Y-m-d H:i:s' }}"),
+            EmployeId: {{ event.employe.id }}
           },
-          {
-            Subject: 'Soins à domicile',
-            StartTime: new Date(2025, 3, 11, 14, 0),
-            EndTime: new Date(2025, 3, 11, 15, 30),
-            EmployeId: 2
-          },
-          {
-            Subject: 'Vaccination',
-            StartTime: new Date(2025, 3, 12, 9, 0),
-            EndTime: new Date(2025, 3, 12, 11, 0),
-            EmployeId: 3
-          }
+          {% endfor %}
         ]
       }
     });
@@ -102,5 +104,6 @@
   <p>&copy; 2025 Vitalia. Tous droits réservés. Projet CY Tech.</p>
   <p><small>Conçu avec bienveillance et modernité.</small></p>
 </footer>
+
 </body>
 </html>

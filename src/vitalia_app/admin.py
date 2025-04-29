@@ -4,6 +4,8 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.admin import GroupAdmin
 from django.contrib.auth.models import Group
 from .models.Profil import Profil
+from .models.Chambre import Chambre 
+
 
 
 class ProfilInline(admin.StackedInline):
@@ -66,3 +68,10 @@ class CustomGroupAdmin(GroupAdmin):
 # Remplacer l'ancien Group admin par le nouveau
 admin.site.unregister(Group)
 admin.site.register(Group, CustomGroupAdmin)
+
+
+@admin.register(Chambre)
+class ChambreAdmin(admin.ModelAdmin):
+    list_display = ('numero', 'statut', 'resident')
+    list_filter = ('statut',)
+    search_fields = ('numero', 'resident__nom', 'resident__prenom')
