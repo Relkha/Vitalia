@@ -13,7 +13,7 @@
 
 body {
   font-family: 'Inter', sans-serif;
-  background-image: url('/static/vitalia_app/images/fond_index.png');
+  background-image: url('../images/fond_index.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

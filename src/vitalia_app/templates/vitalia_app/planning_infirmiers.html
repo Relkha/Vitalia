@@ -36,11 +36,7 @@
 </header>
 
 <main>
-  <!--<a href="{% url 'create_event'  %}">Créer</a>-->
-  {% for event in events %}
-    <p>{{ event.subject }}</p>
-    <a href="{% url 'edit_event' event.id %}">Modifier</a>
-  {% endfor %}
+
     
   <div id="schedule"></div>
 </main>
@@ -94,8 +90,8 @@
         fields: {
             id: 'id',
             subject: { name: 'subject' },
-            startTime: { name: 'start_time' },
-            endTime: { name: 'end_time' },
+            startTime: { name: 'start_time', type: 'date'},
+            endTime: { name: 'end_time', type: 'date' },
             resourceId: 'employe_id'
         }
      }

@@ -1,8 +1,11 @@
 :root {
-  --fond: #361bc7;
-  --nav-footer: #A8BCA1;
-  --texte: #2E2E2E;
-  --section: #F2E8CF;
+  --fond: #f5f5f5;
+  --nav-footer: #a8bca1;
+  --texte: #2e2e2e;
+  --section: #ffffff;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --bordure: #e5e7eb;
 }
 
 * {
@@ -22,16 +25,19 @@ body {
 
 header {
   background-color: var(--nav-footer);
-  padding: 1rem 2rem;
+  color: var(--texte);
+  padding: 1.2rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .logo {
   font-family: 'Rufina', serif;
   font-size: 2rem;
+  color: var(--texte);
 }
 
 nav ul {
@@ -49,26 +55,20 @@ nav ul li a {
   text-decoration: none;
   color: var(--texte);
   font-weight: 500;
-  padding: 0.5rem;
-  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+nav ul li a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 main {
   flex: 1;
+  padding: 2rem 1.5rem;
   display: flex;
   flex-direction: column;
-  overflow: auto;
-}
-
-#schedule {
-  flex: 1;
-  min-height: 600px;
-  height: 100%;
-  width: 100%;
-  overflow: auto;
-  background-color: var(--section);
-  padding: 1rem;
-  border-radius: 8px;
 }
 
 h1 {
@@ -76,23 +76,66 @@ h1 {
   font-size: 2.5rem;
   text-align: center;
   margin: 2rem 0;
+  color: var(--nav-footer);
+}
+
+#schedule {
+  background-color: var(--section);
+  border: 1px solid var(--bordure);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  overflow: auto;
+}
+
+.card {
+  background-color: var(--section);
+  border: 1px solid var(--bordure);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.card h2 {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.6rem 1.2rem;
+  background-color: var(--accent);
+  color: var(--teste);
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+  background-color: var(--accent-hover);
 }
 
 footer {
   background-color: var(--nav-footer);
+  color: var(--texte);
   text-align: center;
-  padding: 1rem;
+  padding: 1rem 2rem;
   font-size: 0.9rem;
+  margin-top: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: auto;
 }
 
 footer p {
   margin: 0;
+  font-family: 'Roboto', sans-serif;
 }
 
 footer a {
-  text-align: right;
+  color: var(--texte);
+  text-decoration: underline;
 }

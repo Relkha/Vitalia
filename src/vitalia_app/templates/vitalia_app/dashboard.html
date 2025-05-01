@@ -40,12 +40,12 @@
         </div>
         {% endif %}
 
-        {% if is_chef_infirmier %}
+        {% if is_admin or is_directeur or is_chef_infirmier %}
         <div class="card">
             <h2>Créer les plannings du personnel</h2>
             <a href="{% url 'event_list' %}" class="btn">Créer un planning</a>
         </div>
-        {% elif is_infirmier or is_aide_soignant or is_menage or is_retraite %}
+        {% elif is_infirmier or is_aide_soignant or is_menage %}
         <div class="card">
             <h2>Mon planning pro</h2>
             <a href="{% url 'planning_individuel' %}" class="btn">Voir</a>

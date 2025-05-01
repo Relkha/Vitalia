@@ -60,7 +60,9 @@
         <td>{% if chambre.resident %}{{ chambre.resident.nom }} {{ chambre.resident.prenom }}{% else %}-{% endif %}</td>
         <td>
           <a href="#" class="action-button voir">Voir</a>
+          {% if is_admin or is_directeur or is_chef_infirmier or is_infirmier %}
           <a href="#" class="action-button modifier">Modifier</a>
+          {% endif %}
         </td>
       </tr>
       {% empty %}
