@@ -4,7 +4,7 @@
   {% load static %}
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Planning Individuel</title>
+  <title>Mon Planning - Vitalia</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'vitalia_app/css/planning.css' %}">
   <link href="https://cdn.syncfusion.com/ej2/25.1.35/material.css" rel="stylesheet" />
@@ -20,16 +20,17 @@
       <li><a href="/a_propos">À propos</a></li>
       <li><a href="#">Nos services</a></li>
       <li><a href="/contact">Contact</a></li>
-      {% if user.is_authenticated and user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
-      <li><a href="/admin">Admin</a></li>
-      {% endif %}
-      {% if user.is_authenticated and user.groups.first.name != "Visiteur du site" %}
-      <li><a href="{%url 'dashboard'%}">Dashboard</a></li>
-      {% endif %}
+
       {% if user.is_authenticated %}
-      <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
+        {% if user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
+          <li><a href="/admin">Admin</a></li>
+        {% endif %}
+        {% if user.groups.first.name != "Visiteur du site" %}
+          <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+        {% endif %}
+        <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
       {% else %}
-      <li><a href="{% url 'connexion' %}">Connexion</a></li>
+        <li><a href="{% url 'connexion' %}">Connexion</a></li>
       {% endif %}
     </ul>
   </nav>
@@ -37,65 +38,118 @@
 
 <main>
   <h1>Mon Planning</h1>
-
   <div id="schedule"></div>
 </main>
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     ej.base.registerLicense('Ngo9BigBOggjHTQxAR8/V1NBaF1cWmhIfEx1RHxQdld5ZFRHallYTnNWUj0eQnxTdEBjXX1ecH1XRmVYUkZzW0lfZg==');
-
     ej.base.enableRipple(true);
 
+    // dépendances nécessaires
     ej.schedule.Schedule.Inject(
-      ej.schedule.TimelineViews, 
-      ej.schedule.TimelineMonth
+      ej.schedule.Day,
+      ej.schedule.Week,
+      ej.schedule.WorkWeek,
+      ej.schedule.Month,
+      ej.schedule.Agenda,
+      ej.schedule.TimelineViews,
+      ej.schedule.TimelineMonth,
+      ej.schedule.DragAndDrop,
+      ej.schedule.Resize
     );
 
+    // Configuration du DataManager pour charger uniquement les événements de l'utilisateur
+    var dataManager = new ej.data.DataManager({
+      url: "/api/planning_events/",
+      adaptor: new ej.data.UrlAdaptor(),
+      crossDomain: false,
+      batchUrl: "/api/planning_events/"
+    });
+
+    // filtre pour l'utilisateur courant
+    dataManager.addParams = [{name: "EmployeId", value: {{ user_id }}}];
+
+    var users = [
+      {
+        text: "{{ user.username }}",
+        id: {{ user_id }},
+        color: '#1abc9c'
+      }
+    ];
+
+
     var scheduleObj = new ej.schedule.Schedule({
-      height: '700px',
+      height: '650px',
       width: '100%',
-      selectedDate: new Date(),
       currentView: 'TimelineDay',
+      selectedDate: new Date(),
       views: [
-        { option: 'TimelineDay', displayName: "Aujourd'hui" },
+        { option: 'TimelineDay', displayName: 'Jour' },
         { option: 'TimelineWeek', displayName: 'Semaine' },
-        { option: 'TimelineMonth', displayName: 'Mois' }
+        { option: 'TimelineMonth', displayName: 'Mois' },
+        { option: 'Agenda', displayName: 'Agenda' }
       ],
-      timeScale: {
-        enable: true,
-        interval: 60, // 1h par colonne
-        slotCount: 1
-      },
       group: {
+        byGroupID: false,
         resources: ['Employes']
       },
       resources: [{
         field: 'EmployeId',
-        title: 'Employé',
+        title: 'Mes événements',
         name: 'Employes',
         allowMultiple: false,
-        dataSource: [
-          { text: "{{ user.username }}", id: {{ user_id }}, color: '#ffaa00' }
-        ],
+        dataSource: users,
         textField: 'text',
         idField: 'id',
         colorField: 'color'
       }],
       eventSettings: {
-        dataSource: [
-          {% for event in events %}
-          {
-            Subject: "{{ event.subject }}",
-            StartTime: new Date("{{ event.start_time|date:'Y-m-d H:i:s' }}"),
-            EndTime: new Date("{{ event.end_time|date:'Y-m-d H:i:s' }}"),
-            EmployeId: {{ event.employe.id }}
-          },
-          {% endfor %}
-        ]
+        dataSource: dataManager,
+        fields: {
+          id: 'id',
+          subject: { name: 'subject', title: 'Subject', default: 'Nouvel événement' },
+          startTime: { name: 'start_time', title: 'Start Time' },
+          endTime: { name: 'end_time', title: 'End Time' },
+          isAllDay: { name: 'IsAllDay', title: 'All day' },
+          description: { name: 'description', title: 'Description' }
+        }
+      },
+      // Personnalisation de l'affichage
+      eventRendered: function(args) {
+        if (args.data.EmployeId) {
+          const user = users.find(u => u.id === args.data.EmployeId);
+          if (user) {
+            args.element.style.backgroundColor = user.color;
+            args.element.style.borderLeft = `5px solid ${user.color}`;
+          }
+        }
+      },
+      actionComplete: function(args) {
+        // Recharge les événements
+        if (args.requestType === 'eventCreated' || args.requestType === 'eventChanged' || args.requestType === 'eventRemoved') {
+          scheduleObj.refreshEvents();
+        }
+      },
+      actionFailure: function(args) {
+        alert("Une erreur s'est produite lors de l'opération sur le planning.");
+      },
+      // Optionnel : Configuration pour s'assurer que l'utilisateur ne peut modifier que ses propres événements
+      beforeEventRender: function(args) {
+        // S'assurer que l'EmployeId correspond à l'utilisateur courant
+        args.data.EmployeId = {{ user_id }};
+      },
+      actionBegin: function(args) {
+        // S'assurer que toutes les actions utilisent l'ID de l'utilisateur courant
+        if (args.requestType === 'eventCreate' || args.requestType === 'eventChange') {
+          if (args.data && args.data[0]) {
+            args.data[0].EmployeId = {{ user_id }};
+          }
+        }
       }
     });
 
+    // Initialiser le planning
     scheduleObj.appendTo('#schedule');
   });
 </script>
@@ -104,6 +158,5 @@
   <p>&copy; 2025 Vitalia. Tous droits réservés. Projet CY Tech.</p>
   <p><small>Conçu avec bienveillance et modernité.</small></p>
 </footer>
-
 </body>
 </html>

@@ -100,6 +100,11 @@ h1 {
   margin-top: 1rem;
 }
 
+.highlight-compte {
+  border-left: 5px solid #2a9d8f;
+  background-color: #f0fdfb;
+}
+
 textarea {
   width: 100%;
   padding: 1rem;

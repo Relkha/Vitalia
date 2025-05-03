@@ -36,5 +36,6 @@ urlpatterns = [
     path('planning_residents/', views.planning_residents, name='planning_residents'),
     path('mon_planning_resident/', views.planning_resident_individuel, name='mon_planning_resident'),
     path('chambres/', views.liste_chambres, name='liste_chambres'),
+    path('chambres/<int:chambre_id>/modifier/', views.modifier_chambre, name='modifier_chambre'),
     path('api/planning_events/', planning_events_api, name='planning_events_api'),
     ]

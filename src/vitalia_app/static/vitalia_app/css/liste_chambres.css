@@ -6,6 +6,13 @@
     --accent: #C3D8B2;
     --danger: #E27D60;
     --info: #84A59D;
+
+    --status-libre: #A8BCA1;
+    --status-reserve: #F4A261;
+    --status-occupe: #E27D60;
+    --status-libre-light: rgba(168, 188, 161, 0.1);
+    --status-reserve-light: rgba(244, 162, 97, 0.1);
+    --status-occupe-light: rgba(226, 125, 96, 0.1);
 }
 
 * {
@@ -70,6 +77,45 @@ h1 {
     color: var(--texte);
 }
 
+.status-legend {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background-color: var(--section);
+    border-radius: 8px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+}
+
+.legend-color.status-libre {
+    background-color: var(--status-libre);
+}
+
+.legend-color.status-reserve {
+    background-color: var(--status-reserve);
+}
+
+.legend-color.status-occupe {
+    background-color: var(--status-occupe);
+}
+
+.legend-text {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+}
+
 .search-bar {
     display: flex;
     justify-content: center;
@@ -126,14 +172,38 @@ h1 {
     font-family: 'Inter', sans-serif;
 }
 
-footer {
-    background-color: var(--nav-footer);
-    text-align: center;
-    padding: 1rem;
-    margin-top: auto;
+/* Styles pour les lignes selon le statut */
+.chambre-row.status-libre {
+    background-color: var(--status-libre-light);
+}
+
+.chambre-row.status-reserve {
+    background-color: var(--status-reserve-light);
+}
+
+.chambre-row.status-occupe {
+    background-color: var(--status-occupe-light);
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 16px;
     font-size: 0.9rem;
-    color: var(--texte);
-    font-family: 'Roboto', sans-serif;
+    font-weight: 600;
+    color: var(--fond);
+}
+
+.status-badge.status-libre {
+    background-color: var(--status-libre);
+}
+
+.status-badge.status-reserve {
+    background-color: var(--status-reserve);
+}
+
+.status-badge.status-occupe {
+    background-color: var(--status-occupe);
 }
 
 .action-button {
@@ -165,4 +235,41 @@ footer {
 .action-button.modifier:hover {
     background-color: #cf6b52;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+footer {
+    background-color: var(--nav-footer);
+    text-align: center;
+    padding: 1rem;
+    margin-top: auto;
+    font-size: 0.9rem;
+    color: var(--texte);
+    font-family: 'Roboto', sans-serif;
+}
+
+@media (max-width: 768px) {
+    .status-legend {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .chambre-table {
+        width: 100%;
+    }
+
+    .search-bar {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0 1rem;
+    }
+
+    .search-bar input[type="text"] {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .search-bar button {
+        margin-left: 0;
+    }
 }

@@ -4,7 +4,7 @@
   {% load static %}
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vitalia - Bienvenue</title>
+  <title>Vitalia - Planning des Infirmiers</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'vitalia_app/css/planning.css' %}">
   <link href="https://cdn.syncfusion.com/ej2/25.1.35/material.css" rel="stylesheet" />
@@ -36,36 +36,68 @@
 </header>
 
 <main>
-
-    
+  <h1>Planning des Infirmiers</h1>
   <div id="schedule"></div>
 </main>
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     ej.base.registerLicense('Ngo9BigBOggjHTQxAR8/V1NBaF1cWmhIfEx1RHxQdld5ZFRHallYTnNWUj0eQnxTdEBjXX1ecH1XRmVYUkZzW0lfZg==');
-
     ej.base.enableRipple(true);
 
+    // les dépendances nécessaires
     ej.schedule.Schedule.Inject(
+      ej.schedule.Day,
+      ej.schedule.Week,
+      ej.schedule.WorkWeek,
+      ej.schedule.Month,
+      ej.schedule.Agenda,
       ej.schedule.TimelineViews,
-      ej.schedule.TimelineMonth
+      ej.schedule.TimelineMonth,
+      ej.schedule.DragAndDrop,
+      ej.schedule.Resize
     );
 
-    // Tableau des utilisateurs récupérés dynamiquement depuis Django
+    // Palette de couleurs pour les utilisateurs
+    const colorPalette = [
+      '#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#f1c40f',
+      '#e74c3c', '#34495e', '#16a085', '#27ae60', '#2980b9',
+      '#8e44ad', '#f39c12', '#d35400', '#c0392b', '#7f8c8d'
+    ];
+
+    // Tableau des utilisateurs avec couleurs distinctes
     var users = [
       {% for user in users %}
-        { text: "{{ user.username }}", id: {{ user.id }}, color: '#ffaa00' },
+        {
+          text: "{{ user.username }}",
+          id: {{ user.id }},
+          color: colorPalette[{{ forloop.counter0 }} % colorPalette.length]
+        },
       {% endfor %}
     ];
 
+    // Configuration du DataManager
+    var dataManager = new ej.data.DataManager({
+      url: "/api/planning_events/",
+      adaptor: new ej.data.UrlAdaptor(),
+      crossDomain: false,
+      batchUrl: "/api/planning_events/"
+    });
+
+    // Configuration du planning
     var scheduleObj = new ej.schedule.Schedule({
-      rowHeight: 20,
-      height: '100%',
+      height: '650px',
       width: '100%',
+      currentView: 'TimelineDay',
       selectedDate: new Date(),
-      views: ['TimelineDay', 'TimelineWeek', 'TimelineMonth'],
+      views: [
+        { option: 'TimelineDay', displayName: 'Jour' },
+        { option: 'TimelineWeek', displayName: 'Semaine' },
+        { option: 'TimelineMonth', displayName: 'Mois' },
+        { option: 'Agenda', displayName: 'Agenda' }
+      ],
       group: {
+        byGroupID: false,
         resources: ['Employes']
       },
       resources: [{
@@ -79,24 +111,36 @@
         colorField: 'color'
       }],
       eventSettings: {
-        dataSource: new ej.data.DataManager({
-            url: "/api/planning_events/",
-            insertUrl: "/api/planning_events/",
-            updateUrl: "/api/planning_events/",
-            removeUrl: "/api/planning_events/",
-            adaptor: new ej.data.UrlAdaptor(),
-            crossDomain: true
-        }),
+        dataSource: dataManager,
         fields: {
-            id: 'id',
-            subject: { name: 'subject' },
-            startTime: { name: 'start_time', type: 'date'},
-            endTime: { name: 'end_time', type: 'date' },
-            resourceId: 'employe_id'
+          id: 'id',
+          subject: { name: 'subject', title: 'Subject', default: 'Nouvel événement' },
+          startTime: { name: 'start_time', title: 'Start Time' },
+          endTime: { name: 'end_time', title: 'End Time' },
+          isAllDay: { name: 'IsAllDay', title: 'All day' },
+          description: { name: 'description', title: 'Description' }
         }
-     }
+      },
+      eventRendered: function(args) {
+        if (args.data.EmployeId) {
+          const user = users.find(u => u.id === args.data.EmployeId);
+          if (user) {
+            args.element.style.backgroundColor = user.color;
+            args.element.style.borderLeft = `5px solid ${user.color}`;
+          }
+        }
+      },
+      actionComplete: function(args) {
+        if (args.requestType === 'eventCreated' || args.requestType === 'eventChanged' || args.requestType === 'eventRemoved') {
+          scheduleObj.refreshEvents();
+        }
+      },
+      actionFailure: function(args) {
+        alert("Une erreur s'est produite lors de l'opération sur le planning.");
+      }
     });
 
+    // Initialiser le planning
     scheduleObj.appendTo('#schedule');
   });
 </script>

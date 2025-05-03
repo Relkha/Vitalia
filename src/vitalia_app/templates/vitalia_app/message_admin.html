@@ -36,7 +36,7 @@
     <h1>Messages reçus</h1>
     <div class="messages-container">
       {% for msg in messages %}
-        <div class="message-card">
+        <div class="message-card {% if msg.objet == 'compte' %}highlight-compte{% endif %}">
           <p><strong>Nom :</strong> {{ msg.nom }}</p>
           <p><strong>Email :</strong> {{ msg.email }}</p>
           <p><strong>Objet :</strong> {{ msg.get_objet_display }}</p>

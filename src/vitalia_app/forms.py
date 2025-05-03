@@ -1,8 +1,12 @@
 from django import forms
 from .models.Evenement import Evenement
+from .models.Chambre import Chambre
+from django.contrib.auth.models import User
+
 
 class ContactForm(forms.Form):
     OBJET_CHOICES = [
+        ('compte', 'Demande de création de compte / inscription'),
         ('infos', 'Demande d\'informations'),
         ('visite', 'Demande de visite'),
         ('disponibilite', 'Demande de disponibilités'),
@@ -29,3 +33,48 @@ class EvenementForm(forms.ModelForm):
         fields = ['user', 'subject', 'start_time', 'end_time']
 
 
+
+class ChambreForm(forms.ModelForm):
+    resident = forms.ModelChoiceField(
+        queryset=User.objects.filter(groups__name="Retraité"),
+        required=False,
+        empty_label="Aucun résident",
+        label="Résident"
+    )
+
+    class Meta:
+        model = Chambre
+        fields = ['statut', 'resident']
+        widgets = {
+            'statut': forms.Select(attrs={'class': 'form-control'})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['resident'].label_from_instance = self.get_resident_label
+
+    def get_resident_label(self, user):
+        if user.first_name or user.last_name:
+            full_name = f"{user.first_name} {user.last_name}".strip()
+            return f"{full_name} ({user.username})"
+        else:
+            return user.username
+
+    def clean(self):
+        cleaned_data = super().clean()
+        statut = cleaned_data.get('statut')
+        resident = cleaned_data.get('resident')
+
+        #Si statut est LIBRE, aucun résident ne doit être assigné
+        if statut == 'LIBRE' and resident is not None:
+            raise forms.ValidationError(
+                "Une chambre libre ne peut pas avoir de résident assigné."
+            )
+
+        #Si statut est OCCUPE ou RESERVE, un résident doit être assigné
+        if statut in ['OCCUPE', 'RESERVE'] and resident is None:
+            raise forms.ValidationError(
+                "Une chambre occupée ou réservée doit avoir un résident assigné."
+            )
+
+        return cleaned_data
