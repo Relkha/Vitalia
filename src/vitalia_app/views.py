@@ -1,12 +1,33 @@
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import render, redirect
 from django.core.mail import send_mail
 from .forms import ContactForm, ConnexionForm
 from .models.MessageContact import MessageContact
 from .models.Profil import Profil
-from .models.Objets import ObjectPermission,ConnectedObject,PermissionType
+from .models.Objets import ObjectPermission, ConnectedObject, PermissionType
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from vitalia_app.models import Visit
+from datetime import date
+
+@login_required
+def reservation_visite(request):
+    if not hasattr(request.user, 'profil') or request.user.profil.get_role() not in ['Visiteur des résidents', 'Retraité', 'Réceptionniste']:
+        return redirect('/')
+
+    if request.method == 'POST':
+        Visit.objects.create(
+            resident=request.user,
+            date=request.POST.get('date'),
+            time=request.POST.get('time'),
+            status='validated'
+        )
+        return redirect('reservation_visite')
+
+    visites = Visit.objects.filter(resident=request.user).order_by('-date', '-time')
+    today = date.today()
+
+    return render(request, 'reservation_visite.html', {'visites': visites, 'today': today})
 
 def index(request):
     return render(request, "index.html")
@@ -17,6 +38,7 @@ def propos(request):
 def deconnexion(request):
     logout(request)
     return render(request, 'deconnexion.html')
+
 def connexion(request):
     if request.method == "POST":
         form = ConnexionForm(request.POST)
@@ -27,7 +49,7 @@ def connexion(request):
             user = authenticate(request, username=nom, password=mdp)
             if user is not None:
                 login(request, user)
-                return redirect('dashboard')  # Change "home" par le nom de ta vue d’accueil
+                return redirect('dashboard')  # Corrigé vers "dashboard"
             else:
                 error = "Identifiants incorrects. Veuillez réessayer."
                 return render(request, 'connexion.html', {'form': form, 'error': error})
@@ -35,7 +57,6 @@ def connexion(request):
         form = ConnexionForm()
 
     return render(request, 'connexion.html', {'form': form})
-
 
 def contact(request):
     if request.method == 'POST':
@@ -46,7 +67,7 @@ def contact(request):
             objet = form.cleaned_data['objet']
             message = form.cleaned_data['message']
 
-            # Enregistrement dans la bdd
+            # Enregistrement dans la base de données
             MessageContact.objects.create(
                 nom=nom,
                 email=email,
@@ -60,9 +81,8 @@ def contact(request):
                 subject=f"Nouveau message de {nom} - {objet}",
                 message=full_message,
                 from_email=email,
-                recipient_list=['matheo.arondeau@gmail.com', email],  # Ajouter ton adresse dans les destinataires
+                recipient_list=['matheo.arondeau@gmail.com', email],
             )
-
 
             return render(request, "contact.html", {
                 'form': ContactForm(),
@@ -73,18 +93,16 @@ def contact(request):
 
     return render(request, "contact.html", {'form': form})
 
-#@login_required
 def message_admin(request):
-    messages = MessageContact.objects.order_by('-date_envoi') # "-" pour afficher les messgaes du plus récent au plus ancien
+    messages = MessageContact.objects.order_by('-date_envoi')
     return render(request, 'vitalia_app/message_admin.html', {'messages': messages})
 
 @csrf_exempt  # uniquement pour test
-# @login_required
 def repondre_message(request, message_id):
     if request.method == 'POST':
         reponse = request.POST.get('reponse')
         message = MessageContact.objects.get(id=message_id)
-        
+
         send_mail(
             subject=f"Réponse à votre message : {message.objet}",
             message=reponse,
@@ -96,11 +114,9 @@ def repondre_message(request, message_id):
 def dashboard(request):
     user = request.user
 
-    # Crée un profil s'il n'existe pas encore (logique métier)
     if not hasattr(user, "profil"):
         Profil.objects.create(user=user)
 
-    # Récupère le groupe (rôle) principal de l'utilisateur
     role = user.groups.first().name if user.groups.exists() else "Aucun"
 
     context = {

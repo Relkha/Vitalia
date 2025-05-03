@@ -7,11 +7,15 @@ NIVEAU_CHOICES = [
     ('avance', 'Avancé'),
     ('expert', 'Expert'),
 ]
+def upload_to(instance, filename):
+    # Exemple : photos_residents/5_photo.png
+    return f'photos_residents/{instance.user.id}_{filename}'
 
 class Profil(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     points = models.FloatField(default=0)
     niveau = models.CharField(max_length=20, choices=NIVEAU_CHOICES, default='debutant')
+    photo = models.ImageField(upload_to=upload_to, blank=True, null=True)  # <-- Nouveau champ !
 
     def __str__(self):
         return f"{self.user.username} - {self.niveau}"

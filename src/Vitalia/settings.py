@@ -147,3 +147,7 @@ EMAIL_HOST_PASSWORD = 'IfazW7kEtScARsgx'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 LOGIN_REDIRECT_URL = '/dashboard/'
+LOGIN_URL = '/connexion/'
+STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
