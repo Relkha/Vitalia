@@ -8,8 +8,8 @@ from .models.Objets import ObjectPermission, ConnectedObject, PermissionType
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from vitalia_app.models import Visit
-from vitalia_app.models.Chambre import Chambre
-from vitalia_app.models.ConnectedObject import ConnectedObject
+from vitalia_app.models.chambre import Chambre
+from vitalia_app.models.Objets import ConnectedObject
 from datetime import date
 
 @login_required
