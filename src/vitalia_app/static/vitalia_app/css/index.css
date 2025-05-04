@@ -208,5 +208,20 @@ footer a {
   text-align: right;
 }
 
+.btn-reservation {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 24px;
+    background-color: #A8BCA1;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-reservation:hover {
+    background-color: #92a98a;
+}
 
 

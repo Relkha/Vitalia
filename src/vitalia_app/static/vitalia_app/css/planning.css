@@ -139,3 +139,13 @@ footer a {
   color: var(--texte);
   text-decoration: underline;
 }
+
+/* Style spécifique pour les visites */
+.e-schedule .e-appointment[data-subject="Visite"] {
+    background-color: #4CAF50 !important;
+    border-left: 4px solid #388E3C !important;
+}
+
+.e-schedule .e-appointment[data-subject="Visite"] .e-subject {
+    font-weight: bold;
+}

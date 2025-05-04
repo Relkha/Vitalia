@@ -15,16 +15,57 @@ from .forms import ContactForm, ConnexionForm, ChambreForm
 from .models.MessageContact import MessageContact
 from .models.Profil import Profil
 from .models.Objets import ObjectPermission, ConnectedObject, PermissionType
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Visit
+from .models.Objets import ConnectedObject
+from datetime import date, datetime, timedelta
+from .models.Objets import ObjectPermission, ConnectedObject, PermissionType
 from .models.planning_resident import PlanningEventResident
 from .models.Chambre import Chambre
-from .models.Evenement import Evenement  
+from .models.Evenement import Evenement
 from .models.planning_infirmier import PlanningEventInfirmier
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import EventSerializer
 from .forms import EvenementForm
 import logging
-from datetime import datetime
+
+@login_required
+def surveillance_view(request):
+    if not hasattr(request.user, 'profil') or request.user.profil.get_role() not in [
+        'Responsable du site', 'Directeur', 'Chef des infirmiers', 'Réceptionniste'
+    ]:
+        return redirect('/')
+
+    chambres = Chambre.objects.all()
+    objets_connectes = ConnectedObject.objects.all()
+
+    return render(request, 'vitalia_app/surveillance.html', {
+        'chambres': chambres,
+        'objets_connectes': objets_connectes
+    })
+
+
+@login_required
+def reservation_visite(request):
+    if not hasattr(request.user, 'profil') or request.user.profil.get_role() not in ['Visiteur des résidents', 'Retraité', 'Réceptionniste']:
+        return redirect('/')
+
+    if request.method == 'POST':
+        Visit.objects.create(
+            resident=request.user,
+            date=request.POST.get('date'),
+            time=request.POST.get('time'),
+            status='validated'
+        )
+        return redirect('reservation_visite')
+
+    visites = Visit.objects.filter(resident=request.user).order_by('-date', '-time')
+    today = date.today()
+
+    return render(request, 'reservation_visite.html', {'visites': visites, 'today': today})
+
 
 logger = logging.getLogger(__name__)
 
@@ -119,6 +160,7 @@ def repondre_message(request, message_id):
     if request.method == 'POST':
         reponse = request.POST.get('reponse')
         message = MessageContact.objects.get(id=message_id)
+
         send_mail(
             subject=f"Réponse à votre message : {message.objet}",
             message=reponse,
@@ -129,8 +171,10 @@ def repondre_message(request, message_id):
 
 def dashboard(request):
     user = request.user
+
     if not hasattr(user, "profil"):
         Profil.objects.create(user=user)
+
     role = user.groups.first().name if user.groups.exists() else "Aucun"
     context = {
         "role": role,
@@ -400,10 +444,40 @@ def planning_individuel(request):
 
 
 @login_required
-@group_required("Responsable du site", "Chef des infirmiers", "Infirmier")
+@group_required("Responsable du site", "Chef des infirmiers", "Infirmier", "Directeur")
 def planning_residents(request):
-    residents = User.objects.filter(groups__name="Retraité")  
-    events = Evenement.objects.all()
+    residents = User.objects.filter(groups__name="Retraité")
+
+    # Récupérer tous les événements
+    events = []
+
+    evenements = Evenement.objects.all()
+    for event in evenements:
+        if hasattr(event, 'resident'):
+            events.append({
+                'subject': event.subject,
+                'start_time': event.start_time,
+                'end_time': event.end_time,
+                'resident_id': event.resident.id
+            })
+
+    # Récupérer toutes les visites des résidents
+    visits = Visit.objects.filter(status='validated', resident__groups__name="Retraité")
+    for visit in visits:
+        start_datetime = datetime.combine(visit.date, visit.time)
+        end_datetime = start_datetime + timedelta(hours=1)
+
+        events.append({
+            'subject': 'Visite',
+            'start_time': start_datetime,
+            'end_time': end_datetime,
+            'resident_id': visit.resident.id
+        })
+
+    colors = ['#ffaa00', '#00bbff', '#ff5566', '#33cc33', '#9966ff', '#ff9900']
+    for i, resident in enumerate(residents):
+        resident.color = colors[i % len(colors)]
+
     return render(request, 'vitalia_app/planning_residents.html', {
         'residents': residents,
         'events': events
@@ -413,8 +487,34 @@ def planning_residents(request):
 @group_required("Retraité")
 def planning_resident_individuel(request):
     resident_events = PlanningEventResident.objects.filter(resident=request.user)
+
+    # Récupérer les visites pour ce résident
+    visits = Visit.objects.filter(resident=request.user, status='validated')
+
+    events = []
+
+    for event in resident_events:
+        events.append({
+            'subject': event.subject,
+            'start_time': event.start_time,
+            'end_time': event.end_time,
+            'employe_id': request.user.id
+        })
+
+    for visit in visits:
+        start_datetime = datetime.combine(visit.date, visit.time)
+        # Supposons que chaque visite dure 1 heure
+        end_datetime = start_datetime + timedelta(hours=1)
+
+        events.append({
+            'subject': 'Visite',
+            'start_time': start_datetime,
+            'end_time': end_datetime,
+            'employe_id': request.user.id
+        })
+
     return render(request, 'vitalia_app/planning_resident_individuel.html', {
-        'resident_events': resident_events,
+        'events': events,
         'user_id': request.user.id
     })
 

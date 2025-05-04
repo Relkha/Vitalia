@@ -37,7 +37,7 @@
 
 <main>
   <h1>Mon Planning</h1>
-  
+
   <div id="schedule"></div>
 </main>
 
@@ -54,7 +54,7 @@
     ej.base.enableRipple(true);
 
     ej.schedule.Schedule.Inject(
-      ej.schedule.TimelineViews, 
+      ej.schedule.TimelineViews,
       ej.schedule.TimelineMonth
     );
 
@@ -95,7 +95,8 @@
             Subject: "{{ event.subject|escapejs }}",
             StartTime: new Date("{{ event.start_time|date:'Y-m-d H:i:s' }}"),
             EndTime: new Date("{{ event.end_time|date:'Y-m-d H:i:s' }}"),
-            EmployeId: {{ event.employe.id }}
+            EmployeId: {{ event.employe_id }},
+            CategoryColor: "{{ event.subject }}" === "Visite" ? "#4CAF50" : "#2196F3"
           },
           {% endfor %}
         ]

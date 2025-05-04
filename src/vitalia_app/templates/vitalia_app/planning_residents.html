@@ -45,11 +45,11 @@
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     ej.base.registerLicense('Ngo9BigBOggjHTQxAR8/V1NBaF1cWmhIfEx1RHxQdld5ZFRHallYTnNWUj0eQnxTdEBjXX1ecH1XRmVYUkZzW0lfZg==');
-    
+
     ej.base.enableRipple(true);
 
     ej.schedule.Schedule.Inject(
-      ej.schedule.TimelineViews, 
+      ej.schedule.TimelineViews,
       ej.schedule.TimelineMonth
     );
 
@@ -92,7 +92,8 @@
             Subject: "{{ event.subject }}",
             StartTime: new Date("{{ event.start_time|date:'Y-m-d H:i:s' }}"),
             EndTime: new Date("{{ event.end_time|date:'Y-m-d H:i:s' }}"),
-            ResidentId: {{ event.resident.id }}
+            ResidentId: {{ event.resident_id }},
+            CategoryColor: "{{ event.subject }}" === "Visite" ? "#4CAF50" : "#2196F3"
           },
           {% endfor %}
         ]
