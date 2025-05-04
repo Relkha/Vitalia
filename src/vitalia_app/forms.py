@@ -1,5 +1,19 @@
 from django import forms
 
+#Ajout
+
+from .models import DossierMedical
+
+class DossierMedicalForm(forms.ModelForm):
+    class Meta:
+        model = DossierMedical
+        fields = ['etat', 'consultation', 'observations']
+        widgets = {
+            'etat': forms.TextInput(attrs={'placeholder': 'État de santé'}),
+            'consultation': forms.Textarea(attrs={'rows': 4}),
+            'observations': forms.Textarea(attrs={'rows': 4}),
+        }
+
 class ContactForm(forms.Form):
     OBJET_CHOICES = [
         ('infos', 'Demande d\'informations'),

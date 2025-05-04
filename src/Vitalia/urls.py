@@ -28,4 +28,14 @@ urlpatterns = [
     path('repondre/<int:message_id>/', views.repondre_message, name='repondre_message'),
     path('dashboard/', dashboard, name = 'dashboard' ),
     path('logout/', views.deconnexion, name='deconnexion'),
-    path('objets/', connected_objects, name='objets'),]
+    path('objets/', connected_objects, name='objets'),
+    path("soins/", views.dossiers_medical, name="dossiers_medical"),
+    path("soins/<int:pk>/", views.document_patient, name="document_patient"),
+    path("soins/<int:pk>/modifier/", views.modifier_patient, name="modifier_patient"),
+    path('soins/assigner/<int:pk>/', views.assigner_infirmier, name='assigner_infirmier'),
+    path('dossier/<int:pk>/export_pdf/', views.export_dossier_pdf, name='export_dossier_pdf'),
+    path('dossiers/export/pdf/', views.export_all_dossiers_pdf, name='export_all_dossiers_pdf'),
+
+
+
+]

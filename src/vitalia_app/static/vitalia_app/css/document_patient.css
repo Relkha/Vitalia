@@ -1,0 +1,119 @@
+:root {
+  --fond:    #F9F5EC;
+  --nav:     #A8BCA1;
+  --section: #F2E8CF;
+  --texte:   #2E2E2E;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--fond);
+  color: var(--texte);
+  margin: 0;
+}
+
+header {
+  background-color: var(--nav);
+  padding: 1rem 2rem;
+}
+
+.header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+nav ul {
+  display: flex;
+  list-style: none;
+  gap: 1rem;
+}
+
+nav a {
+  text-decoration: none;
+  color: var(--texte);
+  font-weight: bold;
+}
+
+nav a.active {
+  border-bottom: 2px solid white;
+  color: white;
+}
+
+.container {
+  max-width: 1024px;
+  margin: 2rem auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-outline,
+.btn-add {
+  text-decoration: none;
+  padding: .5rem 1rem;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.btn-outline {
+  border: 1px solid var(--nav);
+  color: var(--nav);
+}
+
+.btn-outline:hover {
+  background-color: var(--nav);
+  color: white;
+}
+
+.btn-add {
+  background-color: var(--section);
+  color: var(--texte);
+}
+
+.detail-card {
+  background: white;
+  padding: 1rem;
+  margin-top: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.list-group {
+  list-style: none;
+  padding: 0;
+}
+
+.list-group-item {
+  padding: .5rem 0;
+  border-top: 1px solid #eee;
+}
+
+.detail-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.card-general {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.card-general h3 {
+  margin-top: 0;
+}

@@ -7,3 +7,6 @@ class VitaliaAppConfig(AppConfig):
     def ready(self):
         import vitalia_app.signals
 
+
+
+
