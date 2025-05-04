@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@syncfusion/ej2-schedule": "^29.1.38"
+  }
+}
