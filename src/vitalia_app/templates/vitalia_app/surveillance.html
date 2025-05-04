@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Caméra d'entrée - Surveillance</title>
+    <link rel="stylesheet" href="{% static 'vitalia_app/css/surveillance.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<header class="header">
+    <div class="logo">Vitalia</div>
+    <nav class="nav">
+        <a href="/">Accueil</a>
+        <a href="/dashboard/">Dashboard</a>
+        <a href="/surveillance/">Surveillance</a>
+        <a href="/deconnexion/">Déconnexion</a>
+    </nav>
+</header>
+
+<main class="main-content">
+    <h1>Caméra d’entrée – Surveillance</h1>
+
+    <div class="video-feed">
+        Flux vidéo caméra en direct
+    </div>
+
+    <section class="capteurs">
+        <div class="capteur">
+            <span class="status active"></span> Présence chambre : Actif
+        </div>
+        <div class="capteur">
+            <span class="status closed"></span> Ouverture porte : Fermée
+        </div>
+        <div class="capteur">
+            <span class="status moyenne"></span> Qualité de l’air : Moyenne
+        </div>
+        <div class="capteur">
+            <span class="status active"></span> Température : 22°C
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    &copy; 2025 Vitalia. Tous droits réservés.
+</footer>
+
+</body>
+</html>

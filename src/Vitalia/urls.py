@@ -18,7 +18,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
 from vitalia_app import views
-from vitalia_app.views import index, propos, contact, connexion, message_admin, dashboard, connected_objects
+from vitalia_app.views import index, propos, contact, connexion, message_admin, dashboard, connected_objects, surveillance_view
 
 
 urlpatterns = [
@@ -32,7 +32,9 @@ urlpatterns = [
     path('dashboard/', dashboard, name = 'dashboard' ),
     path('logout/', views.deconnexion, name='deconnexion'),
     path('objets/', connected_objects, name='objets'),
-    path('', include('vitalia_app.urls')),]
+    path('', include('vitalia_app.urls')),
+    path('surveillance/', surveillance_view, name='surveillance'),
+]
 
 
 if settings.DEBUG:

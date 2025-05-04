@@ -8,7 +8,25 @@ from .models.Objets import ObjectPermission, ConnectedObject, PermissionType
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from vitalia_app.models import Visit
+from vitalia_app.models.Chambre import Chambre
+from vitalia_app.models.ConnectedObject import ConnectedObject
 from datetime import date
+
+@login_required
+def surveillance_view(request):
+    if not hasattr(request.user, 'profil') or request.user.profil.get_role() not in [
+        'Responsable du site', 'Directeur', 'Chef des infirmiers', 'Réceptionniste'
+    ]:
+        return redirect('/')
+
+    chambres = Chambre.objects.all()
+    objets_connectes = ConnectedObject.objects.all()
+
+    return render(request, 'vitalia_app/surveillance.html', {
+        'chambres': chambres,
+        'objets_connectes': objets_connectes
+    })
+
 
 @login_required
 def reservation_visite(request):
