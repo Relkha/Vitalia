@@ -1,0 +1,124 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f5ec;
+}
+
+.header {
+    background-color: #a8bca1;
+    padding: 10px 30px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    font-family: 'Rufina', serif;
+    font-size: 30px;
+    color: #2e2e2e;
+}
+
+.nav a {
+    text-decoration: none;
+    margin-left: 20px;
+    color: #2e2e2e;
+    font-weight: 500;
+}
+
+.nav a:hover {
+    text-decoration: underline;
+}
+
+.main-content {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+h1 {
+    color: #dab49d;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.video-feed {
+    background-color: #ddd;
+    height: 300px;
+    margin-bottom: 40px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.capteurs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.capteur {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.status {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Couleurs selon le status */
+.active {
+    background-color: #28a745; /* Vert */
+}
+
+.inactive {
+    background-color: #dc3545; /* Rouge */
+}
+
+.closed {
+    background-color: #28a745; /* Porte fermée => vert */
+}
+
+.open {
+    background-color: #dc3545; /* Porte ouverte => rouge */
+}
+
+.good {
+    background-color: #28a745; /* Qualité de l'air bonne => vert */
+}
+
+.moyenne {
+    background-color: #ffc107; /* Qualité de l'air moyenne => jaune */
+}
+
+.bad {
+    background-color: #dc3545; /* Qualité de l'air mauvaise => rouge */
+}
+
+.footer {
+    background-color: #a8bca1;
+    text-align: center;
+    padding: 10px;
+    margin-top: 50px;
+    font-size: 14px;
+    color: #2e2e2e;
+}
+
+/* Responsive mobile */
+@media screen and (max-width: 768px) {
+    .video-feed {
+        height: 200px;
+    }
+}
