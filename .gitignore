@@ -1,0 +1,16 @@
+# Environnement virtuel Python
+.env/
+venv/
+env/
+
+# Fichiers IDE
+.idea/
+
+# Fichiers Python compilés
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Fichiers de configuration locaux
+*.local
