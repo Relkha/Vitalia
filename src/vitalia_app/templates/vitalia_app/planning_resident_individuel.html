@@ -13,6 +13,7 @@
 
 <header>
   <div class="logo">Vitalia</div>
+  <button class="mobile-menu-button">☰</button>
   <nav>
     <ul>
       <li><a href="/">Accueil</a></li>
@@ -54,56 +55,80 @@
     ej.base.enableRipple(true);
 
     ej.schedule.Schedule.Inject(
-      ej.schedule.TimelineViews,
-      ej.schedule.TimelineMonth
+      ej.schedule.Day,
+      ej.schedule.Week,
+      ej.schedule.Month,
+      ej.schedule.Agenda,
+      ej.schedule.TimelineViews
     );
 
     var scheduleObj = new ej.schedule.Schedule({
       height: '700px',
       width: '100%',
       selectedDate: new Date(),
-      currentView: 'TimelineDay',
+      currentView: 'Agenda',
       views: [
-        { option: 'TimelineDay', displayName: "Aujourd'hui" },
-        { option: 'TimelineWeek', displayName: 'Semaine' },
-        { option: 'TimelineMonth', displayName: 'Mois' }
+        { option: 'Agenda', displayName: 'Mon Agenda' },
       ],
-      timeScale: {
-        enable: true,
-        interval: 60,
-        slotCount: 1
-      },
-      group: {
-        resources: ['Employes']
-      },
-      resources: [{
-        field: 'EmployeId',
-        title: 'Employé',
-        name: 'Employes',
-        allowMultiple: false,
-        dataSource: [
-          { text: "{{ user.username }}", id: {{ user_id }}, color: '#ffaa00' }
-        ],
-        textField: 'text',
-        idField: 'id',
-        colorField: 'color'
-      }],
+      // Configuration spécifique pour la vue Agenda
+      agendaDaysCount: 30,
+      showHeaderBar: true,
+      showWeekend: true,
       eventSettings: {
         dataSource: [
           {% for event in events %}
           {
+            Id: {{ forloop.counter }},
             Subject: "{{ event.subject|escapejs }}",
             StartTime: new Date("{{ event.start_time|date:'Y-m-d H:i:s' }}"),
             EndTime: new Date("{{ event.end_time|date:'Y-m-d H:i:s' }}"),
-            EmployeId: {{ event.employe_id }},
+            IsAllDay: false,
+            Description: "{{ event.subject }}" === "Visite" ? "Visite planifiée" : "{{ event.subject }}",
             CategoryColor: "{{ event.subject }}" === "Visite" ? "#4CAF50" : "#2196F3"
-          },
+          }{% if not forloop.last %},{% endif %}
           {% endfor %}
-        ]
-      }
+        ],
+        fields: {
+          id: 'Id',
+          subject: { name: 'Subject', title: 'Titre' },
+          startTime: { name: 'StartTime', title: 'Début' },
+          endTime: { name: 'EndTime', title: 'Fin' },
+          description: { name: 'Description', title: 'Description' }
+        }
+      },
+      eventRendered: function(args) {
+        if (args.data.Subject === "Visite") {
+          args.element.style.backgroundColor = '#ecf0d4';
+          args.element.style.borderLeft = '4px solid #3b82f6';
+          args.element.style.border = '1px solid #e5e7eb';
+          args.element.style.color = '#2e2e2e';
+        } else {
+          args.element.style.backgroundColor = '#ffffff';
+          args.element.style.borderLeft = '4px solid #a8bca1';
+          args.element.style.border = '1px solid #e5e7eb';
+          args.element.style.color = '#2e2e2e';
+        }
+      },
+      locale: 'fr',
+      dateFormat: 'dd/MM/yyyy',
+      timeFormat: 'HH:mm'
     });
 
     scheduleObj.appendTo('#schedule');
+
+    // Pour déboguer
+    //console.log("Events loaded:", scheduleObj.eventSettings.dataSource);
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const menuButton = document.querySelector('.mobile-menu-button');
+    const nav = document.querySelector('nav');
+
+    if (menuButton) {
+        menuButton.addEventListener('click', function() {
+            nav.classList.toggle('active');
+        });
+    }
   });
 </script>
 

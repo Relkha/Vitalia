@@ -483,15 +483,17 @@ def planning_residents(request):
         'events': events
     })
 
+
 @login_required
 @group_required("Retraité")
 def planning_resident_individuel(request):
     resident_events = PlanningEventResident.objects.filter(resident=request.user)
-
-    # Récupérer les visites pour ce résident
     visits = Visit.objects.filter(resident=request.user, status='validated')
 
     events = []
+
+    # Debug : afficher le nombre d'événements
+    print(f"Événements pour {request.user}: {resident_events.count()} events, {visits.count()} visits")
 
     for event in resident_events:
         events.append({
@@ -503,7 +505,6 @@ def planning_resident_individuel(request):
 
     for visit in visits:
         start_datetime = datetime.combine(visit.date, visit.time)
-        # Supposons que chaque visite dure 1 heure
         end_datetime = start_datetime + timedelta(hours=1)
 
         events.append({
@@ -512,6 +513,11 @@ def planning_resident_individuel(request):
             'end_time': end_datetime,
             'employe_id': request.user.id
         })
+
+    # Debug : afficher les événements
+    print(f"Total events to display: {len(events)}")
+    for event in events:
+        print(f"Event: {event}")
 
     return render(request, 'vitalia_app/planning_resident_individuel.html', {
         'events': events,

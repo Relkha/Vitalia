@@ -59,8 +59,8 @@
         </div>
         {% elif is_retraite %}
         <div class="card">
-            <h2>Mon planning résident</h2>
-            <a href="{% url 'mon_planning_resident' %}" class="btn">Voir mon planning</a>
+            <h2>Mon agenda</h2>
+            <a href="{% url 'mon_planning_resident' %}" class="btn">Voir mon agenda</a>
         </div>
         {% endif %}
 
@@ -107,11 +107,6 @@
         <div class="card">
             <h2>Mes visites</h2>
             <a href="{% url 'index' %}" class="btn">Réserver / Modifier</a>
-        </div>
-        {% elif is_retraite %}
-        <div class="card">
-            <h2>Visites programmées</h2>
-            <a href="{% url 'index' %}" class="btn">Voir les horaires</a>
         </div>
         {% elif is_reception %}
         <div class="card">
