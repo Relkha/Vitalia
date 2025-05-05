@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Générer des alertes de test - Vitalia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'vitalia_app/css/dashboard.css' %}">
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <h1>Vitalia - Générateur d'alertes de test</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="{% url 'dashboard' %}">Retour au tableau de bord</a></li>
+                {% if user.is_authenticated and user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
+                <li><a href="/admin">Admin</a></li>
+                {% endif %}
+                <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h2>Générer des alertes de test</h2>
+
+        <div class="card">
+            <h2>Créer une alerte de test</h2>
+            <form method="post" action="{% url 'generate_test_alert' %}">
+                {% csrf_token %}
+
+                <div style="margin-bottom: 1rem;">
+                    <label for="alert-type">Type d'alerte</label>
+                    <select id="alert-type" name="alert_type" required style="width: 100%; padding: 0.5rem; margin-top: 0.25rem;">
+                        <option value="medical">Médicale</option>
+                        <option value="security">Sécurité</option>
+                        <option value="environmental">Environnement</option>
+                        <option value="device">Équipement</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <label for="alert-priority">Priorité</label>
+                    <select id="alert-priority" name="alert_priority" required style="width: 100%; padding: 0.5rem; margin-top: 0.25rem;">
+                        <option value="high">Haute</option>
+                        <option value="medium">Moyenne</option>
+                        <option value="low">Basse</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <label for="alert-title">Titre</label>
+                    <input type="text" id="alert-title" name="alert_title" required style="width: 100%; padding: 0.5rem; margin-top: 0.25rem;">
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <label for="alert-description">Description</label>
+                    <textarea id="alert-description" name="alert_description" required style="width: 100%; padding: 0.5rem; margin-top: 0.25rem; min-height: 100px;"></textarea>
+                </div>
+
+                <button type="submit" class="btn">Générer l'alerte</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Alertes prédéfinies</h2>
+            <p>Cliquez sur un bouton pour générer rapidement une alerte de test prédéfinie :</p>
+
+            <form method="post" action="{% url 'generate_test_alert' %}">
+                {% csrf_token %}
+                <input type="hidden" name="alert_type" value="medical">
+                <input type="hidden" name="alert_priority" value="high">
+                <input type="hidden" name="alert_title" value="Chute d'un résident">
+                <input type="hidden" name="alert_description" value="Un résident a chuté dans sa chambre et nécessite une assistance médicale immédiate.">
+                <button type="submit" class="btn" style="margin-right: 0.5rem; margin-bottom: 0.5rem;">Chute d'un résident</button>
+            </form>
+
+            <form method="post" action="{% url 'generate_test_alert' %}">
+                {% csrf_token %}
+                <input type="hidden" name="alert_type" value="security">
+                <input type="hidden" name="alert_priority" value="medium">
+                <input type="hidden" name="alert_title" value="Porte laissée ouverte">
+                <input type="hidden" name="alert_description" value="La porte principale du bâtiment est restée ouverte pendant plus de 10 minutes.">
+                <button type="submit" class="btn" style="margin-right: 0.5rem; margin-bottom: 0.5rem;">Porte ouverte</button>
+            </form>
+
+            <form method="post" action="{% url 'generate_test_alert' %}">
+                {% csrf_token %}
+                <input type="hidden" name="alert_type" value="environmental">
+                <input type="hidden" name="alert_priority" value="medium">
+                <input type="hidden" name="alert_title" value="Qualité d'air dégradée">
+                <input type="hidden" name="alert_description" value="La qualité de l'air dans la salle commune a atteint un niveau préoccupant. Ventilation recommandée.">
+                <button type="submit" class="btn" style="margin-right: 0.5rem; margin-bottom: 0.5rem;">Qualité d'air</button>
+            </form>
+
+            <form method="post" action="{% url 'generate_test_alert' %}">
+                {% csrf_token %}
+                <input type="hidden" name="alert_type" value="device">
+                <input type="hidden" name="alert_priority" value="low">
+                <input type="hidden" name="alert_title" value="Batterie faible sur bracelet">
+                <input type="hidden" name="alert_description" value="La batterie d'un bracelet connecté est faible et devrait être rechargée dans les prochaines 24 heures.">
+                <button type="submit" class="btn" style="margin-right: 0.5rem; margin-bottom: 0.5rem;">Batterie faible</button>
+            </form>
+        </div>
+
+        {% if messages %}
+        <div class="message-container">
+            {% for message in messages %}
+            <div class="message {{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <a href="{% url 'dashboard' %}" class="btn" style="margin-top: 1rem;">Retour au tableau de bord</a>
+    </main>
+
+    <footer>
+        <p>© 2025 Vitalia. Tous droits réservés.</p>
+    </footer>
+
+</body>
+</html>

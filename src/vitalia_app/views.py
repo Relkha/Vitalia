@@ -21,6 +21,8 @@ from .models.Profil import Profil
 from .models.Objets import ObjectPermission, ConnectedObject, PermissionType
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models.Alertes import Alert, Notification
 from .models import Visit
 from .models.Objets import ConnectedObject
 from datetime import date, datetime, timedelta
@@ -318,6 +320,33 @@ def dashboard(request):
         "is_medical": role in ["Infirmier", "Chef des infirmiers", "Aide-soignant"],
         "can_manage_visites": role in ["Réceptionniste", "Visiteur des résidents", "Retraité"],
     }
+    recent_alerts = []
+
+    user_groups = request.user.groups.values_list('name', flat=True)
+
+    # Déterminer les types d'alertes à afficher selon le rôle
+    alert_types = []
+    if any(group in ['Infirmier', 'Chef des infirmiers', 'Aide-soignant'] for group in user_groups):
+        alert_types.append('medical')
+    if any(group in ['Responsable du site', 'Directeur'] for group in user_groups):
+        alert_types.extend(['security', 'environmental', 'device'])
+
+    # Si l'utilisateur a des types d'alertes à afficher
+    if alert_types:
+        recent_alerts = Alert.objects.filter(
+            type__in=alert_types,
+            status__in=['new', 'in-progress']
+        ).order_by('-priority', '-created_at')[:5]
+
+    context = {
+        # ... votre contexte existant ...
+        'recent_alerts': recent_alerts,
+        'high_priority_alerts_count': Alert.objects.filter(
+            priority='high',
+            status__in=['new', 'in-progress']
+        ).count(),
+    }
+
     if role == "Visiteur du site":
         return render(request, "index.html", context)
     else:
@@ -934,3 +963,64 @@ def send_alert_email(user, alert):
         html_message=html_message,
         fail_silently=False
     )
+
+
+
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.groups.filter(name__in=["Directeur", "Responsable du site"]).exists())
+def generate_test_alert(request):
+    if request.method == 'POST':
+        alert_type = request.POST.get('alert_type')
+        priority = request.POST.get('alert_priority')
+        title = request.POST.get('alert_title')
+        description = request.POST.get('alert_description')
+
+        # Créer l'alerte
+        alert = Alert.objects.create(
+            title=title,
+            description=description,
+            priority=priority,
+            type=alert_type,
+            status='new'
+        )
+
+        # Déterminer quels groupes d'utilisateurs doivent être notifiés
+        groups_to_notify = []
+
+        if alert_type == 'medical':
+            groups_to_notify.extend(['Infirmier', 'Chef des infirmiers', 'Aide-soignant'])
+        elif alert_type == 'security':
+            groups_to_notify.extend(['Responsable du site', 'Directeur'])
+        elif alert_type == 'environmental':
+            groups_to_notify.extend(['Ménage', 'Responsable du site'])
+        elif alert_type == 'device':
+            groups_to_notify.extend(['Responsable du site', 'Chef des infirmiers'])
+
+        # Pour les alertes critiques, ajouter le directeur
+        if priority == 'high':
+            groups_to_notify.append('Directeur')
+
+        # Récupérer tous les utilisateurs des groupes concernés
+        user_ids = User.objects.filter(
+            groups__name__in=groups_to_notify
+        ).values_list('id', flat=True).distinct()
+
+        users_to_notify = User.objects.filter(id__in=user_ids)
+
+        # Créer des notifications pour chaque utilisateur
+        for user in users_to_notify:
+            Notification.objects.create(
+                user=user,
+                title=title,
+                message=description,
+                type=alert_type,
+                related_url=f"/alertes/",
+                is_read=False
+            )
+
+        messages.success(request,
+                         f"Alerte '{title}' créée avec succès et notifiée à {users_to_notify.count()} utilisateurs.")
+        return redirect('generate_test_alert')
+
+    return render(request, 'vitalia_app/generate_test_alert.html')

@@ -52,6 +52,6 @@ urlpatterns = [
     path('api/alertes/<int:alert_id>/resolve/', views.resolve_alert, name='resolve_alert'),
     path('notifications/', views.notifications, name='notifications'),
     path('api/notifications/unread/', views.unread_notifications, name='unread_notifications'),
-
+    path('generate-test-alert/', views.generate_test_alert, name='generate_test_alert'),
 
 ]

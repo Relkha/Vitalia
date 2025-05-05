@@ -39,6 +39,34 @@
     <main class="container mt-4">
         <h2>Bienvenue, {{ user.username }} ({{ role }})</h2>
 
+        <div class="dashboard-section">
+          <h2>Alertes récentes</h2>
+
+          {% if recent_alerts %}
+            <div class="recent-alerts">
+              {% for alert in recent_alerts %}
+                <div class="alert-card priority-{{ alert.priority|lower }}">
+                  <h3>{{ alert.title }}</h3>
+                  <p>{{ alert.description }}</p>
+                  <p class="alert-meta">
+                    <span>{{ alert.created_at|date:"d/m/Y H:i" }}</span>
+                    <span>{{ alert.get_priority_display }}</span>
+                  </p>
+                  <a href="{% url 'alertes_dashboard' %}" class="btn btn-sm">Voir toutes les alertes</a>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p>Aucune alerte récente</p>
+          {% endif %}
+        </div>
+        {% if is_admin or is_directeur %}
+        <div class="card">
+            <h2>Générateur d'alertes de test</h2>
+            <p>Créez des alertes et notifications de test pour la démonstration</p>
+            <a href="{% url 'generate_test_alert' %}" class="btn">Générer des alertes</a>
+        </div>
+        {% endif %}
         {% if is_admin or is_directeur %}
         <div class="card">
             <h2>Gestion des utilisateurs</h2>
