@@ -81,6 +81,128 @@ def group_required(*group_names):
     return user_passes_test(in_groups)
 
 
+#Ajout
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.models import User, Group
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse, HttpResponseForbidden
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+
+from .models import DossierMedical
+from .forms import DossierMedicalForm
+
+
+# === LISTE DES DOSSIERS MÉDICAUX ===
+
+@login_required
+def dossiers_medical(request):
+    dossiers = DossierMedical.objects.select_related("patient", "infirmier").all()
+    user_groups = [group.name.lower() for group in request.user.groups.all()]
+
+    return render(request, "vitalia_app/dossiers_medical.html", {
+        "patients": dossiers,
+        "user_groups": user_groups,
+    })
+
+
+# === DOCUMENT PATIENT DÉTAIL ===
+
+@login_required
+@permission_required('vitalia_app.can_view_dossier', raise_exception=True)
+def document_patient(request, pk):
+    patient = get_object_or_404(DossierMedical, pk=pk)
+    return render(request, 'vitalia_app/document_patient.html', {'patient': patient})
+
+
+# === MODIFIER DOSSIER PATIENT ===
+
+@login_required
+@permission_required('vitalia_app.can_edit_own_consultation', raise_exception=True)
+def modifier_patient(request, pk):
+    dossier = get_object_or_404(DossierMedical, pk=pk)
+    user_groups = [g.name for g in request.user.groups.all()]
+
+    if request.user != dossier.infirmier and "Chef des infirmiers" not in user_groups:
+        return HttpResponseForbidden("Vous ne pouvez modifier que vos propres dossiers.")
+
+    form = DossierMedicalForm(request.POST or None, instance=dossier)
+
+    if form.is_valid():
+        form.save()
+        return redirect('document_patient', pk=dossier.pk)
+
+    return render(request, 'vitalia_app/dossier_patient_modifier.html', {'form': form})
+
+
+# === ASSIGNER UN INFIRMIER ===
+
+@login_required
+@permission_required('vitalia_app.change_dossiermedical', raise_exception=True)
+def assigner_infirmier(request, pk):
+    dossier = get_object_or_404(DossierMedical, pk=pk)
+
+    # Vérification des droits : chef ou responsable uniquement
+    if not request.user.groups.filter(name__in=["Chef des infirmiers", "Responsable du site"]).exists():
+        return HttpResponseForbidden("Accès refusé.")
+
+    infirmiers = User.objects.filter(groups__name="Infirmier")
+
+    if request.method == 'POST':
+        infirmier_id = request.POST.get('infirmier')
+        infirmier = get_object_or_404(User, id=infirmier_id)
+        dossier.infirmier = infirmier
+        dossier.save()
+        return redirect('document_patient', pk=pk)
+
+    return render(request, 'vitalia_app/assigner_infirmier.html', {
+        'dossier': dossier,
+        'infirmiers': infirmiers,
+    })
+
+
+# === EXPORTER UN DOSSIER EN PDF ===
+
+@login_required
+@permission_required('vitalia_app.can_view_dossier', raise_exception=True)
+def export_dossier_pdf(request, pk):
+    dossier = get_object_or_404(DossierMedical, pk=pk)
+    template_path = 'vitalia_app/pdf_template.html'
+    context = {'dossier': dossier}
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="dossier_{pk}.pdf"'
+
+    template = get_template(template_path)
+    html = template.render(context)
+    pisa_status = pisa.CreatePDF(html, dest=response)
+
+    if pisa_status.err:
+        return HttpResponse('Erreur lors de la génération du PDF', status=500)
+    return response
+
+
+# === EXPORTER TOUS LES DOSSIERS EN UN SEUL PDF ===
+
+@login_required
+@permission_required('vitalia_app.can_view_dossier', raise_exception=True)
+def export_all_dossiers_pdf(request):
+    dossiers = DossierMedical.objects.select_related('patient', 'infirmier').all()
+    template_path = 'vitalia_app/pdf_all_dossiers.html'
+    context = {'dossiers': dossiers}
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="tous_les_dossiers.pdf"'
+
+    template = get_template(template_path)
+    html = template.render(context)
+    pisa_status = pisa.CreatePDF(html, dest=response)
+
+    if pisa_status.err:
+        return HttpResponse('Erreur lors de la génération du PDF', status=500)
+    return response
+
+
 def index(request):
     return render(request, "index.html")
 

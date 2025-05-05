@@ -4,6 +4,20 @@ from .models.Chambre import Chambre
 from django.contrib.auth.models import User
 
 
+#Ajout
+
+from .models import DossierMedical
+
+class DossierMedicalForm(forms.ModelForm):
+    class Meta:
+        model = DossierMedical
+        fields = ['etat', 'consultation', 'observations']
+        widgets = {
+            'etat': forms.TextInput(attrs={'placeholder': 'État de santé'}),
+            'consultation': forms.Textarea(attrs={'rows': 4}),
+            'observations': forms.Textarea(attrs={'rows': 4}),
+        }
+
 class ContactForm(forms.Form):
     OBJET_CHOICES = [
         ('compte', 'Demande de création de compte / inscription'),

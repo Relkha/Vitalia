@@ -1,0 +1,28 @@
+
+{% extends 'vitalia_app/base.html' %}
+{% load static %}
+
+{% block title %}Assigner un infirmier{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'vitalia_app/css/assigner_infirmier.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="assign-container">
+    <h1>Assigner un infirmier</h1>
+    <p class="subtitle">Choisissez un infirmier pour le dossier de <strong>{{ patient.get_full_name }}</strong></p>
+
+    <form method="post" class="assign-form">
+        {% csrf_token %}
+        <label for="infirmier">Infirmier :</label>
+        <select name="infirmier" id="infirmier">
+            {% for inf in infirmiers %}
+                <option value="{{ inf.id }}">{{ inf.get_full_name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn-primary">Assigner</button>
+    </form>
+</div>
+{% endblock %}
+
