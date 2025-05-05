@@ -26,27 +26,47 @@
         Flux vidéo caméra en direct
     </div>
 
-    <section class="capteurs">
-        {% for objet in objets_connectes %}
-            <div class="capteur">
-                {% if objet.type == "presence_sensor" %}
-                    <span class="status {% if objet.status == "actif" %}active{% else %}inactive{% endif %}"></span>
-                    Présence chambre : {{ objet.status|title }}
-                {% elif objet.type == "door_sensor" %}
-                    <span class="status {% if objet.status == "fermée" %}closed{% else %}open{% endif %}"></span>
-                    Ouverture porte : {{ objet.status|title }}
-                {% elif objet.type == "air_quality_sensor" %}
-                    <span class="status {% if objet.status == "bonne" %}good{% elif objet.status == "moyenne" %}moyenne{% else %}bad{% endif %}"></span>
-                    Qualité de l'air : {{ objet.status|title }}
-                {% elif objet.type == "thermometer" %}
-                    <span class="status active"></span>
-                    Température : {{ objet.status }}
-                {% endif %}
-            </div>
-        {% empty %}
-            <p>Aucun capteur trouvé pour cette chambre.</p>
-        {% endfor %}
+    <section class="choix-chambre">
+        <form method="get" action="">
+            <label for="chambre">Choisir une chambre :</label>
+            <select name="chambre" id="chambre" onchange="this.form.submit()">
+                <option value="">-- Sélectionnez une chambre --</option>
+                {% for chambre in chambres %}
+                    <option value="{{ chambre.id }}" {% if selected_chambre and chambre.id == selected_chambre.id %}selected{% endif %}>
+                        Chambre {{ chambre.numero }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
     </section>
+
+    {% if selected_chambre %}
+        <section class="chambre">
+            <h2>Objets connectés – Chambre {{ selected_chambre.numero }}</h2>
+
+            {% if objets_connectes %}
+                {% for objet in objets_connectes %}
+                    <div class="capteur">
+                        {% if objet.type == "presence_sensor" %}
+                            <span class="status {% if objet.status == "active" %}active{% else %}inactive{% endif %}"></span>
+                            Présence : {{ objet.status|title }}
+                        {% elif objet.type == "door_sensor" %}
+                            <span class="status {% if objet.status == "fermée" %}closed{% else %}open{% endif %}"></span>
+                            Porte : {{ objet.status|title }}
+                        {% elif objet.type == "air_quality_sensor" %}
+                            <span class="status {% if objet.status == "bonne" %}good{% elif objet.status == "moyenne" %}moyenne{% else %}bad{% endif %}"></span>
+                            Qualité air : {{ objet.status|title }}
+                        {% elif objet.type == "thermometer" %}
+                            <span class="status active"></span>
+                            Température : {{ objet.status }}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>Aucun objet connecté pour cette chambre.</p>
+            {% endif %}
+        </section>
+    {% endif %}
 </main>
 
 <footer class="footer">

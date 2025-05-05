@@ -91,12 +91,23 @@ def surveillance_view(request):
         return redirect('/')
 
     chambres = Chambre.objects.all()
-    objets_connectes = ConnectedObject.objects.all()
+    chambre_id = request.GET.get('chambre')
+    objets_connectes = []
+
+    selected_chambre = None
+    if chambre_id:
+        try:
+            selected_chambre = Chambre.objects.prefetch_related('objets_connectes').get(id=chambre_id)
+            objets_connectes = selected_chambre.objets_connectes.all()
+        except Chambre.DoesNotExist:
+            selected_chambre = None
 
     return render(request, 'vitalia_app/surveillance.html', {
         'chambres': chambres,
+        'selected_chambre': selected_chambre,
         'objets_connectes': objets_connectes,
     })
+
 
 def index(request):
     return render(request, "index.html")
