@@ -1,101 +1,83 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    {% load static %}
     <meta charset="UTF-8">
-    <title>Vitalia - Réservation des visites</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Polices -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
-
-    <!-- CSS général -->
+    <title>Réservation de visite - Vitalia</title>
     <link rel="stylesheet" href="{% static 'vitalia_app/css/reservation.css' %}">
-    <link rel="stylesheet" href="{% static 'vitalia_app/css/header_footer.css' %}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
-
 <body>
-    <!-- HEADER -->
-    <header>
-        <div class="header-container">
-            <div class="logo">Vitalia</div>
-            <nav>
-                <ul>
-                    <li><a href="/">Accueil</a></li>
-                    <li><a href="/a_propos">À propos</a></li>
-                    <li><a href="#">Nos services</a></li>
-                    <li><a href="/contact">Contact</a></li>
-                    <li><a href="{% url 'reservation_visite' %}">Réserver une visite</a></li>
-                    {% if user.is_authenticated and user.groups.first.name != "Visiteur du site" %}
-                    <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-                    {% endif %}
-                    {% if user.is_authenticated %}
-                    <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
-                    {% else %}
-                    <li><a href="{% url 'connexion' %}">Connexion</a></li>
-                    {% endif %}
-                </ul>
-            </nav>
-        </div>
-    </header>
 
-    <!-- CONTENU -->
-    <main class="reservation-wrapper">
-        <div class="reservation-container">
-            <h1>Réservation des visites</h1>
+<header class="header">
+    <div class="logo">Vitalia</div>
+    <nav class="nav">
+        <a href="{% url 'index' %}">Accueil</a>
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'reservation_visite' %}">Réserver une visite</a>
+        <a href="{% url 'deconnexion' %}">Déconnexion</a>
+    </nav>
+</header>
 
-            <form method="post" class="reservation-form">
+<main class="main-content">
+    <h1>Réservation des visites</h1>
+
+    {% if peut_choisir_resident %}
+        <form method="get" action="">
+            <div class="form-group">
+                <label for="resident">Choisir un résident :</label>
+                <select name="resident" id="resident" onchange="this.form.submit()">
+                    <option value="">-- Sélectionnez --</option>
+                    {% for resident in residents %}
+                        <option value="{{ resident.id }}" {% if resident.id == selected_resident_id %}selected{% endif %}>
+                            {{ resident.username }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+    {% endif %}
+
+    {% if selected_resident_id %}
+        {% if photo_resident %}
+            <div class="resident-photo">
+                <img src="{{ photo_resident }}" alt="Photo du résident" class="photo-img">
+            </div>
+        {% endif %}
+
+        <div class="reservation-form">
+            <form method="post">
                 {% csrf_token %}
+                <input type="hidden" name="resident" value="{{ selected_resident_id }}">
                 <div class="form-group">
                     <label for="date">Date :</label>
-                    <input type="text" name="date" id="date" required>
+                    <input type="date" id="date" name="date" required>
                 </div>
                 <div class="form-group">
                     <label for="time">Heure :</label>
-                    <input type="time" name="time" required>
+                    <input type="time" id="time" name="time" required>
                 </div>
                 <button type="submit" class="btn-submit">Ajouter une visite</button>
             </form>
+        </div>
 
-            <h2>Liste des visites</h2>
+        <h2>Liste des visites</h2>
+        {% if visites %}
             <ul class="visites-list">
                 {% for visite in visites %}
                     <li class="visite-item">
-                        {{ visite.date }} à {{ visite.time }} -
-                        {% if visite.status == 'cancelled' %}
-                            <span class="badge badge-cancelled">Annulée</span>
-                        {% else %}
-                            <span class="badge badge-valid">Validée</span>
-                        {% endif %}
+                        {{ visite.date|date:"d F Y" }} à {{ visite.time|time:"H:i" }}
                     </li>
-                {% empty %}
-                    <li>Aucune visite programmée.</li>
                 {% endfor %}
             </ul>
-        </div>
+        {% else %}
+            <p>Aucune visite programmée.</p>
+        {% endif %}
+    {% endif %}
+</main>
 
-        <div class="resident-photo">
-            {% if request.user.profil.photo %}
-                <img src="{{ request.user.profil.photo.url }}" alt="Photo du résident">
-            {% else %}
-                <img src="{% static 'vitalia_app/images/default_resident.png' %}" alt="Photo du résident">
-            {% endif %}
-            <p>Photo du résident</p>
-        </div>
-    </main>
+<footer class="footer">
+    <p>© 2025 Vitalia. Tous droits réservés.</p>
+</footer>
 
-    <!-- FOOTER -->
-    <footer>
-        <p>&copy; 2025 Vitalia. Tous droits réservés. Projet CY Tech.</p>
-    </footer>
-
-    <!-- JS Flatpickr -->
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script>
-        flatpickr("#date", {
-            dateFormat: "Y-m-d"
-        });
-    </script>
 </body>
 </html>

@@ -88,23 +88,23 @@ h1 {
 }
 
 .closed {
-    background-color: #28a745; /* Porte fermée => vert */
+    background-color: #dc3545; /* Porte fermée => Rouge */
 }
 
 .open {
-    background-color: #dc3545; /* Porte ouverte => rouge */
+    background-color: #28a745; /* Porte ouverte => Vert */
 }
 
 .good {
-    background-color: #28a745; /* Qualité de l'air bonne => vert */
+    background-color: #28a745; /* Qualité de l'air bonne => Vert */
 }
 
 .moyenne {
-    background-color: #ffc107; /* Qualité de l'air moyenne => jaune */
+    background-color: #ffc107; /* Qualité de l'air moyenne => Jaune */
 }
 
 .bad {
-    background-color: #dc3545; /* Qualité de l'air mauvaise => rouge */
+    background-color: #dc3545; /* Qualité de l'air mauvaise => Rouge */
 }
 
 .footer {

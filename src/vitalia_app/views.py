@@ -1,9 +1,8 @@
 import json
 from django.conf import settings
 from django.contrib.auth.models import User, Group
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import permission_required
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
@@ -37,7 +36,78 @@ from rest_framework.response import Response
 from .serializers import EventSerializer
 from .forms import EvenementForm
 import logging
+from datetime import date
+from django.contrib.auth import get_user_model
 
+
+User = get_user_model()
+
+@login_required
+def reservation_visite(request):
+    user = request.user
+    peut_choisir_resident = False
+    residents = None
+    selected_resident_id = request.GET.get('resident')
+
+    try:
+        selected_resident_id = int(selected_resident_id)
+    except (TypeError, ValueError):
+        selected_resident_id = None
+
+    # Vérifier le groupe
+    if user.groups.filter(name__in=["Réceptionniste", "Visiteur des résidents"]).exists():
+        peut_choisir_resident = True
+        residents = User.objects.filter(groups__name="Retraité")
+    elif user.groups.filter(name="Retraité").exists():
+        selected_resident_id = user.id
+    else:
+        return redirect('dashboard')
+
+    # POST pour créer la visite
+    if request.method == 'POST':
+        date_visite = request.POST.get('date')
+        time_visite = request.POST.get('time')
+        resident_id_post = request.POST.get('resident') or selected_resident_id
+
+        try:
+            resident_id_post = int(resident_id_post)
+        except (TypeError, ValueError):
+            resident_id_post = None
+
+        if resident_id_post and date_visite and time_visite:
+            resident = User.objects.get(id=resident_id_post)
+            Visit.objects.create(
+                resident=resident,
+                date=date_visite,
+                time=time_visite,
+                status='validated'
+            )
+            return redirect(f'/reservation-visite/?resident={resident.id}')
+
+    # Visites prévues
+    visites = []
+    if selected_resident_id:
+        visites = Visit.objects.filter(resident_id=selected_resident_id).order_by('date', 'time')
+
+    # Photo du résident
+    photo_resident = None
+    if selected_resident_id:
+        try:
+            profil = Profil.objects.get(user_id=selected_resident_id)
+            if profil.photo:
+                photo_resident = profil.photo.url
+        except Profil.DoesNotExist:
+            pass
+
+    context = {
+        'peut_choisir_resident': peut_choisir_resident,
+        'residents': residents,
+        'visites': visites,
+        'selected_resident_id': selected_resident_id,
+        'photo_resident': photo_resident,
+    }
+
+    return render(request, 'vitalia_app/reservation_visite.html', context)
 
 @login_required
 def surveillance_view(request):
@@ -47,32 +117,23 @@ def surveillance_view(request):
         return redirect('/')
 
     chambres = Chambre.objects.all()
-    objets_connectes = ConnectedObject.objects.all()
+    chambre_id = request.GET.get('chambre')
+    objets_connectes = []
+
+    selected_chambre = None
+    if chambre_id:
+        try:
+            selected_chambre = Chambre.objects.prefetch_related('objets_connectes').get(id=chambre_id)
+            objets_connectes = selected_chambre.objets_connectes.all()
+        except Chambre.DoesNotExist:
+            selected_chambre = None
 
     return render(request, 'vitalia_app/surveillance.html', {
         'chambres': chambres,
-        'objets_connectes': objets_connectes
+        'selected_chambre': selected_chambre,
+        'objets_connectes': objets_connectes,
     })
 
-
-@login_required
-def reservation_visite(request):
-    if not hasattr(request.user, 'profil') or request.user.profil.get_role() not in ['Visiteur des résidents', 'Retraité', 'Réceptionniste']:
-        return redirect('/')
-
-    if request.method == 'POST':
-        Visit.objects.create(
-            resident=request.user,
-            date=request.POST.get('date'),
-            time=request.POST.get('time'),
-            status='validated'
-        )
-        return redirect('reservation_visite')
-
-    visites = Visit.objects.filter(resident=request.user).order_by('-date', '-time')
-    today = date.today()
-
-    return render(request, 'reservation_visite.html', {'visites': visites, 'today': today})
 
 
 logger = logging.getLogger(__name__)
@@ -265,7 +326,16 @@ def contact(request):
             email = form.cleaned_data['email']
             objet = form.cleaned_data['objet']
             message = form.cleaned_data['message']
-            MessageContact.objects.create(nom=nom, email=email, objet=objet, message=message)
+
+            # Enregistrement dans la base de données
+            MessageContact.objects.create(
+                nom=nom,
+                email=email,
+                objet=objet,
+                message=message
+            )
+
+            # Envoi du mail
             full_message = f"Objet : {objet}\n\nMessage : {message}"
             send_mail(
                 subject=f"Nouveau message de {nom} - {objet}",
@@ -299,6 +369,7 @@ def repondre_message(request, message_id):
         )
         return redirect('/messages/')
 
+@login_required
 def dashboard(request):
     user = request.user
 

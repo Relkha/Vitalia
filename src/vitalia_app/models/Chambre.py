@@ -8,6 +8,10 @@ class Chambre(models.Model):
         ('OCCUPE', 'Occupée'),
     ]
 
+    class Meta:
+        managed = False  # << IMPORTANT !
+        db_table = 'vitalia_app_chambre'
+
     numero = models.CharField(max_length=10, unique=True)
     statut = models.CharField(max_length=10, choices=STATUT_CHOICES, default='LIBRE')
     resident = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)

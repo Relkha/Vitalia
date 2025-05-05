@@ -14,6 +14,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
 from django.urls import path, include
 from vitalia_app import views
 from vitalia_app.views import index, propos, contact, connexion, message_admin, dashboard, connected_objects, event_list, planning_events_api, liste_chambres, connected_objects, surveillance_view, alertes_dashboard, alert_details, acknowledge_alert, resolve_alert, notifications, unread_notifications
@@ -36,10 +38,8 @@ urlpatterns = [
     path('chambres/', views.liste_chambres, name='liste_chambres'),
     path('chambres/<int:chambre_id>/modifier/', views.modifier_chambre, name='modifier_chambre'),
     path('api/planning_events/', planning_events_api, name='planning_events_api'),
-    path('objets/', connected_objects, name='objets'),
     path('', include('vitalia_app.urls')),
     path('surveillance/', surveillance_view, name='surveillance'),
-    path('objets/', connected_objects, name='objets'),
     path("soins/", views.dossiers_medical, name="dossiers_medical"),
     path("soins/<int:pk>/", views.document_patient, name="document_patient"),
     path("soins/<int:pk>/modifier/", views.modifier_patient, name="modifier_patient"),
@@ -53,5 +53,11 @@ urlpatterns = [
     path('notifications/', views.notifications, name='notifications'),
     path('api/notifications/unread/', views.unread_notifications, name='unread_notifications'),
     path('generate-test-alert/', views.generate_test_alert, name='generate_test_alert'),
+    path('deconnexion/', LogoutView.as_view(next_page='/'), name='deconnexion'),
 
 ]
+
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

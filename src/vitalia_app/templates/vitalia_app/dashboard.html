@@ -10,13 +10,13 @@
 </head>
 <body>
 
-    <header>
-        <div class="container">
-            <h1>Vitalia - Tableau de bord</h1>
-        </div>
-        <nav>
-            <ul>
-                {% if user.is_authenticated and user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
+<header>
+    <div class="container">
+        <h1>Vitalia - Tableau de bord</h1>
+    </div>
+    <nav>
+        <ul>
+            {% if user.is_authenticated and user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
                 <li><a href="/admin">Admin</a></li>
                 {% endif %}
 
@@ -38,6 +38,14 @@
     <!NE PAS OUBLIER DE MODIFIER TOUS LES URL DE REDIRECTION>
     <main class="container mt-4">
         <h2>Bienvenue, {{ user.username }} ({{ role }})</h2>
+            {% endif %}
+            <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main class="container mt-4">
+    <h2>Bienvenue, {{ user.username }} ({{ role }})</h2>
 
         <div class="dashboard-section">
           <h2>Alertes récentes</h2>
@@ -127,30 +135,18 @@
         </div>
         {% endif %}
 
-        {% if is_admin or is_directeur or is_chef_infirmier or is_infirmier or is_menage or is_retraite %}
-        <div class="card">
-            <h2>Objets connectés</h2>
-            <a href="{% url 'objets' %}" class="btn">Gérer ou consulter</a>
-        </div>
-        {% endif %}
+    {% if is_admin or is_directeur or is_chef_infirmier or is_infirmier or is_menage or is_retraite %}
+    <div class="card">
+        <h2>Objets connectés</h2>
+        <a href="{% url 'index' %}" class="btn">Gérer ou consulter</a>
+    </div>
+    {% endif %}
 
         <!-- Modifier cette section pour le système d'alertes -->
         {% if is_admin or is_directeur or is_chef_infirmier or is_infirmier or is_aide_soignant %}
         <div class="card">
             <h2>Alertes et surveillance</h2>
             <a href="{% url 'alertes_dashboard' %}" class="btn">Voir les alertes</a>
-        </div>
-        {% endif %}
-
-        {% if is_visiteur_resident %}
-        <div class="card">
-            <h2>Mes visites</h2>
-            <a href="{% url 'reservation_visite' %}" class="btn">Réserver / Modifier</a>
-        </div>
-        {% elif is_reception %}
-        <div class="card">
-            <h2>Accueil des visiteurs</h2>
-            <a href="{% url 'index' %}" class="btn">Gérer les entrées</a>
         </div>
         {% endif %}
 
@@ -162,10 +158,44 @@
         </div>
         {% endif %}
     </main>
+    {% if is_visiteur_resident %}
+    <div class="card">
+        <h2>Mes visites</h2>
+        <a href="{% url 'reservation_visite' %}" class="btn">Réserver / Modifier</a>
+    </div>
+    {% elif is_retraite %}
+    <div class="card">
+        <h2>Visites programmées</h2>
+        <a href="{% url 'reservation_visite' %}" class="btn">Voir les horaires</a>
+    </div>
+    {% elif is_reception %}
+    <div class="card">
+        <h2>Accueil des visiteurs</h2>
+        <a href="{% url 'dashboard' %}" class="btn">Gérer les entrées</a>
+    </div>
+    {% endif %}
 
-    <footer>
-        <p>© 2025 Vitalia. Tous droits réservés.</p>
-    </footer>
+    {# AJOUT des NOUVELLES CARTES SURVEILLANCE + RÉSERVATION #}
+
+    {% if is_reception or is_directeur or is_responsable_site or is_infirmier or is_retraite %}
+    <div class="card">
+        <h2>Surveillance</h2>
+        <a href="{% url 'surveillance' %}" class="btn">Accéder aux caméras</a>
+    </div>
+    {% endif %}
+
+    {% if is_reception or is_visiteur_resident or is_retraite %}
+    <div class="card">
+        <h2>Réservations de visites</h2>
+        <a href="{% url 'reservation_visite' %}" class="btn">Voir / Réserver</a>
+    </div>
+    {% endif %}
+
+</main>
+
+<footer>
+    <p>© 2025 Vitalia. Tous droits réservés.</p>
+</footer>
 
     <!-- Ajout du script de notifications -->
     <script src="{% static 'vitalia_app/js/notifications.js' %}"></script>
