@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import Group
+from vitalia_app.models.chambre import Chambre
 
 class PermissionType(models.Model):
     code = models.CharField(max_length=50, unique=True)
@@ -12,9 +13,8 @@ class ConnectedObject(models.Model):
     name = models.CharField(max_length=100)
     type = models.CharField(max_length=100)
     description = models.TextField(blank=True)
-    room = models.CharField(max_length=100, blank=True)
+    room = models.ForeignKey(Chambre, on_delete=models.CASCADE, related_name='objets_connectes')  # 🔥
     status = models.CharField(max_length=20, choices=[('active', 'Actif'), ('inactive', 'Inactif')], default='active')
-
     def __str__(self):
         return self.name
 

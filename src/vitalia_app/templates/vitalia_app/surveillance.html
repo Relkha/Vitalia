@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-{% load static %}
 <html lang="fr">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
-    <title>Caméra d'entrée - Surveillance</title>
+    <title>Surveillance</title>
     <link rel="stylesheet" href="{% static 'vitalia_app/css/surveillance.css' %}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
@@ -15,7 +15,7 @@
         <a href="/">Accueil</a>
         <a href="/dashboard/">Dashboard</a>
         <a href="/surveillance/">Surveillance</a>
-        <a href="/deconnexion/">Déconnexion</a>
+        <a href="{% url 'deconnexion' %}">Déconnexion</a>
     </nav>
 </header>
 

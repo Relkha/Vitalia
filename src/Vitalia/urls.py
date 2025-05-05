@@ -19,6 +19,7 @@ from django.conf.urls.static import static
 from django.urls import path, include
 from vitalia_app import views
 from vitalia_app.views import index, propos, contact, connexion, message_admin, dashboard, connected_objects, surveillance_view
+from django.contrib.auth.views import LogoutView
 
 
 urlpatterns = [
@@ -34,6 +35,8 @@ urlpatterns = [
     path('objets/', connected_objects, name='objets'),
     path('', include('vitalia_app.urls')),
     path('surveillance/', surveillance_view, name='surveillance'),
+    path('deconnexion/', LogoutView.as_view(next_page='/'), name='deconnexion'),
+
 ]
 
 
