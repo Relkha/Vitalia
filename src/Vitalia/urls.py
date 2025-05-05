@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from vitalia_app import views
-from vitalia_app.views import index, propos, contact, connexion, message_admin, dashboard, connected_objects, event_list, planning_events_api, liste_chambres, connected_objects, surveillance_view, alertes_dashboard, alert_details, acknowledge_alert, resolve_alert, notifications, unread_notifications
+from vitalia_app.views import index, propos, contact, connexion, message_admin, dashboard, connected_objects, event_list, planning_events_api, liste_chambres, connected_objects, surveillance_view
 
 urlpatterns = [
     path('admin/', admin.site.urls, name = 'admin'),
@@ -30,6 +30,8 @@ urlpatterns = [
     path('logout/', views.deconnexion, name='deconnexion'),
     path('objets/', connected_objects, name='objets'),
     path('events/', event_list, name='event_list'),
+    #path('events/create/', views.create_event, name='create_event'),
+    #path('events/edit/<int:event_id>/', views.edit_event, name='edit_event'),
     path('mon_planning/', views.planning_individuel, name='planning_individuel'),
     path('planning_residents/', views.planning_residents, name='planning_residents'),
     path('mon_planning_resident/', views.planning_resident_individuel, name='mon_planning_resident'),
@@ -46,12 +48,7 @@ urlpatterns = [
     path('soins/assigner/<int:pk>/', views.assigner_infirmier, name='assigner_infirmier'),
     path('dossier/<int:pk>/export_pdf/', views.export_dossier_pdf, name='export_dossier_pdf'),
     path('dossiers/export/pdf/', views.export_all_dossiers_pdf, name='export_all_dossiers_pdf'),
-    path('alertes/', views.alertes_dashboard, name='alertes_dashboard'),
-    path('api/alertes/<int:alert_id>/details/', views.alert_details, name='alert_details'),
-    path('api/alertes/<int:alert_id>/acknowledge/', views.acknowledge_alert, name='acknowledge_alert'),
-    path('api/alertes/<int:alert_id>/resolve/', views.resolve_alert, name='resolve_alert'),
-    path('notifications/', views.notifications, name='notifications'),
-    path('api/notifications/unread/', views.unread_notifications, name='unread_notifications'),
+
 
 
 ]

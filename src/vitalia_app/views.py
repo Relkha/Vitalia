@@ -1,19 +1,15 @@
 import json
-from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import permission_required
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
-from django.template.loader import render_to_string
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
-from django.core.paginator import Paginator
 from django.db.models import Q, Case, When
 from django.http import JsonResponse
 from django.utils.dateparse import parse_datetime
-from django.utils.html import strip_tags
 from django.forms.models import model_to_dict
 from .forms import ContactForm, ConnexionForm, ChambreForm
 from .models.MessageContact import MessageContact
@@ -29,13 +25,11 @@ from .models.planning_resident import PlanningEventResident
 from .models.Chambre import Chambre
 from .models.Evenement import Evenement
 from .models.planning_infirmier import PlanningEventInfirmier
-from .models.Alertes import Alert, Notification, AlertHistory
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import EventSerializer
 from .forms import EvenementForm
 import logging
-
 
 @login_required
 def surveillance_view(request):
@@ -523,7 +517,42 @@ def event_list(request):
         'events': events
     })
 
+'''
+#@login_required
+#@permission_required('vitalia_app.can_add_event', raise_exception=True)
+# Vue pour créer un événement
+def create_event(request):
+    if request.method == 'POST':
+        form = EvenementForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('event_list')
+    else:
+        form = EvenementForm()
+    return render(request, 'event/create_event.html', {'form': form})
 
+#@login_required
+#@permission_required('vitalia_app.can_change_event', raise_exception=True)
+# Vue pour modifier un événement
+def edit_event(request, event_id):
+    event = PlanningEventInfirmier.objects.get(id=event_id)
+    if request.method == 'POST':
+        form = EvenementForm(request.POST, instance=event)
+        if form.is_valid():
+            form.save()
+            return redirect('event_list')
+    else:
+        form = EvenementForm(instance=event)
+    return render(request, 'event/edit_event.html', {'form': form})
+
+#@login_required
+#@permission_required('vitalia_app.can_delete_event', raise_exception=True)
+# Vue pour supprimer un événement
+def delete_event(request, event_id):
+    event = PlanningEventInfirmier.objects.get(id=event_id)
+    event.delete()
+    return redirect('event_list')
+'''
 
 @login_required
 @group_required("Infirmier", "Aide-soignant", "Ménage")
@@ -682,255 +711,3 @@ def liste_chambres(request):
     }
 
     return render(request, 'vitalia_app/liste_chambres.html', context)
-
-
-
-# Vue pour le tableau de bord des alertes
-@login_required
-def alertes_dashboard(request):
-    # Récupérer toutes les alertes, triées par date et priorité
-    alerts = Alert.objects.all().order_by('-priority', '-created_at')
-
-    # Compter les alertes par priorité
-    high_priority_count = Alert.objects.filter(priority='high', status__in=['new', 'in-progress']).count()
-    medium_priority_count = Alert.objects.filter(priority='medium', status__in=['new', 'in-progress']).count()
-    low_priority_count = Alert.objects.filter(priority='low', status__in=['new', 'in-progress']).count()
-    total_alerts_count = alerts.count()
-
-    # Pagination
-    paginator = Paginator(alerts, 10)  # 10 alertes par page
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    context = {
-        'alerts': page_obj,
-        'high_priority_count': high_priority_count,
-        'medium_priority_count': medium_priority_count,
-        'low_priority_count': low_priority_count,
-        'total_alerts_count': total_alerts_count
-    }
-
-    return render(request, 'vitalia_app/alertes_dashboard.html', context)
-
-
-# API pour les détails d'une alerte
-@login_required
-def alert_details(request, alert_id):
-    alert = get_object_or_404(Alert, id=alert_id)
-
-    # Construire l'objet de réponse
-    data = {
-        'id': alert.id,
-        'title': alert.title,
-        'description': alert.description,
-        'created_at': alert.created_at.isoformat(),
-        'priority': alert.priority,
-        'priority_display': alert.get_priority_display(),
-        'type': alert.type,
-        'type_display': alert.get_type_display(),
-        'status': alert.status,
-        'status_display': alert.get_status_display(),
-    }
-
-    # Ajouter des informations sur l'appareil
-    if alert.device:
-        data['device'] = {
-            'id': alert.device.id,
-            'name': alert.device.name,
-            'type': alert.device.type,
-            'location': alert.device.location
-        }
-
-    # Ajouter des informations sur le résident
-    if alert.resident:
-        data['resident'] = {
-            'id': alert.resident.user.id,
-            'first_name': alert.resident.user.first_name,
-            'last_name': alert.resident.user.last_name,
-            'room_number': alert.resident.chambre.numero if hasattr(alert.resident, 'chambre') else None
-        }
-
-    # Ajouter l'historique de l'alerte
-    data['history'] = []
-    for entry in alert.alerthistory_set.all().order_by('-timestamp'):
-        data['history'].append({
-            'date': entry.timestamp.isoformat(),
-            'action': entry.get_action_display(),
-            'user': f"{entry.user.first_name} {entry.user.last_name}" if entry.user else "Système"
-        })
-
-    return JsonResponse(data)
-
-
-# API pour prendre en charge une alerte
-@login_required
-def acknowledge_alert(request, alert_id):
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Méthode non autorisée'}, status=405)
-
-    alert = get_object_or_404(Alert, id=alert_id)
-
-    # Mettre à jour le statut de l'alerte
-    alert.status = 'in-progress'
-    alert.save()
-
-    # Enregistrer l'action dans l'historique
-    alert.alerthistory_set.create(
-        user=request.user,
-        action='acknowledge',
-        details=f"Prise en charge par {request.user.first_name} {request.user.last_name}"
-    )
-
-    return JsonResponse({'success': True})
-
-
-# API pour résoudre une alerte
-@login_required
-def resolve_alert(request, alert_id):
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Méthode non autorisée'}, status=405)
-
-    alert = get_object_or_404(Alert, id=alert_id)
-
-    # Mettre à jour le statut de l'alerte
-    alert.status = 'resolved'
-    alert.save()
-
-    # Enregistrer l'action dans l'historique
-    alert.alerthistory_set.create(
-        user=request.user,
-        action='resolve',
-        details=f"Résolue par {request.user.first_name} {request.user.last_name}"
-    )
-
-    return JsonResponse({'success': True})
-
-
-# Vue pour afficher les notifications de l'utilisateur
-@login_required
-def notifications(request):
-    # Récupérer les notifications de l'utilisateur
-    notifications = Notification.objects.filter(
-        user=request.user
-    ).order_by('-created_at')
-
-    # Marquer les notifications non lues comme lues
-    unread_notifications = notifications.filter(is_read=False)
-    unread_notifications.update(is_read=True)
-
-    # Pagination
-    paginator = Paginator(notifications, 15)  # 15 notifications par page
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    context = {
-        'notifications': page_obj,
-        'unread_count': unread_notifications.count()
-    }
-
-    return render(request, 'vitalia_app/notifications.html', context)
-
-
-# API pour récupérer les notifications non lues
-@login_required
-def unread_notifications(request):
-    # Récupérer les notifications non lues
-    notifications = Notification.objects.filter(
-        user=request.user,
-        is_read=False
-    ).order_by('-created_at')
-
-    # Construire la réponse
-    data = []
-    for notification in notifications:
-        data.append({
-            'id': notification.id,
-            'title': notification.title,
-            'message': notification.message,
-            'created_at': notification.created_at.isoformat(),
-            'type': notification.type,
-            'related_url': notification.related_url
-        })
-
-    return JsonResponse({'notifications': data, 'count': len(data)})
-
-
-# Fonction pour créer une alerte et envoyer des notifications
-def create_alert(title, description, priority, alert_type, device=None, resident=None):
-    # Créer l'alerte
-    alert = Alert.objects.create(
-        title=title,
-        description=description,
-        priority=priority,
-        type=alert_type,
-        device=device,
-        resident=resident,
-        status='new'
-    )
-
-    # Déterminer quels groupes d'utilisateurs doivent être notifiés
-    groups_to_notify = []
-
-    if alert_type == 'medical':
-        groups_to_notify.extend(['Infirmier', 'Chef des infirmiers', 'Aide-soignant'])
-    elif alert_type == 'security':
-        groups_to_notify.extend(['Responsable du site', 'Directeur'])
-    elif alert_type == 'environmental':
-        groups_to_notify.extend(['Ménage', 'Responsable du site'])
-    elif alert_type == 'device':
-        groups_to_notify.extend(['Responsable du site', 'Chef des infirmiers'])
-
-    # Pour les alertes critiques, ajouter le directeur
-    if priority == 'high':
-        groups_to_notify.append('Directeur')
-
-    # Récupérer tous les utilisateurs des groupes concernés
-    user_ids = User.objects.filter(
-        groups__name__in=groups_to_notify
-    ).values_list('id', flat=True).distinct()
-
-    users_to_notify = User.objects.filter(id__in=user_ids)
-
-    # Créer des notifications pour chaque utilisateur
-    for user in users_to_notify:
-        notification = Notification.objects.create(
-            user=user,
-            title=title,
-            message=description,
-            type=alert_type,
-            related_url=f"/alertes/details/{alert.id}/",
-            is_read=False
-        )
-
-        # Envoyer un e-mail pour les alertes de haute priorité
-        if priority == 'high' and user.email:
-            send_alert_email(user, alert)
-
-    return alert
-
-
-# Fonction pour envoyer un e-mail d'alerte
-def send_alert_email(user, alert):
-    subject = f"ALERTE {alert.get_priority_display().upper()} : {alert.title}"
-
-    # Préparer le contexte pour le template
-    context = {
-        'user': user,
-        'alert': alert,
-        'dashboard_url': f"{settings.SITE_URL}/alertes/",
-        'alert_url': f"{settings.SITE_URL}/alertes/details/{alert.id}/"
-    }
-
-    # Rendre le template HTML
-    html_message = render_to_string('email/alert_notification.html', context)
-    plain_message = strip_tags(html_message)
-
-    # Envoyer l'e-mail
-    send_mail(
-        subject=subject,
-        message=plain_message,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[user.email],
-        html_message=html_message,
-        fail_silently=False
-    )

@@ -38,7 +38,7 @@
 
 <main>
   <h1>Planning des Infirmiers</h1>
-  <div id="schedule" class="planning-multi"></div>
+  <div id="schedule"></div>
 </main>
 
 <script>
@@ -126,14 +126,8 @@
         if (args.data.EmployeId) {
           const user = users.find(u => u.id === args.data.EmployeId);
           if (user) {
-            // Utiliser setProperty pour s'assurer que les styles sont appliqués
-            args.element.style.setProperty('background-color', user.color, 'important');
-            args.element.style.setProperty('border-left', `5px solid ${user.color}`, 'important');
-            args.element.style.setProperty('color', '#ffffff', 'important');
-
-            // Ajouter une classe pour identifier les événements par employé
-            args.element.classList.add('employe-event');
-            args.element.dataset.employeId = args.data.EmployeId;
+            args.element.style.backgroundColor = user.color;
+            args.element.style.borderLeft = `5px solid ${user.color}`;
           }
         }
       },
@@ -150,7 +144,6 @@
     // Initialiser le planning
     scheduleObj.appendTo('#schedule');
   });
-
   document.addEventListener('DOMContentLoaded', function() {
     const menuButton = document.querySelector('.mobile-menu-button');
     const nav = document.querySelector('nav');
