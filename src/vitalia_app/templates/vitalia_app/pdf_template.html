@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    {% load static %}
+  <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'vitalia_app/css/pdf_template.css' %}">
+</head>
+<body>
+  <h1>Dossier Médical – {{ dossier.patient.get_full_name }}</h1>
+
+  <div class="info-section">
+    <span class="label">Identifiant :</span><span class="value">{{ dossier.patient.id }}</span>
+  </div>
+
+  <div class="info-section">
+    <span class="label">Infirmier :</span>
+    <span class="value">
+      {% if dossier.infirmier %}
+        {{ dossier.infirmier.get_full_name }}
+      {% else %}
+        Aucun infirmier assigné
+      {% endif %}
+    </span>
+  </div>
+
+  <div class="info-section">
+    <span class="label">État :</span><span class="value">{{ dossier.etat|default:"-" }}</span>
+  </div>
+
+  <div class="info-section">
+    <span class="label">Date d'entrée :</span><span class="value">{{ dossier.date_entree|date:"d/m/Y" }}</span>
+  </div>
+
+  <div class="section-title">Consultation</div>
+  <div class="box">{{ dossier.consultation|default:"Aucune consultation enregistrée." }}</div>
+
+  <div class="section-title">Observations</div>
+  <div class="box">{{ dossier.observations|default:"Aucune observation." }}</div>
+
+  <div class="footer">© 2025 Vitalia – Export automatique du dossier médical</div>
+</body>
+</html>

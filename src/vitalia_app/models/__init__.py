@@ -5,3 +5,4 @@ from .Chambre import Chambre
 from .Objets import ConnectedObject
 
 
+from .DossierMedical import DossierMedical

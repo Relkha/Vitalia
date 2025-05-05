@@ -1,0 +1,56 @@
+{% extends 'vitalia_app/base.html' %}
+{% load static %}
+
+{% block title %}Dossiers médicaux{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'vitalia_app/css/patients.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Dossiers médicaux</h1>
+</div>
+<a href="{% url 'export_all_dossiers_pdf' %}" class="btn-outline">📄 Exporter tous les dossiers PDF</a>
+
+
+
+
+<div class="table-wrapper">
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Nom et Prénom</th>
+          <th>Identifiant</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in patients %}
+        <tr>
+          <td>{{ p.patient.get_full_name }}</td>
+          <td>{{ p.patient.id }}</td>
+          <td class="td-actions">
+            <a href="{% url 'document_patient' p.pk %}" class="btn-outline">Voir</a>
+            {% if 'infirmier' in user_groups %}
+              <a href="{% url 'modifier_patient' p.pk %}" class="btn-secondary">Modifier</a>
+            {% endif %}
+            {% if "chef des infirmiers" in user_groups or "responsable du site" in user_groups %}
+              <a href="{% url 'assigner_infirmier' p.pk %}" class="btn-assigner">Assigner un infirmier</a>
+            {% endif %}
+
+            <!-- ✅ Bouton Export PDF -->
+            <a href="{% url 'export_dossier_pdf' p.pk %}" class="btn-outline">Exporter PDF</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="3">Aucun dossier trouvé.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

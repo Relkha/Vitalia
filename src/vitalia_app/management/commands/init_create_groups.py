@@ -49,3 +49,5 @@ def create_groups():
             print(f"🔐 {len(permission_objs)} permission(s) attribuées à '{group_name}'.")
 
 create_groups()
+
+

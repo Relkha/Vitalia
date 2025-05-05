@@ -20,8 +20,18 @@
                 {% if user.is_authenticated and user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
                 <li><a href="/admin">Admin</a></li>
                 {% endif %}
-                <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
 
+                <!-- Ajout du lien vers les notifications -->
+                {% if user.is_authenticated %}
+                <li class="nav-item notification-indicator">
+                    <a href="{% url 'notifications' %}">
+                        <i class="icon-bell"></i>
+                        <span class="notification-icon-badge"></span>
+                    </a>
+                </li>
+                {% endif %}
+
+                <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
             </ul>
         </nav>
 
@@ -93,26 +103,35 @@
         {% if is_admin or is_directeur or is_chef_infirmier or is_infirmier or is_menage or is_retraite %}
         <div class="card">
             <h2>Objets connectés</h2>
-            <a href="{% url 'index' %}" class="btn">Gérer ou consulter</a>
+            <a href="{% url 'objets' %}" class="btn">Gérer ou consulter</a>
         </div>
         {% endif %}
 
-        {% if is_admin or is_directeur or is_medical %}
+        <!-- Modifier cette section pour le système d'alertes -->
+        {% if is_admin or is_directeur or is_chef_infirmier or is_infirmier or is_aide_soignant %}
         <div class="card">
-            <h2>Alertes d'urgence</h2>
-            <a href="{% url 'index' %}" class="btn">Voir les alertes</a>
+            <h2>Alertes et surveillance</h2>
+            <a href="{% url 'alertes_dashboard' %}" class="btn">Voir les alertes</a>
         </div>
         {% endif %}
 
         {% if is_visiteur_resident %}
         <div class="card">
             <h2>Mes visites</h2>
-            <a href="{% url 'index' %}" class="btn">Réserver / Modifier</a>
+            <a href="{% url 'reservation_visite' %}" class="btn">Réserver / Modifier</a>
         </div>
         {% elif is_reception %}
         <div class="card">
             <h2>Accueil des visiteurs</h2>
             <a href="{% url 'index' %}" class="btn">Gérer les entrées</a>
+        </div>
+        {% endif %}
+
+        <!-- Ajout d'une section pour voir les dernières notifications -->
+        {% if user.is_authenticated %}
+        <div class="card">
+            <h2>Mes notifications</h2>
+            <a href="{% url 'notifications' %}" class="btn">Voir toutes les notifications</a>
         </div>
         {% endif %}
     </main>
@@ -121,5 +140,13 @@
         <p>© 2025 Vitalia. Tous droits réservés.</p>
     </footer>
 
+    <!-- Ajout du script de notifications -->
+    <script src="{% static 'vitalia_app/js/notifications.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser le système de notifications
+            initNotificationSystem();
+        });
+    </script>
 </body>
 </html>

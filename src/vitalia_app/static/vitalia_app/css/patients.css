@@ -1,0 +1,189 @@
+:root {
+  --fond:    #F9F5EC;
+  --nav:     #A8BCA1;
+  --section: #F2E8CF;
+  --texte:   #2E2E2E;
+  --accent:  #a4c39d;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', 'Roboto', sans-serif;
+  background-color: var(--fond);
+  color: var(--texte);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ---------------- HEADER ---------------- */
+
+header {
+  background-color: var(--nav);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo a {
+  font-family: 'Rufina', serif;
+  font-size: 1.8rem;
+  color: var(--texte);
+  text-decoration: none;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+}
+
+nav a {
+  text-decoration: none;
+  color: var(--texte);
+  font-weight: 500;
+  padding: .25rem;
+  transition: color .2s, border-bottom .2s;
+}
+
+nav a:hover,
+nav a.active {
+  color: #fff;
+  border-bottom: 2px solid #fff;
+}
+
+/* ---------------- CONTENEUR ---------------- */
+
+main.container {
+  flex: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* ---------------- PAGE HEADER ---------------- */
+
+.page-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.page-header h1 {
+  font-family: 'Rufina', serif;
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+/* ---------------- TABLE CARD ---------------- */
+
+.table-card {
+  width: 100%;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 20px;
+  margin-bottom: 2rem;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead th {
+  background-color: var(--section);
+  text-align: left;
+  padding: 1rem;
+  font-weight: bold;
+}
+
+tbody td {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+/* ---------------- BOUTONS D'ACTION ---------------- */
+
+.td-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.btn-outline,
+.btn-secondary,
+.btn-assigner {
+  padding: 6px 12px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-outline {
+  border: 1px solid var(--accent);
+  background-color: #fff;
+  color: var(--accent);
+}
+
+.btn-outline:hover {
+  background-color: var(--accent);
+  color: #fff;
+}
+
+.btn-secondary {
+  background-color: var(--section);
+  color: var(--texte);
+  border: none;
+}
+
+.btn-secondary:hover {
+  background-color: #e2d5b8;
+}
+
+.btn-assigner {
+  background-color: var(--accent);
+  color: white;
+  border: none;
+}
+
+.btn-assigner:hover {
+  background-color: #7da77c;
+}
+
+/* ---------------- FOOTER ---------------- */
+
+.footer {
+  background-color: var(--nav);
+  color: #222;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  font-size: 14px;
+  margin-top: auto;
+}
+
+.footer-right {
+  font-style: italic;
+}
+td.td-actions {
+  white-space: nowrap;
+}

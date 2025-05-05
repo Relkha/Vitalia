@@ -18,6 +18,8 @@
         <li><a href="/a_propos">À propos</a></li>
         <li><a href="/services">Nos services</a></li>
         <li><a href="/contact">Contact</a></li>
+        <li><a href="{% url 'dossiers_medical' %}" class="active">Soins</a></li>
+
         {% if user.is_authenticated and user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
         <li><a href="/admin">Admin</a></li>
         {% endif %}
