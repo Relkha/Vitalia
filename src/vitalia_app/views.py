@@ -91,6 +91,9 @@ def deconnexion(request):
     logout(request)
     return render(request, 'deconnexion.html')
 
+def nos_services(request):
+    return render(request, 'nos_services.html')
+
 def connexion(request):
     if request.method == "POST":
         form = ConnexionForm(request.POST)

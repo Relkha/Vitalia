@@ -18,7 +18,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
 from vitalia_app import views
-from vitalia_app.views import index, propos, contact, connexion, message_admin, dashboard, connected_objects, event_list, planning_events_api, liste_chambres, connected_objects, surveillance_view
+from vitalia_app.views import index, propos, contact, connexion, message_admin, dashboard, connected_objects, event_list, planning_events_api, liste_chambres, connected_objects, surveillance_view, nos_services
 
 urlpatterns = [
     path('admin/', admin.site.urls, name = 'admin'),
@@ -43,6 +43,7 @@ urlpatterns = [
     path('objets/', connected_objects, name='objets'),
     path('', include('vitalia_app.urls')),
     path('surveillance/', surveillance_view, name='surveillance'),
+    path('services/', nos_services, name = 'services'),
 ]
 
 
