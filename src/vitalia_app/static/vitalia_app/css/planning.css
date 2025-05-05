@@ -201,7 +201,7 @@ h1 {
   }
 }
 
-/* Styles existants pour les événements */
+/* Styles existants pour les éléments généraux */
 .card {
   background-color: var(--section);
   border: 1px solid var(--bordure);
@@ -254,8 +254,10 @@ footer a {
   text-decoration: underline;
 }
 
-/* Styles pour tous les événements */
-.e-schedule .e-appointment {
+/* Styles pour les plannings individuels */
+.planning-individuel .e-schedule .e-appointment,
+.planning-individuel .e-schedule .e-appointment-container .e-appointment,
+.planning-individuel .e-schedule .e-agenda-view .e-appointment {
   background-color: #ffffff !important;
   border: 1px solid #e5e7eb !important;
   color: #2e2e2e !important;
@@ -263,61 +265,47 @@ footer a {
   transition: all 0.2s ease;
 }
 
-.e-schedule .e-appointment:hover {
+.planning-individuel .e-schedule .e-appointment:hover,
+.planning-individuel .e-schedule .e-appointment-container .e-appointment:hover,
+.planning-individuel .e-schedule .e-agenda-view .e-appointment:hover {
   background-color: #f3f4f6 !important;
   border-color: #d1d5db !important;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.e-schedule .e-appointment .e-subject {
+.planning-individuel .e-schedule .e-appointment .e-subject {
   font-weight: 600;
   color: #2e2e2e;
 }
 
-/* Style spécifique pour les visites */
-.e-schedule .e-appointment.e-appointment-visit,
-.e-schedule .e-appointment[data-subject="Visite"] {
+/* Style spécifique pour les visites dans les plannings individuels*/
+.planning-individuel .e-schedule .e-appointment[data-subject="Visite"],
+.planning-individuel .e-schedule .e-appointment-container .e-appointment[data-subject="Visite"],
+.planning-individuel .e-schedule .e-agenda-view .e-appointment[data-subject="Visite"] {
   background-color: #ffffff !important;
   border-left: 4px solid #3b82f6 !important;
 }
 
-.e-schedule .e-appointment.e-appointment-visit:hover,
-.e-schedule .e-appointment[data-subject="Visite"]:hover {
-  background-color: #f3f4f6 !important;
-}
-
-/* Styles pour la vue Agenda */
-.e-schedule .e-agenda-view .e-appointment {
+/* Styles globaux pour tous les plannings sauf les plannings individuels */
+:not(.planning-individuel) .e-schedule .e-agenda-view .e-appointment {
   padding: 12px 16px;
   margin: 8px 0;
   border-radius: 8px;
-  background-color: #ffffff !important;
-  border: 1px solid #e5e7eb !important;
-  border-left: 4px solid #a8bca1 !important;
   transition: all 0.2s ease;
 }
 
-.e-schedule .e-agenda-view .e-appointment:hover {
-  background-color: #f3f4f6 !important;
-  border-color: #d1d5db !important;
+:not(.planning-individuel) .e-schedule .e-agenda-view .e-appointment:hover {
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.e-schedule .e-agenda-view .e-appointment.e-appointment-visit,
-.e-schedule .e-agenda-view .e-appointment[data-subject="Visite"] {
-  border-left: 4px solid #3b82f6 !important;
-  background-color: #ffffff !important;
-}
-
-.e-schedule .e-agenda-view .e-subject {
+:not(.planning-individuel) .e-schedule .e-agenda-view .e-subject {
   font-weight: 600;
   font-size: 16px;
-  color: #2e2e2e;
   margin-bottom: 4px;
 }
 
-.e-schedule .e-agenda-view .e-time {
+:not(.planning-individuel) .e-schedule .e-agenda-view .e-time {
   font-size: 14px;
   color: #6b7280;
 }
@@ -377,35 +365,36 @@ footer a {
   border-color: #e5e7eb !important;
 }
 
-/* Style pour les événements dans les autres vues */
-.e-schedule .e-appointment-container .e-appointment {
-  background-color: #ffffff !important;
-  border: 1px solid #e5e7eb !important;
-  border-left: 4px solid #a8bca1 !important;
+/* Styles spécifiques pour plannings multi-utilisateurs */
+.planning-multi .e-schedule .e-appointment {
+  text-align: center;
+  font-weight: 500 !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s ease !important;
 }
 
-.e-schedule .e-appointment-container .e-appointment:hover {
-  background-color: #f3f4f6 !important;
+.planning-multi .e-schedule .e-appointment:hover {
+  opacity: 0.9 !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
 }
 
-.e-schedule .e-appointment-container .e-appointment.e-appointment-visit,
-.e-schedule .e-appointment-container .e-appointment[data-subject="Visite"] {
-  border-left: 4px solid #3b82f6 !important;
-  background-color: #ffffff !important;
+.planning-multi .e-schedule .e-appointment .e-subject {
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* Forcer le fond blanc pour tous les événements */
-.e-schedule .e-appointment,
-.e-schedule .e-appointment-container .e-appointment,
-.e-schedule .e-agenda-view .e-appointment {
-  background-color: #ffffff !important;
+.employe-event {
+  opacity: 1 !important;
+  z-index: 10 !important;
 }
 
-/* Forcer le fond gris clair au survol */
-.e-schedule .e-appointment:hover,
-.e-schedule .e-appointment-container .e-appointment:hover,
-.e-schedule .e-agenda-view .e-appointment:hover {
-  background-color: #f3f4f6 !important;
+.planning-multi .e-schedule .e-appointment .e-subject,
+.planning-multi .e-schedule .e-appointment .e-time,
+.planning-multi .e-schedule .e-appointment .e-location,
+.planning-multi .e-schedule .e-appointment .e-description {
+  color: #ffffff !important;
+  text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3) !important;
 }
 
 /* Amélioration de la navigation mobile avec menu burger */

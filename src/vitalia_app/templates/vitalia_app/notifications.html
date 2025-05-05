@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  {% load static %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitalia - Mes notifications</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'vitalia_app/css/notifications.css' %}">
+</head>
+<body>
+
+<header>
+  <div class="logo">Vitalia</div>
+  <button class="mobile-menu-button">☰</button>
+  <nav>
+    <ul>
+      <li><a href="/">Accueil</a></li>
+      <li><a href="/a_propos">À propos</a></li>
+      <li><a href="#">Nos services</a></li>
+      <li><a href="/contact">Contact</a></li>
+      {% if user.is_authenticated and user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
+      <li><a href="/admin">Admin</a></li>
+      {% endif %}
+      {% if user.is_authenticated and user.groups.first.name != "Visiteur du site" %}
+      <li><a href="{%url 'dashboard'%}">Dashboard</a></li>
+      {% endif %}
+      {% if user.is_authenticated %}
+      <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
+      {% else %}
+      <li><a href="{% url 'connexion' %}">Connexion</a></li>
+      {% endif %}
+      {% if is_admin or is_directeur or is_chef_infirmier or is_infirmier or is_aide_soignant %}
+      <li class="nav-item notification-indicator">
+        <a href="{% url 'notifications' %}">
+      <i class="icon-bell"></i>
+    <span class="notification-icon-badge"></span></a></li>
+      {% endif %}
+
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <h1>Mes Notifications</h1>
+
+  <div class="notifications-container">
+    {% if notifications %}
+      <div class="notification-list">
+        {% for notification in notifications %}
+          <div class="notification-card {% if not notification.is_read %}unread{% endif %}" data-type="{{ notification.type }}">
+            <div class="notification-icon">
+              {% if notification.type == 'medical' %}
+                <i class="icon-medical"></i>
+              {% elif notification.type == 'security' %}
+                <i class="icon-security"></i>
+              {% elif notification.type == 'environmental' %}
+                <i class="icon-environmental"></i>
+              {% elif notification.type == 'device' %}
+                <i class="icon-device"></i>
+              {% else %}
+                <i class="icon-system"></i>
+              {% endif %}
+            </div>
+            <div class="notification-content">
+              <h3>{{ notification.title }}</h3>
+              <p>{{ notification.message }}</p>
+              <div class="notification-meta">
+                <span class="notification-time">{{ notification.created_at|date:"d/m/Y H:i" }}</span>
+                <span class="notification-type">{{ notification.get_type_display }}</span>
+              </div>
+            </div>
+            {% if notification.related_url %}
+              <div class="notification-actions">
+                <a href="{{ notification.related_url }}" class="btn-action">Voir détails</a>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="pagination">
+        {% if notifications.has_previous %}
+          <a href="?page={{ notifications.previous_page_number }}" class="pagination-prev">Précédent</a>
+        {% endif %}
+
+        <span class="pagination-current">
+          Page {{ notifications.number }} sur {{ notifications.paginator.num_pages }}
+        </span>
+
+        {% if notifications.has_next %}
+          <a href="?page={{ notifications.next_page_number }}" class="pagination-next">Suivant</a>
+        {% endif %}
+      </div>
+
+    {% else %}
+      <div class="no-notifications">
+        <img src="{% static 'vitalia_app/img/no-notifications.svg' %}" alt="Aucune notification">
+        <p>Vous n'avez pas de notification pour le moment</p>
+      </div>
+    {% endif %}
+  </div>
+</main>
+
+<footer>
+  <p>&copy; 2025 Vitalia. Tous droits réservés. Projet CY Tech.</p>
+  <p><small>Conçu avec bienveillance et modernité.</small></p>
+</footer>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const menuButton = document.querySelector('.mobile-menu-button');
+    const nav = document.querySelector('nav');
+
+    if (menuButton) {
+      menuButton.addEventListener('click', function() {
+        nav.classList.toggle('active');
+      });
+    }
+  });
+
+  // Système de notifications en temps réel
+function initNotificationSystem() {
+  // Vérifier les nouvelles notifications toutes les 30 secondes
+  checkForNewNotifications();
+
+  let notificationInterval = setInterval(checkForNewNotifications, 30000);
+
+  window.addEventListener('beforeunload', () => {
+    clearInterval(notificationInterval);
+  });
+
+  createNotificationContainer();
+
+  function checkForNewNotifications() {
+    fetch('/api/notifications/unread/')
+      .then(response => response.json())
+      .then(data => {
+        // Mettre à jour le compteur de notifications
+        updateNotificationCounter(data.count);
+
+        // Afficher les nouvelles notifications
+        if (data.notifications && data.notifications.length > 0) {
+          // Trier par ordre chronologique inversé
+          const sortedNotifications = data.notifications.sort((a, b) =>
+            new Date(b.created_at) - new Date(a.created_at)
+          );
+
+          // N'afficher que les 3 plus récentes notifications
+          sortedNotifications.slice(0, 3).forEach(notification => {
+            showNotificationPopup(notification);
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Erreur lors de la vérification des notifications:', error);
+      });
+  }
+
+  function updateNotificationCounter(count) {
+    // Mettre à jour l'icône de notification dans la barre de navigation
+    const notifIcon = document.querySelector('.notification-icon-badge');
+
+    if (notifIcon) {
+      if (count > 0) {
+        notifIcon.textContent = count > 99 ? '99+' : count;
+        notifIcon.classList.add('has-notifications');
+      } else {
+        notifIcon.textContent = '';
+        notifIcon.classList.remove('has-notifications');
+      }
+    }
+</script>
+</body>
+</html>

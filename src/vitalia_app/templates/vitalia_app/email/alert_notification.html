@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alerte Vitalia</title>
+  <style>
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">Vitalia</div>
+    </div>
+
+    <div class="content">
+      <h2>Bonjour {{ user.first_name }},</h2>
+
+      <p>Une nouvelle alerte a été détectée dans le système Vitalia et nécessite votre attention.</p>
+
+      <div class="alert-{{ alert.priority }}">
+        <h3>{{ alert.title }}</h3>
+        <p><strong>Priorité :</strong> {{ alert.get_priority_display }}</p>
+        <p><strong>Type :</strong> {{ alert.get_type_display }}</p>
+        <p><strong>Date :</strong> {{ alert.created_at|date:"d/m/Y H:i" }}</p>
+        <p><strong>Description :</strong> {{ alert.description }}</p>
+
+        {% if alert.device %}
+          <p><strong>Appareil :</strong> {{ alert.device.name }} ({{ alert.device.location }})</p>
+        {% endif %}
+
+        {% if alert.resident %}
+          <p><strong>Résident concerné :</strong> {{ alert.resident.user.first_name }} {{ alert.resident.user.last_name }}</p>
+        {% endif %}
+      </div>
+
+      <p>Veuillez prendre les mesures appropriées pour résoudre cette alerte.</p>
+
+      <a href="{{ alert_url }}" class="btn">Voir les détails de l'alerte</a>
+      <br>
+      <a href="{{ dashboard_url }}" class="btn" style="background-color: #6b7280;">Tableau de bord des alertes</a>
+    </div>
+
+    <div class="footer">
+      <p>Ce message a été envoyé automatiquement par le système Vitalia. Veuillez ne pas répondre à cet e-mail.</p>
+      <p>&copy; 2025 Vitalia. Tous droits réservés.</p>
+    </div>
+  </div>
+</body>
+</html>
