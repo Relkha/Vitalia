@@ -1,1 +1,16 @@
+# Environnement virtuel Python
 .env/
+venv/
+env/
+
+# Fichiers IDE
+.idea/
+
+# Fichiers Python compilés
+_pycache_/
+*.pyc
+*.pyo
+*.pyd
+
+# Fichiers de configuration locaux
+*.local
