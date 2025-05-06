@@ -36,13 +36,6 @@
 
     </header>
     <!NE PAS OUBLIER DE MODIFIER TOUS LES URL DE REDIRECTION>
-    <main class="container mt-4">
-        <h2>Bienvenue, {{ user.username }} ({{ role }})</h2>
-            {% endif %}
-            <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
-        </ul>
-    </nav>
-</header>
 
 <main class="container mt-4">
     <h2>Bienvenue, {{ user.username }} ({{ role }})</h2>
@@ -135,12 +128,12 @@
         </div>
         {% endif %}
 
-    {% if is_admin or is_directeur or is_chef_infirmier or is_infirmier or is_menage or is_retraite %}
-    <div class="card">
-        <h2>Objets connectés</h2>
-        <a href="{% url 'index' %}" class="btn">Gérer ou consulter</a>
-    </div>
-    {% endif %}
+        {% if is_admin or is_directeur or is_chef_infirmier or is_infirmier or is_menage or is_retraite %}
+        <div class="card">
+            <h2>Objets connectés</h2>
+            <a href="{% url 'index' %}" class="btn">Gérer ou consulter</a>
+        </div>
+        {% endif %}
 
         <!-- Modifier cette section pour le système d'alertes -->
         {% if is_admin or is_directeur or is_chef_infirmier or is_infirmier or is_aide_soignant %}
@@ -157,39 +150,39 @@
             <a href="{% url 'notifications' %}" class="btn">Voir toutes les notifications</a>
         </div>
         {% endif %}
-    </main>
-    {% if is_visiteur_resident %}
-    <div class="card">
-        <h2>Mes visites</h2>
-        <a href="{% url 'reservation_visite' %}" class="btn">Réserver / Modifier</a>
-    </div>
-    {% elif is_retraite %}
-    <div class="card">
-        <h2>Visites programmées</h2>
-        <a href="{% url 'reservation_visite' %}" class="btn">Voir les horaires</a>
-    </div>
-    {% elif is_reception %}
-    <div class="card">
-        <h2>Accueil des visiteurs</h2>
-        <a href="{% url 'dashboard' %}" class="btn">Gérer les entrées</a>
-    </div>
-    {% endif %}
+        </main>
+        {% if is_visiteur_resident %}
+        <div class="card">
+            <h2>Mes visites</h2>
+            <a href="{% url 'reservation_visite' %}" class="btn">Réserver / Modifier</a>
+        </div>
+        {% elif is_retraite %}
+        <div class="card">
+            <h2>Visites programmées</h2>
+            <a href="{% url 'reservation_visite' %}" class="btn">Voir les horaires</a>
+        </div>
+        {% elif is_reception %}
+        <div class="card">
+            <h2>Accueil des visiteurs</h2>
+            <a href="{% url 'dashboard' %}" class="btn">Gérer les entrées</a>
+        </div>
+        {% endif %}
 
-    {# AJOUT des NOUVELLES CARTES SURVEILLANCE + RÉSERVATION #}
+        {# AJOUT des NOUVELLES CARTES SURVEILLANCE + RÉSERVATION #}
 
-    {% if is_reception or is_directeur or is_responsable_site or is_infirmier or is_retraite %}
-    <div class="card">
-        <h2>Surveillance</h2>
-        <a href="{% url 'surveillance' %}" class="btn">Accéder aux caméras</a>
-    </div>
-    {% endif %}
+        {% if is_reception or is_directeur or is_responsable_site or is_infirmier or is_retraite %}
+        <div class="card">
+            <h2>Surveillance</h2>
+            <a href="{% url 'surveillance' %}" class="btn">Accéder aux caméras</a>
+        </div>
+        {% endif %}
 
-    {% if is_reception or is_visiteur_resident or is_retraite %}
-    <div class="card">
-        <h2>Réservations de visites</h2>
-        <a href="{% url 'reservation_visite' %}" class="btn">Voir / Réserver</a>
-    </div>
-    {% endif %}
+        {% if is_reception or is_visiteur_resident or is_retraite %}
+        <div class="card">
+            <h2>Réservations de visites</h2>
+            <a href="{% url 'reservation_visite' %}" class="btn">Voir / Réserver</a>
+        </div>
+        {% endif %}
 
 </main>
 

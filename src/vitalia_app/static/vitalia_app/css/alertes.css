@@ -295,7 +295,7 @@
 }
 
 /* Icônes pour les types d'alertes */
-.icon-medical, .icon-security, .icon-environmental, .icon-device {
+.icon-medical, .icon-security, .icon-environmental, .icon-device, .icon-system{
   width: 24px;
   height: 24px;
   background-size: contain;

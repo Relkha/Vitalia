@@ -38,6 +38,14 @@ from .forms import EvenementForm
 import logging
 from datetime import date
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.models import User, Group
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse, HttpResponseForbidden
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from .models import DossierMedical
+from .forms import DossierMedicalForm
 
 
 User = get_user_model()
@@ -151,15 +159,6 @@ def group_required(*group_names):
 
 
 #Ajout
-from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.models import User, Group
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse, HttpResponseForbidden
-from django.template.loader import get_template
-from xhtml2pdf import pisa
-
-from .models import DossierMedical
-from .forms import DossierMedicalForm
 
 
 # === LISTE DES DOSSIERS MÉDICAUX ===
@@ -391,33 +390,6 @@ def dashboard(request):
         "is_medical": role in ["Infirmier", "Chef des infirmiers", "Aide-soignant"],
         "can_manage_visites": role in ["Réceptionniste", "Visiteur des résidents", "Retraité"],
     }
-    recent_alerts = []
-
-    user_groups = request.user.groups.values_list('name', flat=True)
-
-    # Déterminer les types d'alertes à afficher selon le rôle
-    alert_types = []
-    if any(group in ['Infirmier', 'Chef des infirmiers', 'Aide-soignant'] for group in user_groups):
-        alert_types.append('medical')
-    if any(group in ['Responsable du site', 'Directeur'] for group in user_groups):
-        alert_types.extend(['security', 'environmental', 'device'])
-
-    # Si l'utilisateur a des types d'alertes à afficher
-    if alert_types:
-        recent_alerts = Alert.objects.filter(
-            type__in=alert_types,
-            status__in=['new', 'in-progress']
-        ).order_by('-priority', '-created_at')[:5]
-
-    context = {
-        # ... votre contexte existant ...
-        'recent_alerts': recent_alerts,
-        'high_priority_alerts_count': Alert.objects.filter(
-            priority='high',
-            status__in=['new', 'in-progress']
-        ).count(),
-    }
-
     if role == "Visiteur du site":
         return render(request, "index.html", context)
     else:

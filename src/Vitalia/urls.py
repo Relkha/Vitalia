@@ -53,11 +53,6 @@ urlpatterns = [
     path('notifications/', views.notifications, name='notifications'),
     path('api/notifications/unread/', views.unread_notifications, name='unread_notifications'),
     path('generate-test-alert/', views.generate_test_alert, name='generate_test_alert'),
-    path('deconnexion/', LogoutView.as_view(next_page='/'), name='deconnexion'),
-
 ]
 
-]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import Group
-from vitalia_app.models.chambre import Chambre
+from .Chambre import Chambre
 
 class PermissionType(models.Model):
     code = models.CharField(max_length=50, unique=True)
