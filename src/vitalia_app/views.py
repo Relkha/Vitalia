@@ -31,11 +31,13 @@ from .models.Chambre import Chambre
 from .models.Evenement import Evenement
 from .models.planning_infirmier import PlanningEventInfirmier
 from .models.Alertes import Alert, Notification, AlertHistory
+from .models.ObjectData import ObjectData
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import EventSerializer
 from .forms import EvenementForm
 import logging
+import random
 from datetime import date
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, permission_required
@@ -1067,3 +1069,416 @@ def generate_test_alert(request):
         return redirect('generate_test_alert')
 
     return render(request, 'vitalia_app/generate_test_alert.html')
+
+
+
+
+@login_required
+def resident_connected_objects(request):
+    user = request.user
+
+    # Vérifier si l'utilisateur est un résident
+    if not user.groups.filter(name="Retraité").exists():
+        messages.error(request, "Accès non autorisé.")
+        return redirect('dashboard')
+
+    # Vérifier si le résident est assigné à une chambre
+    try:
+        chambre = Chambre.objects.get(resident=user)
+    except Chambre.DoesNotExist:
+        messages.error(request, "Vous n'êtes pas assigné à une chambre.")
+        return redirect('dashboard')
+
+    # Récupérer les objets connectés de la chambre
+    objets_connectes = ConnectedObject.objects.filter(room=chambre)
+
+    # Préparer les données initiales pour l'affichage
+    objects_data = {}
+
+    for obj in objets_connectes:
+        # Gérer spécifiquement les thermostats
+        if obj.type == 'thermostat':
+            try:
+                # Récupérer directement depuis la base de données pour éviter tout problème de cache
+                thermostat_data = ObjectData.objects.get(connected_object=obj)
+                if thermostat_data.numeric_value is not None:
+                    obj.current_temp = thermostat_data.numeric_value
+                else:
+                    obj.current_temp = 21  # Valeur par défaut
+                    thermostat_data.numeric_value = 21
+                    thermostat_data.save()
+                print(f"Thermostat {obj.id}: température actuelle = {obj.current_temp}°C")
+            except ObjectData.DoesNotExist:
+                # Créer un enregistrement de données avec la valeur par défaut
+                thermostat_data = ObjectData.objects.create(
+                    connected_object=obj,
+                    numeric_value=21
+                )
+                obj.current_temp = 21
+                print(f"Nouveau thermostat {obj.id}: température par défaut = 21°C")
+
+        # Récupérer les données des capteurs
+        try:
+            # Récupérer ou créer les données pour chaque type de capteur
+            if obj.type == 'thermometer':
+                obj_data, created = ObjectData.objects.get_or_create(connected_object=obj)
+                if created or obj_data.numeric_value is None:
+                    temp = round(20 + 5 * random.random(), 1)
+                    obj_data.numeric_value = temp
+                    obj_data.save()
+
+                objects_data[obj.id] = {
+                    'type': 'temperature',
+                    'value': obj_data.numeric_value,
+                    'unit': '°C',
+                    'data': f"{obj_data.numeric_value}°C",
+                    'icon': 'temperature'
+                }
+
+            elif obj.type == 'air_quality_sensor':
+                obj_data, created = ObjectData.objects.get_or_create(connected_object=obj)
+                if created or obj_data.numeric_value is None:
+                    aqi = int(random.random() * 100)
+                    obj_data.numeric_value = aqi
+                    obj_data.save()
+
+                aqi = obj_data.numeric_value
+                quality = 'Bonne' if aqi < 50 else ('Moyenne' if aqi < 100 else 'Mauvaise')
+                color = 'green' if aqi < 50 else ('orange' if aqi < 100 else 'red')
+
+                objects_data[obj.id] = {
+                    'type': 'air-quality',
+                    'value': int(aqi),
+                    'unit': 'AQI',
+                    'data': f"{int(aqi)} AQI",
+                    'quality': quality,
+                    'color': color,
+                    'icon': 'air-quality'
+                }
+
+            elif obj.type == 'door_sensor':
+                obj_data, created = ObjectData.objects.get_or_create(connected_object=obj)
+                if created or obj_data.boolean_value is None:
+                    is_open = random.choice([True, False])
+                    obj_data.boolean_value = is_open
+                    obj_data.save()
+
+                is_open = obj_data.boolean_value
+
+                objects_data[obj.id] = {
+                    'type': 'door',
+                    'value': is_open,
+                    'data': 'Ouverte' if is_open else 'Fermée',
+                    'icon': 'door'
+                }
+
+            elif obj.type == 'presence_sensor':
+                obj_data, created = ObjectData.objects.get_or_create(connected_object=obj)
+                if created or obj_data.boolean_value is None:
+                    presence = random.choice([True, False])
+                    obj_data.boolean_value = presence
+                    obj_data.save()
+
+                presence = obj_data.boolean_value
+
+                objects_data[obj.id] = {
+                    'type': 'presence',
+                    'value': presence,
+                    'data': 'Présence détectée' if presence else 'Aucune présence',
+                    'icon': 'presence'
+                }
+
+        except Exception as e:
+            print(f"Erreur lors de la récupération des données pour l'objet {obj.id}: {e}")
+
+    # Contexte à passer au template
+    context = {
+        'chambre': chambre,
+        'objets_connectes': objets_connectes,
+        'objects_data': json.dumps(objects_data)
+    }
+
+    return render(request, 'vitalia_app/resident_objects.html', context)
+
+
+# Fonction d'exécution d'action sur un objet
+def execute_action(obj, action, temp_value=None):
+    """
+    Exécute une action sur un objet connecté et sauvegarde les données.
+    """
+    result = {
+        'object_id': obj.id,
+        'object_name': obj.name,
+        'action': action,
+        'timestamp': datetime.now().isoformat(),
+        'success': True
+    }
+
+    # Récupérer ou créer l'objet de données
+    obj_data, created = ObjectData.objects.get_or_create(connected_object=obj)
+
+    # Actions différentes selon le type d'objet
+    if action == 'read':
+        # Lecture de données existantes ou génération de nouvelles
+        if obj.type == 'thermometer':
+            # Si on n'a pas encore de données ou si elles sont vieilles, générer de nouvelles
+            if created or obj_data.numeric_value is None:
+                temperature = round(20 + 5 * random.random(), 1)
+                obj_data.numeric_value = temperature
+                obj_data.save()
+            else:
+                temperature = obj_data.numeric_value
+
+            print(f"Thermomètre ID {obj.id}: température {temperature}, enregistré: {obj_data.numeric_value}")
+
+            result['data'] = f"{temperature}°C"
+            result['message'] = f"Température actuelle : {temperature}°C"
+            result['value'] = temperature
+            result['unit'] = '°C'
+            result['icon'] = 'temperature'
+
+        elif obj.type == 'air_quality_sensor':
+            if created or obj_data.numeric_value is None:
+                aqi = int(random.random() * 100)
+                obj_data.numeric_value = aqi
+                obj_data.save()
+            else:
+                aqi = obj_data.numeric_value
+
+            result['data'] = f"{int(aqi)} AQI"
+            result['message'] = f"Qualité de l'air : {int(aqi)} AQI"
+            result['value'] = aqi
+            result['unit'] = 'AQI'
+            result['icon'] = 'air-quality'
+
+            # Ajouter une interprétation de la qualité de l'air
+            if aqi < 50:
+                result['quality'] = 'Bonne'
+                result['color'] = 'green'
+            elif aqi < 100:
+                result['quality'] = 'Moyenne'
+                result['color'] = 'orange'
+            else:
+                result['quality'] = 'Mauvaise'
+                result['color'] = 'red'
+
+        elif obj.type == 'door_sensor':
+            if created or obj_data.boolean_value is None:
+                is_open = random.choice([True, False])
+                obj_data.boolean_value = is_open
+                obj_data.save()
+            else:
+                is_open = obj_data.boolean_value
+
+            result['data'] = 'Ouverte' if is_open else 'Fermée'
+            result['message'] = f"La porte est actuellement {result['data'].lower()}"
+            result['value'] = is_open
+            result['icon'] = 'door'
+
+        elif obj.type == 'presence_sensor':
+            if created or obj_data.boolean_value is None:
+                presence_detected = random.choice([True, False])
+                obj_data.boolean_value = presence_detected
+                obj_data.save()
+            else:
+                presence_detected = obj_data.boolean_value
+
+            result['data'] = 'Présence détectée' if presence_detected else 'Aucune présence'
+            result['message'] = result['data']
+            result['value'] = presence_detected
+            result['icon'] = 'presence'
+
+        else:
+            result['data'] = "Données lues"
+            result['message'] = f"Lecture des données de {obj.name} effectuée"
+
+    elif action == 'power_on':
+        obj.status = 'active'
+        obj.save()
+
+        if obj.type == 'lighting':
+            result['message'] = f"Lumière allumée"
+            result['icon'] = 'lightbulb-on'
+        elif obj.type == 'thermostat':
+            result['message'] = f"Chauffage allumé"
+            result['icon'] = 'thermostat-on'
+        elif obj.type == 'shutters':
+            result['message'] = f"Volets ouverts"
+            result['icon'] = 'shutters-open'
+        else:
+            result['message'] = f"{obj.name} a été allumé"
+
+    elif action == 'power_off':
+        obj.status = 'inactive'
+        obj.save()
+
+        if obj.type == 'lighting':
+            result['message'] = f"Lumière éteinte"
+            result['icon'] = 'lightbulb-off'
+        elif obj.type == 'thermostat':
+            result['message'] = f"Chauffage éteint"
+            result['icon'] = 'thermostat-off'
+        elif obj.type == 'shutters':
+            result['message'] = f"Volets fermés"
+            result['icon'] = 'shutters-closed'
+        else:
+            result['message'] = f"{obj.name} a été éteint"
+
+    elif action == 'configure':
+        if obj.type == 'thermostat':
+            # Si une température est fournie, l'utiliser
+            if temp_value is not None:
+                try:
+                    temperature = float(temp_value)
+                    obj_data.numeric_value = temperature
+                    obj_data.save()
+
+                    # Log pour débogage
+                    print(f"Thermostat ID {obj.id}: configuré à {temperature}°C, sauvegardé dans la BD")
+
+                    result['message'] = f"Thermostat configuré à {temperature}°C"
+                    result['icon'] = 'thermostat-config'
+                    result['value'] = temperature
+                    result['unit'] = '°C'
+                except ValueError:
+                    result['success'] = False
+                    result['message'] = f"Valeur de température invalide"
+            else:
+                result['success'] = False
+                result['message'] = f"Aucune température spécifiée"
+        else:
+            result['message'] = f"Configuration de {obj.name} effectuée"
+
+    elif action == 'send_alert':
+        # Simulation d'envoi d'alerte (interphone d'urgence)
+        if obj.type == 'intercom':
+            result['message'] = f"Alerte envoyée via l'interphone d'urgence"
+            result['icon'] = 'alert'
+            # Dans un cas réel, on pourrait créer une alerte dans le système
+            # create_alert("Appel d'urgence", f"Un appel d'urgence a été lancé depuis la chambre {obj.room.numero}", "high", "security", obj, obj.room.resident)
+
+    return result
+
+
+# La vue pour contrôler un objet connecté
+@login_required
+@csrf_exempt
+def control_object(request, object_id):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Méthode non autorisée'}, status=405)
+
+    # Récupérer l'objet connecté
+    try:
+        obj = ConnectedObject.objects.get(id=object_id)
+    except ConnectedObject.DoesNotExist:
+        return JsonResponse({'error': 'Objet non trouvé'}, status=404)
+
+    # Vérifier si l'utilisateur est le résident de la chambre où se trouve l'objet
+    if not obj.room.resident == request.user:
+        return JsonResponse({'error': 'Vous n\'avez pas la permission de contrôler cet objet'}, status=403)
+
+    # Récupérer le type d'action demandée
+    action = request.POST.get('action')
+
+    # Récupérer la température pour le thermostat si disponible
+    temperature = request.POST.get('temperature')
+
+    # Pour débogage
+    if temperature:
+        print(f"Température reçue pour l'objet {object_id}: {temperature}")
+
+    # Vérifier si le type d'action est valide
+    try:
+        permission = PermissionType.objects.get(code=action)
+    except PermissionType.DoesNotExist:
+        return JsonResponse({'error': 'Action non valide'}, status=400)
+
+    # Exécuter l'action sur l'objet
+    result = execute_action(obj, action, temperature)
+
+    return JsonResponse({'success': True, 'result': result})
+@login_required
+@group_required("Responsable du site", "Directeur")
+def setup_connected_objects(request):
+    """
+    Crée les objets connectés pour toutes les chambres qui n'en ont pas encore
+    """
+    # Types d'objets à créer pour chaque chambre
+    object_types = [
+        {"name": "Thermostat intelligent", "type": "thermostat", "description": "Régle la température de la chambre"},
+        {"name": "Éclairage intelligent", "type": "lighting",
+         "description": "Permet d'ajuster la lumière de la chambre"},
+        {"name": "Volets électriques", "type": "shutters", "description": "Ouvre et ferme les volets de la chambre"},
+        {"name": "Capteur qualité de l'air", "type": "air_quality_sensor",
+         "description": "Mesure la pollution, l'humidité et le CO2"},
+        {"name": "Capteur de présence", "type": "presence_sensor",
+         "description": "Détecte les mouvements dans la chambre"},
+        {"name": "Capteur ouverture de porte", "type": "door_sensor",
+         "description": "Détecte si une porte est ouverte"},
+        {"name": "Thermomètre", "type": "thermometer", "description": "Capteur de température"}
+    ]
+
+    # Récupérer toutes les chambres
+    chambres = Chambre.objects.all()
+
+    # Compteurs pour le rapport
+    total_objets = 0
+    nouvelles_chambres = 0
+
+    for chambre in chambres:
+        # Vérifier si la chambre a déjà des objets
+        existing_objects = ConnectedObject.objects.filter(room=chambre)
+        existing_types = set(obj.type for obj in existing_objects)
+
+        has_new_objects = False
+
+        # Créer les objets manquants pour cette chambre
+        for obj_type in object_types:
+            if obj_type["type"] not in existing_types:
+                ConnectedObject.objects.create(
+                    name=f"{obj_type['name']} - Chambre {chambre.numero}",
+                    type=obj_type["type"],
+                    description=obj_type["description"],
+                    room=chambre,
+                    status="active"
+                )
+                total_objets += 1
+                has_new_objects = True
+
+        if has_new_objects:
+            nouvelles_chambres += 1
+
+    # Créer les permissions pour le groupe Retraité
+    retraite_group = Group.objects.get(name="Retraité")
+
+    # Définir quelles actions sont permises sur quels types d'objets
+    permission_mapping = {
+        "thermostat": ["read", "power_on", "power_off", "configure"],
+        "lighting": ["power_on", "power_off", "configure"],
+        "shutters": ["power_on", "power_off"],
+        "air_quality_sensor": ["read"],
+        "presence_sensor": ["read"],
+        "door_sensor": ["read"],
+        "thermometer": ["read"]
+    }
+
+    for obj in ConnectedObject.objects.all():
+        # Vérifier si une permission existe déjà
+        if not ObjectPermission.objects.filter(connected_object=obj, group=retraite_group).exists():
+            # Créer la permission
+            perm = ObjectPermission.objects.create(
+                connected_object=obj,
+                group=retraite_group
+            )
+
+            # Ajouter les types de permission appropriés
+            if obj.type in permission_mapping:
+                for perm_code in permission_mapping[obj.type]:
+                    try:
+                        perm_type = PermissionType.objects.get(code=perm_code)
+                        perm.permissions.add(perm_type)
+                    except PermissionType.DoesNotExist:
+                        pass
+
+    messages.success(request, f"{total_objets} objets connectés ont été créés pour {nouvelles_chambres} chambres.")
+    return redirect('liste_chambres')

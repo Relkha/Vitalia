@@ -1,0 +1,835 @@
+/* residents_objects.css - Version améliorée */
+:root {
+  --fond: #F9F5EC;
+  --nav-footer: #A8BCA1;
+  --texte: #2E2E2E;
+  --section: #F2E8CF;
+  --accent: #C3D8B2;
+  --danger: #E27D60;
+  --info: #84A59D;
+  --priority-high: #E27D60;
+  --priority-medium: #F2CC8F;
+  --priority-low: #84A59D;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
+  --transition-std: all 0.3s ease;
+  --border-radius: 12px;
+}
+
+/* Base Layout */
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--fond);
+  color: var(--texte);
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.mt-4 {
+  margin-top: 2rem;
+}
+
+/* Header and Navigation */
+header {
+  background-color: var(--nav-footer);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+}
+
+header h1 {
+  font-family: 'Rufina', serif;
+  font-size: 1.8rem;
+  color: var(--texte);
+  margin: 0;
+}
+
+nav ul {
+  display: flex;
+  list-style: none;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+}
+
+nav a {
+  color: var(--texte);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: var(--transition-std);
+}
+
+nav a:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.notification-indicator {
+  position: relative;
+}
+
+.notification-icon-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: var(--danger);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+/* Main Content */
+main {
+  padding: 2rem 0;
+  min-height: calc(100vh - 140px);
+}
+
+main h2 {
+  font-family: 'Rufina', serif;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: var(--texte);
+  text-align: center;
+}
+
+/* Dashboard Sections */
+.dashboard-section {
+  margin-bottom: 3rem;
+}
+
+.dashboard-section h3 {
+  font-family: 'Rufina', serif;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--texte);
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 0.5rem;
+  position: relative;
+}
+
+.dashboard-section h3::after {
+  content: '';
+  display: block;
+  width: 50px;
+  height: 4px;
+  background-color: var(--accent);
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+}
+
+/* Info Card */
+.info-card {
+  background-color: var(--section);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  margin-bottom: 2.5rem;
+  box-shadow: var(--shadow-md);
+  border-left: 5px solid var(--accent);
+  transition: var(--transition-std);
+}
+
+.info-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-3px);
+}
+
+.info-card h3 {
+  margin-top: 0;
+  font-family: 'Rufina', serif;
+  color: var(--texte);
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.info-card h3::after {
+  display: none;
+}
+
+.info-card p {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.info-card p strong {
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+/* Objects Grid */
+.objets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 2rem;
+}
+
+/* Object Card */
+.objet-card {
+  background-color: white;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  transition: var(--transition-std);
+  border-top: 5px solid var(--section);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.objet-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+.objet-card.card-active {
+  border-top-color: var(--accent);
+}
+
+/* Priority Colors */
+.objet-card[data-type="thermometer"],
+.objet-card[data-type="air_quality_sensor"] {
+  border-top-color: var(--info);
+}
+
+.objet-card[data-type="door_sensor"],
+.objet-card[data-type="presence_sensor"] {
+  border-top-color: var(--priority-medium);
+}
+
+.objet-card[data-type="intercom"] {
+  border-top-color: var(--danger);
+}
+
+.objet-card[data-type="lighting"],
+.objet-card[data-type="thermostat"],
+.objet-card[data-type="shutters"] {
+  border-top-color: var(--accent);
+}
+
+/* Object Header */
+.objet-header {
+  background-color: rgba(0, 0, 0, 0.02);
+  padding: 1.2rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.objet-header h4 {
+  margin: 0;
+  font-family: 'Rufina', serif;
+  font-size: 1.2rem;
+  color: var(--texte);
+}
+
+.objet-status {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.status-active {
+  background-color: rgba(56, 161, 105, 0.15);
+  color: #2f855a;
+}
+
+.status-inactive {
+  background-color: rgba(160, 174, 192, 0.15);
+  color: #718096;
+}
+
+/* Object Body */
+.objet-body {
+  padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.objet-description {
+  margin-bottom: 1.2rem;
+  color: #4a5568;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.objet-data {
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+}
+
+/* Data Display */
+.data-display {
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  padding: 1.2rem;
+  margin: 0.5rem 0 1.5rem;
+  display: flex;
+  align-items: center;
+  box-shadow: var(--shadow-sm);
+  border-left: 4px solid var(--info);
+  position: relative;
+  overflow: hidden;
+}
+
+.data-display::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 100%);
+  pointer-events: none;
+}
+
+/* Data Display Types */
+.data-display.temperature {
+  border-left-color: #f59e0b;
+  background-color: rgba(245, 158, 11, 0.05);
+}
+
+.data-display.air-quality {
+  border-left-color: var(--info);
+  background-color: rgba(132, 165, 157, 0.05);
+}
+
+.data-display.door.open {
+  border-left-color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.05);
+}
+
+.data-display.door.closed {
+  border-left-color: #10b981;
+  background-color: rgba(16, 185, 129, 0.05);
+}
+
+.data-display.presence.detected {
+  border-left-color: #3b82f6;
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+.data-display.presence.none {
+  border-left-color: #9ca3af;
+  background-color: rgba(156, 163, 175, 0.05);
+}
+
+.data-icon {
+  font-size: 1.8rem;
+  margin-right: 1.2rem;
+  color: #4b5563;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+}
+
+.data-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.data-label {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-left: auto;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 0.3rem 0.7rem;
+  border-radius: 20px;
+}
+
+.data-quality {
+  margin-left: 1rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.data-quality.green {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.data-quality.orange {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.data-quality.red {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+/* Action Buttons */
+.objet-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: auto;
+}
+
+.btn-action {
+  padding: 0.7rem 1.2rem;
+  border-radius: 8px;
+  border: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-std);
+  flex: 1;
+  min-width: 120px;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-action i {
+  margin-right: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.btn-info {
+  background-color: var(--info);
+  color: white;
+}
+
+.btn-info:hover {
+  background-color: #73998d;
+}
+
+.btn-on {
+  background-color: var(--accent);
+  color: var(--texte);
+}
+
+.btn-on:hover {
+  background-color: #b3c9a2;
+  transform: translateY(-2px);
+}
+
+.btn-off {
+  background-color: #e2e8f0;
+  color: #4a5568;
+}
+
+.btn-off:hover {
+  background-color: #cbd5e0;
+  transform: translateY(-2px);
+}
+
+.btn-config {
+  background-color: var(--info);
+  color: white;
+}
+
+.btn-config:hover {
+  background-color: #73998d;
+  transform: translateY(-2px);
+}
+
+.btn-alert {
+  background-color: var(--danger);
+  color: white;
+  font-weight: 600;
+}
+
+.btn-alert:hover {
+  background-color: #e05d40;
+  transform: translateY(-2px);
+}
+
+/* Loading Animation */
+.action-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.action-btn.loading::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.7);
+  z-index: 1;
+}
+
+.action-btn.loading::before {
+  content: "";
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-top-color: var(--accent);
+  animation: spin 1s linear infinite;
+  z-index: 2;
+  top: calc(50% - 12px);
+  left: calc(50% - 12px);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Thermostat Control */
+.thermostat-control {
+  background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.temperature-display {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 1.2rem;
+  font-family: 'Inter', sans-serif;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(to right, #f59e0b, #ef4444);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+}
+
+.temperature-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.temp-button {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  font-size: 1.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-std);
+  box-shadow: var(--shadow-md);
+}
+
+.temp-up {
+  background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
+  color: white;
+}
+
+.temp-up:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+}
+
+.temp-down {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+}
+
+.temp-down:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+}
+
+.control-buttons {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* No Objects Message */
+.no-objects-message {
+  text-align: center;
+  padding: 3rem 2rem;
+  background-color: var(--section);
+  border-radius: var(--border-radius);
+  color: #718096;
+  font-style: italic;
+  box-shadow: var(--shadow-md);
+  max-width: 600px;
+  margin: 2rem auto;
+}
+
+/* Toast Container */
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  min-width: 300px;
+  max-width: 450px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  transform: translateX(120%);
+  opacity: 0;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+.toast.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.toast-content {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 18px;
+  border-left: 4px solid var(--accent);
+}
+
+.toast-info .toast-content {
+  border-left-color: var(--info);
+}
+
+.toast-success .toast-content {
+  border-left-color: var(--priority-low);
+}
+
+.toast-error .toast-content {
+  border-left-color: var(--priority-high);
+}
+
+.toast-message {
+  flex: 1;
+  font-size: 0.95rem;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #718096;
+  margin-left: 15px;
+  transition: color 0.2s;
+}
+
+.toast-close:hover {
+  color: #2d3748;
+}
+
+/* Footer */
+footer {
+  background-color: var(--nav-footer);
+  text-align: center;
+  padding: 1.5rem;
+  color: var(--texte);
+  margin-top: 3rem;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Media Queries */
+@media (max-width: 992px) {
+  .objets-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  header .container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  header h1 {
+    font-size: 1.6rem;
+  }
+
+  nav ul {
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .objets-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .temperature-display {
+    font-size: 2.5rem;
+  }
+
+  .temperature-buttons {
+    gap: 1.5rem;
+  }
+
+  .temp-button {
+    width: 42px;
+    height: 42px;
+  }
+
+  .data-display {
+    flex-direction: column;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .data-icon {
+    margin-right: 0;
+    margin-bottom: 0.8rem;
+  }
+
+  .data-label {
+    margin-left: 0;
+    margin-top: 0.5rem;
+  }
+
+  .data-quality {
+    margin-left: 0;
+    margin-top: 0.5rem;
+  }
+
+  .btn-action {
+    flex: 1 0 100%;
+  }
+
+  main h2 {
+    font-size: 1.6rem;
+  }
+
+  .toast {
+    min-width: auto;
+    max-width: calc(100vw - 40px);
+  }
+}
+
+@media (max-width: 576px) {
+  main {
+    padding: 1.5rem 0;
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+
+  .dashboard-section h3 {
+    font-size: 1.3rem;
+  }
+
+  .info-card {
+    padding: 1.2rem;
+  }
+
+  nav ul {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.8rem;
+  }
+
+  nav ul li {
+    margin: 0.2rem;
+  }
+
+  .objet-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.8rem;
+  }
+
+  .objet-status {
+    width: 100%;
+    text-align: center;
+  }
+
+  .temperature-display {
+    font-size: 2.2rem;
+  }
+
+  .btn-action {
+    font-size: 0.85rem;
+    padding: 0.6rem 1rem;
+  }
+}
+
+/* Icon Styles */
+.icon-temperature,
+.icon-air,
+.icon-door,
+.icon-presence,
+.icon-light-on,
+.icon-light-off,
+.icon-thermostat-on,
+.icon-thermostat-off,
+.icon-config,
+.icon-shutters-open,
+.icon-shutters-closed,
+.icon-emergency,
+.icon-read,
+.icon-power,
+.icon-power-off,
+.icon-bell {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background-size: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  vertical-align: middle;
+}
+
+/* Use emoji as placeholders for icons */
+.icon-temperature::before { content: '🌡️'; }
+.icon-air::before { content: '💨'; }
+.icon-door::before { content: '🚪'; }
+.icon-door-open::before { content: '🚪'; }
+.icon-door-closed::before { content: '🔒'; }
+.icon-presence::before { content: '👤'; }
+.icon-presence-detected::before { content: '👤'; }
+.icon-presence-none::before { content: '❓'; }
+.icon-light-on::before { content: '💡'; }
+.icon-light-off::before { content: '⚫'; }
+.icon-thermostat-on::before { content: '🔥'; }
+.icon-thermostat-off::before { content: '❄️'; }
+.icon-config::before { content: '⚙️'; }
+.icon-shutters-open::before { content: '⬆️'; }
+.icon-shutters-closed::before { content: '⬇️'; }
+.icon-emergency::before { content: '🚨'; }
+.icon-read::before { content: '📊'; }
+.icon-power::before { content: '⚡'; }
+.icon-power-off::before { content: '🔌'; }
+.icon-bell::before { content: '🔔'; }

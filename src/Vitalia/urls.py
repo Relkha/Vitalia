@@ -18,7 +18,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
 from vitalia_app import views
-from vitalia_app.views import index, propos, contact, connexion, message_admin, dashboard, connected_objects, event_list, planning_events_api, liste_chambres, connected_objects, surveillance_view, alertes_dashboard, alert_details, acknowledge_alert, resolve_alert, notifications, unread_notifications
+from vitalia_app.views import index, propos, contact, connexion, message_admin, dashboard, connected_objects, event_list, planning_events_api, liste_chambres, connected_objects, surveillance_view, alertes_dashboard, alert_details, acknowledge_alert, resolve_alert, notifications, unread_notifications, resident_connected_objects, control_object
 
 urlpatterns = [
     path('admin/', admin.site.urls, name = 'admin'),
@@ -53,6 +53,8 @@ urlpatterns = [
     path('notifications/', views.notifications, name='notifications'),
     path('api/notifications/unread/', views.unread_notifications, name='unread_notifications'),
     path('generate-test-alert/', views.generate_test_alert, name='generate_test_alert'),
+    path('mes-objets/', views.resident_connected_objects, name='resident_objects'),
+    path('api/objects/<int:object_id>/control/', views.control_object, name='control_object'),
 ]
 
 

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Mes Objets Connectés - Vitalia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'vitalia_app/css/resident_objects.css' %}">
+    <link rel="stylesheet" href="{% static 'vitalia_app/css/dashboard.css' %}">
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <h1>Vitalia - Mes Objets Connectés</h1>
+    </div>
+    <nav>
+        <ul>
+            <li><a href="{% url 'dashboard' %}">Tableau de bord</a></li>
+
+            {% if user.is_authenticated %}
+            <li class="nav-item notification-indicator">
+                <a href="{% url 'notifications' %}">
+                    <i class="icon-bell"></i>
+                    <span class="notification-icon-badge"></span>
+                </a>
+            </li>
+            {% endif %}
+
+            <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main class="container mt-4">
+    <h2>Chambre {{ chambre.numero }} - Mes Objets Connectés</h2>
+
+    <div class="dashboard-section">
+        <div class="info-card">
+            <h3>Informations sur la chambre</h3>
+            <p><strong>Numéro :</strong> {{ chambre.numero }}</p>
+            <p><strong>Statut :</strong> {{ chambre.get_statut_display }}</p>
+        </div>
+    </div>
+
+    <div class="dashboard-section">
+        <h3>Mes appareils</h3>
+
+        {% if objets_connectes %}
+            <div class="objets-grid">
+                {% for objet in objets_connectes %}
+                    <div class="objet-card {% if objet.status == 'active' %}card-active{% endif %}" data-id="{{ objet.id }}" data-type="{{ objet.type }}">
+                        <div class="objet-header">
+                            <h4>{{ objet.name }}</h4>
+                            <span class="objet-status {% if objet.status == 'active' %}status-active{% else %}status-inactive{% endif %}">
+                                {{ objet.status }}
+                            </span>
+                        </div>
+                        <div class="objet-body">
+                            <p class="objet-description">{{ objet.description }}</p>
+
+                            <div class="objet-data" id="data-{{ objet.id }}">
+                                <!--données-->
+                            </div>
+
+                            <!-- Interface spécifique selon le type d'objet -->
+                            <div class="objet-actions">
+                                {% if objet.type == 'thermometer' %}
+                                    <button class="btn btn-action btn-info action-btn" data-action="read" data-object="{{ objet.id }}">
+                                        <i class="icon-temperature"></i> Voir la température
+                                    </button>
+
+                                {% elif objet.type == 'air_quality_sensor' %}
+                                    <button class="btn btn-action btn-info action-btn" data-action="read" data-object="{{ objet.id }}">
+                                        <i class="icon-air"></i> Mesurer la qualité de l'air
+                                    </button>
+
+                                {% elif objet.type == 'door_sensor' %}
+                                    <button class="btn btn-action btn-info action-btn" data-action="read" data-object="{{ objet.id }}">
+                                        <i class="icon-door"></i> Vérifier la porte
+                                    </button>
+
+                                {% elif objet.type == 'presence_sensor' %}
+                                    <button class="btn btn-action btn-info action-btn" data-action="read" data-object="{{ objet.id }}">
+                                        <i class="icon-presence"></i> Détecter une présence
+                                    </button>
+
+                                {% elif objet.type == 'lighting' %}
+                                    <div class="control-buttons">
+                                        <button class="btn btn-action btn-on action-btn" data-action="power_on" data-object="{{ objet.id }}">
+                                            <i class="icon-light-on"></i> Allumer
+                                        </button>
+
+                                        <button class="btn btn-action btn-off action-btn" data-action="power_off" data-object="{{ objet.id }}">
+                                            <i class="icon-light-off"></i> Éteindre
+                                        </button>
+                                    </div>
+
+                                {% elif objet.type == 'thermostat' %}
+                                    <div class="thermostat-control">
+                                        <div class="temperature-display" id="temp-display-{{ objet.id }}">
+                                            {% if objet.current_temp %}{{ objet.current_temp }}{% else %}21{% endif %}°C
+                                        </div>
+                                        <div class="temperature-buttons">
+                                            <button class="temp-button temp-up" data-object="{{ objet.id }}">+</button>
+                                            <button class="temp-button temp-down" data-object="{{ objet.id }}">-</button>
+                                        </div>
+                                        <div class="control-buttons">
+                                            <button class="btn btn-action btn-on action-btn" data-action="power_on" data-object="{{ objet.id }}">
+                                                <i class="icon-thermostat-on"></i> Allumer
+                                            </button>
+
+                                            <button class="btn btn-action btn-off action-btn" data-action="power_off" data-object="{{ objet.id }}">
+                                                <i class="icon-thermostat-off"></i> Éteindre
+                                            </button>
+
+                                            <button class="btn btn-action btn-config action-btn" data-action="configure" data-object="{{ objet.id }}">
+                                                <i class="icon-config"></i> Appliquer
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                {% elif objet.type == 'shutters' %}
+                                    <div class="control-buttons">
+                                        <button class="btn btn-action btn-on action-btn" data-action="power_on" data-object="{{ objet.id }}">
+                                            <i class="icon-shutters-open"></i> Ouvrir
+                                        </button>
+
+                                        <button class="btn btn-action btn-off action-btn" data-action="power_off" data-object="{{ objet.id }}">
+                                            <i class="icon-shutters-closed"></i> Fermer
+                                        </button>
+                                    </div>
+
+                                {% elif objet.type == 'intercom' %}
+                                    <button class="btn btn-action btn-alert action-btn" data-action="send_alert" data-object="{{ objet.id }}">
+                                        <i class="icon-emergency"></i> Appel d'urgence
+                                    </button>
+
+                                {% else %}
+                                    <!-- Interface par défaut pour les autres types d'objets -->
+                                    <button class="btn btn-action btn-info action-btn" data-action="read" data-object="{{ objet.id }}">
+                                        <i class="icon-read"></i> Lire les données
+                                    </button>
+
+                                    <button class="btn btn-action btn-on action-btn" data-action="power_on" data-object="{{ objet.id }}">
+                                        <i class="icon-power"></i> Allumer
+                                    </button>
+
+                                    <button class="btn btn-action btn-off action-btn" data-action="power_off" data-object="{{ objet.id }}">
+                                        <i class="icon-power-off"></i> Éteindre
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="no-objects-message">Aucun objet connecté n'est associé à votre chambre.</p>
+        {% endif %}
+    </div>
+</main>
+
+<footer>
+    <p>© 2025 Vitalia. Tous droits réservés.</p>
+</footer>
+
+<div class="toast-container" id="toastContainer">
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialisation des données au chargement
+    const objectsData = {{ objects_data|safe|default:'{}' }};
+
+    // Parcourir les données et les afficher
+    for (const [objectId, data] of Object.entries(objectsData)) {
+        const dataElement = document.getElementById(`data-${objectId}`);
+        if (!dataElement) continue;
+
+        updateDataDisplay(objectId, data);
+    }
+
+    // Gestionnaire pour les boutons d'action
+    const actionButtons = document.querySelectorAll('.action-btn');
+
+    actionButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const objectId = this.getAttribute('data-object');
+            const action = this.getAttribute('data-action');
+
+            // Animation de chargement
+            this.classList.add('loading');
+
+            // Appel AJAX pour exécuter l'action
+            executeAction(objectId, action, this);
+        });
+    });
+
+    // Gestionnaire pour les boutons de température du thermostat
+    const tempUpButtons = document.querySelectorAll('.temp-up');
+    const tempDownButtons = document.querySelectorAll('.temp-down');
+
+    tempUpButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const objectId = this.getAttribute('data-object');
+            const displayElement = document.getElementById(`temp-display-${objectId}`);
+            let currentTemp = parseInt(displayElement.textContent);
+            if (isNaN(currentTemp)) currentTemp = 21;
+
+            if (currentTemp < 30) {
+                displayElement.textContent = `${currentTemp + 1}°C`;
+            }
+        });
+    });
+
+    tempDownButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const objectId = this.getAttribute('data-object');
+            const displayElement = document.getElementById(`temp-display-${objectId}`);
+            let currentTemp = parseInt(displayElement.textContent);
+            if (isNaN(currentTemp)) currentTemp = 21;
+
+            if (currentTemp > 15) {
+                displayElement.textContent = `${currentTemp - 1}°C`;
+            }
+        });
+    });
+
+    // Fonction pour exécuter une action sur un objet
+    function executeAction(objectId, action, buttonElement) {
+        const formData = new FormData();
+        formData.append('action', action);
+
+        // Pour le thermostat, ajouter la température configurée
+        if (action === 'configure' && buttonElement.closest('.thermostat-control')) {
+            const displayElement = document.getElementById(`temp-display-${objectId}`);
+            const tempText = displayElement.textContent;
+            // Extraire le nombre de la chaîne (enlever le °C)
+            const temperature = parseInt(tempText);
+
+            if (!isNaN(temperature)) {
+                console.log(`Envoi de la température pour l'objet ${objectId}: ${temperature}°C`);
+                formData.append('temperature', temperature);
+            } else {
+                console.error(`Valeur de température invalide: ${tempText}`);
+            }
+        }
+
+        fetch(`/api/objects/${objectId}/control/`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Supprimer l'animation de chargement
+            buttonElement.classList.remove('loading');
+
+            if (data.success) {
+                // Afficher le résultat de l'action
+                showToast(data.result.message, 'success');
+
+                // Mettre à jour les données affichées
+                if (data.result.data) {
+                    updateDataDisplay(objectId, data.result);
+                }
+
+                // Mettre à jour l'interface si nécessaire
+                updateObjectStatus(objectId, action);
+            } else {
+                showToast(data.error || 'Une erreur est survenue.', 'error');
+            }
+        })
+        .catch(error => {
+            // Supprimer l'animation de chargement
+            buttonElement.classList.remove('loading');
+
+            showToast('Une erreur est survenue lors de l\'exécution de l\'action.', 'error');
+            console.error('Error:', error);
+        });
+    }
+
+    // Fonction pour mettre à jour l'affichage des données
+    function updateDataDisplay(objectId, result) {
+        const dataElement = document.getElementById(`data-${objectId}`);
+        if (!dataElement) return;
+
+        let html = '';
+
+        // Affichage spécifique selon le type de données
+        if (result.icon === 'temperature') {
+            html = `
+                <div class="data-display temperature">
+                    <div class="data-icon"><i class="icon-temperature"></i></div>
+                    <div class="data-value">${result.value}${result.unit}</div>
+                    <div class="data-label">Température actuelle</div>
+                </div>
+            `;
+        } else if (result.icon === 'air-quality') {
+            html = `
+                <div class="data-display air-quality">
+                    <div class="data-icon"><i class="icon-air"></i></div>
+                    <div class="data-value">${result.value} ${result.unit}</div>
+                    <div class="data-quality ${result.color}">${result.quality}</div>
+                </div>
+            `;
+        } else if (result.icon === 'door') {
+            const doorStatus = result.value ? 'open' : 'closed';
+            html = `
+                <div class="data-display door ${doorStatus}">
+                    <div class="data-icon"><i class="icon-door-${doorStatus}"></i></div>
+                    <div class="data-value">${result.data}</div>
+                </div>
+            `;
+        } else if (result.icon === 'presence') {
+            const presenceStatus = result.value ? 'detected' : 'none';
+            html = `
+                <div class="data-display presence ${presenceStatus}">
+                    <div class="data-icon"><i class="icon-presence-${presenceStatus}"></i></div>
+                    <div class="data-value">${result.data}</div>
+                </div>
+            `;
+        } else {
+            // Affichage par défaut pour les autres types de données
+            html = `<div class="data-display general">
+                <div class="data-value">${result.data}</div>
+            </div>`;
+        }
+
+        dataElement.innerHTML = html;
+    }
+
+    // Fonction pour mettre à jour le statut visuel de l'objet
+    function updateObjectStatus(objectId, action) {
+        const card = document.querySelector(`.objet-card[data-id="${objectId}"]`);
+        const statusBadge = card.querySelector('.objet-status');
+
+        if (action === 'power_on') {
+            statusBadge.textContent = 'active';
+            statusBadge.classList.remove('status-inactive');
+            statusBadge.classList.add('status-active');
+        } else if (action === 'power_off') {
+            statusBadge.textContent = 'inactive';
+            statusBadge.classList.remove('status-active');
+            statusBadge.classList.add('status-inactive');
+        }
+    }
+
+    // Fonction pour afficher une notification toast
+    function showToast(message, type = 'info') {
+        const toastContainer = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `
+            <div class="toast-content">
+                <span class="toast-message">${message}</span>
+                <button class="toast-close">&times;</button>
+            </div>
+        `;
+
+        // Ajouter le toast au conteneur
+        toastContainer.appendChild(toast);
+
+        // Afficher le toast avec une animation
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 10);
+
+        // Configurer le bouton de fermeture
+        const closeButton = toast.querySelector('.toast-close');
+        closeButton.addEventListener('click', () => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                toast.remove();
+            }, 300);
+        });
+
+        // Fermer automatiquement après 5 secondes
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                }, 300);
+            }
+        }, 5000);
+    }
+
+    // Fonction pour récupérer le cookie CSRF
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+</script>
+</body>
+</html>
