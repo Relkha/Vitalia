@@ -1,0 +1,16 @@
+{% extends 'vitalia_app/base.html' %}
+{% load static %}
+
+{% block title %}Mot de passe réinitialisé{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'vitalia_app/css/mdp_oublie.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="container">
+  <h1>✅ Mot de passe modifié avec succès</h1>
+  <p>Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.</p>
+  <a href="{% url 'connexion' %}" class="btn">Se connecter</a>
+</main>
+{% endblock %}

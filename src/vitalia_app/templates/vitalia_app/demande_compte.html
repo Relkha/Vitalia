@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Demande de création de compte{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'vitalia_app/css/mon_profil.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="profil-container">
+  <h1>📄 Demande de création de compte</h1>
+
+  {% if success %}
+    <p class="success-message">Votre demande a été envoyée avec succès !</p>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">📩 Envoyer la demande</button>
+  </form>
+</div>
+{% endblock %}

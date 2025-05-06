@@ -2,9 +2,8 @@ from django import forms
 from .models.Evenement import Evenement
 from .models.Chambre import Chambre
 from django.contrib.auth.models import User
-
-
-#Ajout
+from django import forms
+from .models.Profil import Profil
 
 from .models import DossierMedical
 
@@ -92,3 +91,19 @@ class ChambreForm(forms.ModelForm):
             )
 
         return cleaned_data
+
+class ProfilForm(forms.ModelForm):
+    class Meta:
+        model = Profil
+        fields = ['photo']
+
+from django import forms
+
+class DemandeCompteForm(forms.Form):
+    nom = forms.CharField(max_length=100, required=True, label="Nom")
+    prenom = forms.CharField(max_length=100, required=True, label="Prénom")
+    email = forms.EmailField(required=True, label="Email")
+    raison = forms.CharField(widget=forms.Textarea, required=True, label="Raison de la demande")
+
+
+

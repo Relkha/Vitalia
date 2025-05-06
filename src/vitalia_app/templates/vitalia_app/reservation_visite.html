@@ -1,23 +1,13 @@
+{% extends 'vitalia_app/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Réservation de visite - Vitalia</title>
-    <link rel="stylesheet" href="{% static 'vitalia_app/css/reservation.css' %}">
-</head>
-<body>
 
-<header class="header">
-    <div class="logo">Vitalia</div>
-    <nav class="nav">
-        <a href="{% url 'index' %}">Accueil</a>
-        <a href="{% url 'dashboard' %}">Dashboard</a>
-        <a href="{% url 'reservation_visite' %}">Réserver une visite</a>
-        <a href="{% url 'deconnexion' %}">Déconnexion</a>
-    </nav>
-</header>
+{% block title %}Réservation de visite - Vitalia{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="{% static 'vitalia_app/css/reservation.css' %}">
+{% endblock %}
+
+{% block content %}
 <main class="main-content">
     <h1>Réservation des visites</h1>
 
@@ -74,10 +64,4 @@
         {% endif %}
     {% endif %}
 </main>
-
-<footer class="footer">
-    <p>© 2025 Vitalia. Tous droits réservés.</p>
-</footer>
-
-</body>
-</html>
+{% endblock %}

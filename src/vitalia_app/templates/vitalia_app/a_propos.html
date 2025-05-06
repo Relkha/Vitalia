@@ -1,89 +1,60 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  {% load static %}
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vitalia - À propos</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'vitalia_app/css/a_propos.css' %}">
-</head>
-<body>
-  <header>
-    <div class="logo">Vitalia</div>
-    <nav>
-      <ul>
-        <li><a href="/">Accueil</a></li>
-        <li><a href="/a_propos">À propos</a></li>
-        <li><a href="#">Nos services</a></li>
-        <li><a href="/contact">Contact</a></li>
-        {% if user.is_authenticated and user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
-        <li><a href="/admin">Admin</a></li>
-        {% endif %}
-        {% if user.is_authenticated and user.groups.first.name != "Visiteur du site" %}
-        <li><a href="{%url 'dashboard'%}">Dashboard</a></li>
-        {% endif %}
-        {% if user.is_authenticated %}
-        <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
-        {% else %}
-        <li><a href="{% url 'connexion' %}">Connexion</a></li>
-        {% endif %}
-      </ul>
-    </nav>
-  </header>
+{% extends "base.html" %}
+{% load static %}
 
-  <section class="hero-banner">
-    <img src="{% static 'vitalia_app/images/fond_a_propos.png' %}" alt="Résidents heureux à Vitalia">
-    <div class="hero-text">
-      <h1>À propos de Vitalia</h1>
-      <p>Un lieu de vie et d’accompagnement humain, au cœur de chaque instant.</p>
-    </div>
+{% block title %}À propos - Vitalia{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'vitalia_app/css/a_propos.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="hero-banner">
+  <img src="{% static 'vitalia_app/images/fond_a_propos.png' %}" alt="Résidents heureux à Vitalia">
+  <div class="hero-text">
+    <h1>À propos de Vitalia</h1>
+    <p>Un lieu de vie et d’accompagnement humain, au cœur de chaque instant.</p>
+  </div>
+</section>
+
+<main class="about">
+  <section class="mission">
+    <h2>Notre mission</h2>
+    <p>
+      Chez Vitalia, nous plaçons le respect, la dignité et le confort de chaque résident au cœur de notre action. Notre établissement allie modernité, sécurité et chaleur humaine pour offrir un cadre de vie paisible et stimulant.
+    </p>
   </section>
 
-  <main class="about">
-    <section class="mission">
-      <h2>Notre mission</h2>
-      <p>
-        Chez Vitalia, nous plaçons le respect, la dignité et le confort de chaque résident au cœur de notre action. Notre établissement allie modernité, sécurité et chaleur humaine pour offrir un cadre de vie paisible et stimulant.
-      </p>
-    </section>
+  <section class="valeurs">
+    <h2>Nos valeurs</h2>
+    <ul>
+      <li><strong>Bienveillance :</strong> Chaque geste compte, chaque personne est unique.</li>
+      <li><strong>Écoute :</strong> Une attention quotidienne portée à chacun.</li>
+      <li><strong>Professionnalisme :</strong> Une équipe dédiée et formée avec soin.</li>
+    </ul>
+  </section>
 
-    <section class="valeurs">
-      <h2>Nos valeurs</h2>
-      <ul>
-        <li><strong>Bienveillance :</strong> Chaque geste compte, chaque personne est unique.</li>
-        <li><strong>Écoute :</strong> Une attention quotidienne portée à chacun.</li>
-        <li><strong>Professionnalisme :</strong> Une équipe dédiée et formée avec soin.</li>
-      </ul>
-    </section>
+  <section class="equipe">
+    <h2>Notre équipe</h2>
+    <p>
+      Nos soignants, animateurs, cuisiniers et encadrants partagent une même passion : offrir aux résidents une qualité de vie optimale. Ils sont présents au quotidien avec attention et dévouement.
+    </p>
+  </section>
 
-    <section class="equipe">
-      <h2>Notre équipe</h2>
-      <p>
-        Nos soignants, animateurs, cuisiniers et encadrants partagent une même passion : offrir aux résidents une qualité de vie optimale. Ils sont présents au quotidien avec attention et dévouement.
-      </p>
-    </section>
+  <section class="choisir">
+    <h2>Pourquoi choisir Vitalia ?</h2>
+    <ul>
+      <li>Cadre verdoyant et sécurisé</li>
+      <li>Activités variées et adaptées</li>
+      <li>Équipements connectés pour les familles</li>
+      <li>Repas cuisinés sur place avec amour</li>
+    </ul>
+  </section>
 
-    <section class="choisir">
-      <h2>Pourquoi choisir Vitalia ?</h2>
-      <ul>
-        <li>Cadre verdoyant et sécurisé</li>
-        <li>Activités variées et adaptées</li>
-        <li>Équipements connectés pour les familles</li>
-        <li>Repas cuisinés sur place avec amour</li>
-      </ul>
-    </section>
-
-    <section class="temoignage">
-      <blockquote>
-        “Grâce à Vitalia, mon père a retrouvé le sourire et des repères. Une équipe en or dans un lieu humain.”
-        <span>– Nathalie, fille de résident</span>
-      </blockquote>
-    </section>
-  </main>
-
-  <footer>
-    <p>&copy; 2025 Vitalia. Tous droits réservés. Projet CY Tech.</p>
-  </footer>
-</body>
-</html>
+  <section class="temoignage">
+    <blockquote>
+      “Grâce à Vitalia, mon père a retrouvé le sourire et des repères. Une équipe en or dans un lieu humain.”
+      <span>– Nathalie, fille de résident</span>
+    </blockquote>
+  </section>
+</main>
+{% endblock %}

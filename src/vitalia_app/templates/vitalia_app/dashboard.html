@@ -1,202 +1,128 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <title>Tableau de bord - Vitalia</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'vitalia_app/css/dashboard.css' %}">
-</head>
-<body>
+{% extends "base.html" %}
+{% load static %}
 
-<header>
-    <div class="container">
-        <h1>Vitalia - Tableau de bord</h1>
-    </div>
-    <nav>
-        <ul>
-            {% if user.is_authenticated and user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
-                <li><a href="/admin">Admin</a></li>
-                {% endif %}
+{% block title %}Tableau de bord - Vitalia{% endblock %}
 
-                <!-- Ajout du lien vers les notifications -->
-                {% if user.is_authenticated %}
-                <li class="nav-item notification-indicator">
-                    <a href="{% url 'notifications' %}">
-                        <i class="icon-bell"></i>
-                        <span class="notification-icon-badge"></span>
-                    </a>
-                </li>
-                {% endif %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'vitalia_app/css/dashboard.css' %}">
+{% endblock %}
 
-                <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
-            </ul>
-        </nav>
-
-    </header>
-    <!NE PAS OUBLIER DE MODIFIER TOUS LES URL DE REDIRECTION>
-
+{% block content %}
 <main class="container mt-4">
-    <h2>Bienvenue, {{ user.username }} ({{ role }})</h2>
+  <h2>Bienvenue, {{ user.username }} ({{ role }})</h2>
 
-        <div class="dashboard-section">
-          <h2>Alertes récentes</h2>
+  <!-- 🛑 Alertes récentes -->
+  <section class="dashboard-section">
+    <h3>📢 Alertes récentes</h3>
+    {% if recent_alerts %}
+      <div class="recent-alerts">
+        {% for alert in recent_alerts %}
+          <div class="alert-card priority-{{ alert.priority|lower }}">
+            <h4>{{ alert.title }}</h4>
+            <p>{{ alert.description }}</p>
+            <p class="alert-meta">
+              <span>{{ alert.created_at|date:"d/m/Y H:i" }}</span>
+              <span>{{ alert.get_priority_display }}</span>
+            </p>
+            <a href="{% url 'alertes_dashboard' %}" class="btn btn-sm">Voir toutes les alertes</a>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>Aucune alerte récente</p>
+    {% endif %}
+  </section>
 
-          {% if recent_alerts %}
-            <div class="recent-alerts">
-              {% for alert in recent_alerts %}
-                <div class="alert-card priority-{{ alert.priority|lower }}">
-                  <h3>{{ alert.title }}</h3>
-                  <p>{{ alert.description }}</p>
-                  <p class="alert-meta">
-                    <span>{{ alert.created_at|date:"d/m/Y H:i" }}</span>
-                    <span>{{ alert.get_priority_display }}</span>
-                  </p>
-                  <a href="{% url 'alertes_dashboard' %}" class="btn btn-sm">Voir toutes les alertes</a>
-                </div>
-              {% endfor %}
-            </div>
-          {% else %}
-            <p>Aucune alerte récente</p>
-          {% endif %}
-        </div>
-        {% if is_admin or is_directeur %}
-        <div class="card">
-            <h2>Générateur d'alertes de test</h2>
-            <p>Créez des alertes et notifications de test pour la démonstration</p>
-            <a href="{% url 'generate_test_alert' %}" class="btn">Générer des alertes</a>
-        </div>
-        {% endif %}
-        {% if is_admin or is_directeur %}
-        <div class="card">
-            <h2>Gestion des utilisateurs</h2>
-            <a href="{% url 'index' %}" class="btn">Accéder</a>
-        </div>
-        <div class="card">
-            <h2>Message</h2>
-            <a href="{% url 'message_admin' %}" class="btn">Accéder</a>
-        </div>
-        {% endif %}
+  <!-- 👥 Gestion utilisateurs / Compte / Messages -->
+  {% if is_admin or is_directeur %}
+    <section class="dashboard-section">
+      <h3>👥 Gestion administrative</h3>
+      <div class="card"><h4>Générateur d'alertes</h4><a href="{% url 'generate_test_alert' %}" class="btn">Tester</a></div>
+      <div class="card"><h4>Administration</h4><a href="/admin" class="btn">Gérer</a></div>
+      <div class="card"><h4>Messages</h4><a href="{% url 'message_admin' %}" class="btn">Voir</a></div>
+    </section>
+  {% endif %}
 
-        {% if is_admin or is_directeur or is_chef_infirmier %}
-        <div class="card">
-            <h2>Créer les plannings du personnel</h2>
-            <a href="{% url 'event_list' %}" class="btn">Créer un planning</a>
-        </div>
-        {% elif is_infirmier or is_aide_soignant or is_menage %}
-        <div class="card">
-            <h2>Mon planning pro</h2>
-            <a href="{% url 'planning_individuel' %}" class="btn">Voir</a>
-        </div>
-        {% endif %}
+  <!-- 🗓️ Planning personnel / infirmiers / résidents -->
+  <section class="dashboard-section">
+    <h3>🗓️ Planning</h3>
+    {% if is_admin or is_directeur or is_chef_infirmier %}
+      <div class="card"><h4>Planning personnel</h4><a href="{% url 'event_list' %}" class="btn">Créer</a></div>
+    {% elif is_infirmier or is_aide_soignant or is_menage %}
+      <div class="card"><h4>Mon planning</h4><a href="{% url 'planning_individuel' %}" class="btn">Voir</a></div>
+    {% endif %}
 
-        {% if is_admin or is_directeur or is_chef_infirmier or is_infirmier %}
-        <div class="card">
-            <h2>Voir le planning des résidents</h2>
-            <a href="{% url 'planning_residents' %}" class="btn">Voir le planning</a>
-        </div>
-        {% elif is_retraite %}
-        <div class="card">
-            <h2>Mon agenda</h2>
-            <a href="{% url 'mon_planning_resident' %}" class="btn">Voir mon agenda</a>
-        </div>
-        {% endif %}
+    {% if is_admin or is_directeur or is_chef_infirmier or is_infirmier %}
+      <div class="card"><h4>Planning résidents</h4><a href="{% url 'planning_residents' %}" class="btn">Voir</a></div>
+    {% elif is_retraite %}
+      <div class="card"><h4>Mon agenda</h4><a href="{% url 'mon_planning_resident' %}" class="btn">Voir</a></div>
+    {% endif %}
+  </section>
 
-        {% if is_admin or is_directeur or is_chef_infirmier or is_infirmier or is_aide_soignant or is_menage or is_retraite %}
-        <div class="card">
-            <h2>Accès aux chambres</h2>
-            <a href="{% url 'liste_chambres' %}" class="btn">Accéder</a>
-        </div>
-        {% endif %}
+  <!-- 🏠 Chambres et objets connectés -->
+  <section class="dashboard-section">
+    <h3>🏠 Chambres & Objets</h3>
+    {% if is_admin or is_directeur or is_chef_infirmier or is_infirmier or is_aide_soignant or is_menage or is_retraite %}
+      <div class="card"><h4>Chambres</h4><a href="{% url 'liste_chambres' %}" class="btn">Accéder</a></div>
+    {% endif %}
 
-        {% if is_admin or is_directeur %}
-        <div class="card">
-            <h2>Dossiers médicaux</h2>
-            <a href="{% url 'index' %}" class="btn">Consulter</a>
-        </div>
+    {% if is_retraite %}
+      <div class="card"><h4>Ma chambre (Objets connectés)</h4><a href="{% url 'resident_objects' %}" class="btn">Gérer / Consulter</a></div>
+    {% endif %}
+  </section>
 
-        {% elif is_infirmier %}
-        <div class="card">
-            <h2>Notes médicales</h2>
-            <a href="{% url 'index' %}" class="btn">Ajouter des notes</a>
-        </div>
-        {% elif is_aide_soignant %}
-        <div class="card">
-            <h2>Observations</h2>
-            <a href="{% url 'index' %}" class="btn">Voir les infos</a>
-        </div>
-        {% endif %}
+  <!-- 🩺 Dossier médical -->
+  <section class="dashboard-section">
+    <h3>🩺 Dossiers médicaux</h3>
+    {% if is_admin or is_directeur or is_chef_infirmier or is_infirmier %}
+      <div class="card"><h4>Dossiers patients</h4><a href="{% url 'dossiers_medical' %}" class="btn">Consulter</a></div>
+    {% elif is_infirmier or is_chef_infirmier %}
+      <div class="card"><h4>Notes médicales</h4><a href="{% url 'dossiers_medical' %}" class="btn">Ajouter</a></div>
+    {% elif is_aide_soignant or is_chef_infirmier or is_infirmier %}
+      <div class="card"><h4>Observations</h4><a href="{% url 'dossiers_medical' %}" class="btn">Voir</a></div>
+    {% endif %}
+  </section>
 
-        {% if is_retraite %}
-        <div class="card">
-            <h2>Ma chambre (Objets connectés)</h2>
-            <a href="{% url 'resident_objects' %}" class="btn">Gérer ou consulter</a>
-        </div>
-        {% endif %}
+  <!-- 🚨 Surveillance et alertes -->
+  <section class="dashboard-section">
+    <h3>🚨 Sécurité & Surveillance</h3>
+    {% if is_admin or is_directeur or is_chef_infirmier or is_infirmier or is_aide_soignant %}
+      <div class="card"><h4>Alertes</h4><a href="{% url 'alertes_dashboard' %}" class="btn">Accéder</a></div>
+    {% endif %}
 
-        <!-- Modifier cette section pour le système d'alertes -->
-        {% if is_admin or is_directeur or is_chef_infirmier or is_infirmier or is_aide_soignant %}
-        <div class="card">
-            <h2>Alertes et surveillance</h2>
-            <a href="{% url 'alertes_dashboard' %}" class="btn">Voir les alertes</a>
-        </div>
-        {% endif %}
+    {% if is_reception or is_directeur or is_responsable_site or is_infirmier or is_retraite %}
+      <div class="card"><h4>Surveillance</h4><a href="{% url 'surveillance' %}" class="btn">Caméras</a></div>
+    {% endif %}
 
-        <!-- Ajout d'une section pour voir les dernières notifications -->
-        {% if user.is_authenticated %}
-        <div class="card">
-            <h2>Mes notifications</h2>
-            <a href="{% url 'notifications' %}" class="btn">Voir toutes les notifications</a>
-        </div>
-        {% endif %}
-        </main>
-        {% if is_visiteur_resident %}
-        <div class="card">
-            <h2>Mes visites</h2>
-            <a href="{% url 'reservation_visite' %}" class="btn">Réserver / Modifier</a>
-        </div>
-        {% elif is_retraite %}
-        <div class="card">
-            <h2>Visites programmées</h2>
-            <a href="{% url 'reservation_visite' %}" class="btn">Voir les horaires</a>
-        </div>
-        {% elif is_reception %}
-        <div class="card">
-            <h2>Accueil des visiteurs</h2>
-            <a href="{% url 'dashboard' %}" class="btn">Gérer les entrées</a>
-        </div>
-        {% endif %}
+    {% if is_admin or is_directeur or is_chef_infirmier or is_reception or is_infirmier %}
+      <div class="card"><h4>Surveillance des chambres</h4><a href="{% url 'surveillance' %}" class="btn">Voir les capteurs</a></div>
+    {% endif %}
+  </section>
 
-        {# AJOUT des NOUVELLES CARTES SURVEILLANCE + RÉSERVATION #}
+  <!-- 👥 Visites -->
+  {% if is_reception or is_visiteur_resident or is_retraite %}
+    <section class="dashboard-section">
+      <h3>👥 Visites</h3>
+      <div class="card"><h4>Réservations</h4><a href="{% url 'reservation_visite' %}" class="btn">Voir / Réserver</a></div>
+    </section>
+  {% endif %}
 
-        {% if is_reception or is_directeur or is_responsable_site or is_infirmier or is_retraite %}
-        <div class="card">
-            <h2>Surveillance</h2>
-            <a href="{% url 'surveillance' %}" class="btn">Accéder aux caméras</a>
-        </div>
-        {% endif %}
-
-        {% if is_reception or is_visiteur_resident or is_retraite %}
-        <div class="card">
-            <h2>Réservations de visites</h2>
-            <a href="{% url 'reservation_visite' %}" class="btn">Voir / Réserver</a>
-        </div>
-        {% endif %}
-
+  <!-- 🔔 Notifications -->
+  {% if user.is_authenticated %}
+    <section class="dashboard-section">
+      <h3>🔔 Notifications</h3>
+      <div class="card"><h4>Mes notifications</h4><a href="{% url 'notifications' %}" class="btn">Voir tout</a></div>
+    </section>
+  {% endif %}
 </main>
 
-<footer>
-    <p>© 2025 Vitalia. Tous droits réservés.</p>
-</footer>
+{% endblock %}
 
-    <!-- Ajout du script de notifications -->
-    <script src="{% static 'vitalia_app/js/notifications.js' %}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialiser le système de notifications
-            initNotificationSystem();
-        });
-    </script>
-</body>
-</html>
+{% block extra_js %}
+<script src="{% static 'vitalia_app/js/notifications.js' %}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    initNotificationSystem();
+  });
+</script>
+{% endblock %}

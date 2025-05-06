@@ -1,46 +1,13 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  {% load static %}
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vitalia - Mes notifications</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'vitalia_app/css/notifications.css' %}">
-</head>
-<body>
+{% extends 'vitalia_app/base.html' %}
+{% load static %}
 
-<header>
-  <div class="logo">Vitalia</div>
-  <button class="mobile-menu-button">☰</button>
-  <nav>
-    <ul>
-      <li><a href="/">Accueil</a></li>
-      <li><a href="/a_propos">À propos</a></li>
-      <li><a href="#">Nos services</a></li>
-      <li><a href="/contact">Contact</a></li>
-      {% if user.is_authenticated and user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
-      <li><a href="/admin">Admin</a></li>
-      {% endif %}
-      {% if user.is_authenticated and user.groups.first.name != "Visiteur du site" %}
-      <li><a href="{%url 'dashboard'%}">Dashboard</a></li>
-      {% endif %}
-      {% if user.is_authenticated %}
-      <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
-      {% else %}
-      <li><a href="{% url 'connexion' %}">Connexion</a></li>
-      {% endif %}
-      {% if is_admin or is_directeur or is_chef_infirmier or is_infirmier or is_aide_soignant %}
-      <li class="nav-item notification-indicator">
-        <a href="{% url 'notifications' %}">
-      <i class="icon-bell"></i>
-    <span class="notification-icon-badge"></span></a></li>
-      {% endif %}
+{% block title %}Vitalia - Mes notifications{% endblock %}
 
-    </ul>
-  </nav>
-</header>
+{% block styles %}
+<link rel="stylesheet" href="{% static 'vitalia_app/css/notifications.css' %}">
+{% endblock %}
 
+{% block content %}
 <main>
   <h1>Mes Notifications</h1>
 
@@ -101,12 +68,9 @@
     {% endif %}
   </div>
 </main>
+{% endblock %}
 
-<footer>
-  <p>&copy; 2025 Vitalia. Tous droits réservés. Projet CY Tech.</p>
-  <p><small>Conçu avec bienveillance et modernité.</small></p>
-</footer>
-
+{% block scripts %}
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     const menuButton = document.querySelector('.mobile-menu-button');
@@ -119,57 +83,40 @@
     }
   });
 
-  // Système de notifications en temps réel
-function initNotificationSystem() {
-  // Vérifier les nouvelles notifications toutes les 30 secondes
-  checkForNewNotifications();
+  function initNotificationSystem() {
+    checkForNewNotifications();
+    let notificationInterval = setInterval(checkForNewNotifications, 30000);
+    window.addEventListener('beforeunload', () => clearInterval(notificationInterval));
+    createNotificationContainer();
 
-  let notificationInterval = setInterval(checkForNewNotifications, 30000);
+    function checkForNewNotifications() {
+      fetch('/api/notifications/unread/')
+        .then(response => response.json())
+        .then(data => {
+          updateNotificationCounter(data.count);
+          if (data.notifications && data.notifications.length > 0) {
+            const sorted = data.notifications.sort((a, b) =>
+              new Date(b.created_at) - new Date(a.created_at));
+            sorted.slice(0, 3).forEach(notification => {
+              showNotificationPopup(notification);
+            });
+          }
+        })
+        .catch(error => console.error('Erreur lors de la vérification des notifications:', error));
+    }
 
-  window.addEventListener('beforeunload', () => {
-    clearInterval(notificationInterval);
-  });
-
-  createNotificationContainer();
-
-  function checkForNewNotifications() {
-    fetch('/api/notifications/unread/')
-      .then(response => response.json())
-      .then(data => {
-        // Mettre à jour le compteur de notifications
-        updateNotificationCounter(data.count);
-
-        // Afficher les nouvelles notifications
-        if (data.notifications && data.notifications.length > 0) {
-          // Trier par ordre chronologique inversé
-          const sortedNotifications = data.notifications.sort((a, b) =>
-            new Date(b.created_at) - new Date(a.created_at)
-          );
-
-          // N'afficher que les 3 plus récentes notifications
-          sortedNotifications.slice(0, 3).forEach(notification => {
-            showNotificationPopup(notification);
-          });
+    function updateNotificationCounter(count) {
+      const notifIcon = document.querySelector('.notification-icon-badge');
+      if (notifIcon) {
+        if (count > 0) {
+          notifIcon.textContent = count > 99 ? '99+' : count;
+          notifIcon.classList.add('has-notifications');
+        } else {
+          notifIcon.textContent = '';
+          notifIcon.classList.remove('has-notifications');
         }
-      })
-      .catch(error => {
-        console.error('Erreur lors de la vérification des notifications:', error);
-      });
-  }
-
-  function updateNotificationCounter(count) {
-    // Mettre à jour l'icône de notification dans la barre de navigation
-    const notifIcon = document.querySelector('.notification-icon-badge');
-
-    if (notifIcon) {
-      if (count > 0) {
-        notifIcon.textContent = count > 99 ? '99+' : count;
-        notifIcon.classList.add('has-notifications');
-      } else {
-        notifIcon.textContent = '';
-        notifIcon.classList.remove('has-notifications');
       }
     }
+  }
 </script>
-</body>
-</html>
+{% endblock %}

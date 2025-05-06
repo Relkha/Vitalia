@@ -1,0 +1,57 @@
+{% extends 'vitalia_app/base.html' %}
+{% load static %}
+
+{% block title %}Mon profil - Vitalia{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'vitalia_app/css/mon_profil.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="profil-container">
+  <h1>👤 Mon profil</h1>
+
+  <div class="profil-info">
+    <p><strong>Nom d'utilisateur :</strong> {{ user.username }}</p>
+    <p><strong>Email :</strong> {{ user.email }}</p>
+    <p><strong>Rôle :</strong> {{ user.profil.get_role }}</p>
+    <p><strong>Niveau :</strong> {{ user.profil.niveau }}</p>
+    <p><strong>Points :</strong> {{ user.profil.points }}</p>
+
+    {% if user.profil.photo %}
+      <img src="{{ user.profil.photo.url }}" alt="Photo de profil">
+    {% else %}
+      <p><em>Aucune photo de profil</em></p>
+    {% endif %}
+  </div>
+
+  <form method="post" action="{% url 'upgrade_niveau' %}">
+    {% csrf_token %}
+    <button type="submit">🔄 Mettre à jour mon niveau</button>
+  </form>
+
+  <!-- 🔐 Bouton changement de mot de passe -->
+  <div style="margin-top: 2rem;">
+    <a href="{% url 'change_password' %}" class="btn-password-change">🔒 Modifier mon mot de passe</a>
+  </div>
+
+  <hr>
+
+  <div class="profil-form">
+    <h2>🖼️ Modifier ma photo</h2>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">💾 Enregistrer</button>
+    </form>
+  </div>
+
+  {% if messages %}
+    <div class="success-message">
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

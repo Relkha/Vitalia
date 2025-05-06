@@ -27,7 +27,7 @@ body {
 
 header {
   background-color: var(--nav-footer);
-  padding: 1rem 2rem;
+  padding: 0.5rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -42,20 +42,24 @@ header {
 nav ul {
   list-style: none;
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
+  height: 100%;
 }
 
 nav ul li {
   margin-left: 1.5rem;
-  font-family: 'Roboto', sans-serif;
+  display: flex;
+  align-items: center;
 }
 
 nav ul li a {
   text-decoration: none;
   color: var(--texte);
   font-weight: 500;
-  padding: 0.5rem;
-  display: inline-block;
+  padding: 0;
+  line-height: 1;
+  display: flex;
+  align-items: center;
 }
 
 /* Zone de contenu à gauche */
@@ -222,6 +226,73 @@ footer a {
 
 .btn-reservation:hover {
     background-color: #92a98a;
+}
+
+.profil-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0.5rem 1rem;
+}
+
+.profil-avatar img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.profil-avatar:hover img {
+  transform: scale(1.05);
+}
+
+
+/* 🔄 RESPONSIVE – À AJOUTER À LA FIN DE CHAQUE CSS PAGE */
+
+@media (max-width: 768px) {
+  .container, .main-content, .assign-container, .form-container, .profil-container {
+    padding: 1rem;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+    text-align: center;
+  }
+
+  h2, h3 {
+    font-size: 1.4rem;
+    text-align: center;
+  }
+
+  .btn, .btn-primary, button {
+    width: 100%;
+    text-align: center;
+  }
+
+  .form-group,
+  form input,
+  form select,
+  form textarea {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  table {
+    width: 100%;
+    overflow-x: auto;
+    display: block;
+  }
+
+  ul, li {
+    padding: 0.5rem 1rem;
+    word-break: break-word;
+  }
 }
 
 

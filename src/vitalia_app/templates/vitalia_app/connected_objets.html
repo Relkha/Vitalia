@@ -1,23 +1,36 @@
-<h1>Objets connectés accessibles</h1>
+{% extends "base.html" %}
+{% load static %}
 
-{% for entry in objets %}
-  <div style="border:1px solid #ccc; margin:10px; padding:10px;">
-    <h2>{{ entry.objet.name }}</h2>
-    <p>{{ entry.objet.description }}</p>
+{% block title %}Objets connectés - Vitalia{% endblock %}
 
-    <div>
-      {% if 'read' in entry.permissions %}
-        <button>📖 Consulter</button>
-      {% endif %}
-      {% if 'configure' in entry.permissions %}
-        <button>⚙️ Configurer</button>
-      {% endif %}
-      {% if 'send_alert' in entry.permissions %}
-        <button>🚨 Envoyer une alerte</button>
-      {% endif %}
-      {% if 'view_logs' in entry.permissions %}
-        <button>📊 Voir les logs</button>
-      {% endif %}
-    </div>
-  </div>
-{% endfor %}
+{% block content %}
+<main class="container">
+  <h1>Objets connectés accessibles</h1>
+
+  {% if objets %}
+    {% for entry in objets %}
+      <div style="border: 1px solid #ccc; margin: 1rem 0; padding: 1rem; border-radius: 8px; background: #f9f9f9;">
+        <h2 style="margin-bottom: 0.5rem;">{{ entry.objet.name }}</h2>
+        <p style="margin-bottom: 1rem;">{{ entry.objet.description }}</p>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+          {% if 'read' in entry.permissions %}
+            <button style="padding: 0.5rem 1rem;">📖 Consulter</button>
+          {% endif %}
+          {% if 'configure' in entry.permissions %}
+            <button style="padding: 0.5rem 1rem;">⚙️ Configurer</button>
+          {% endif %}
+          {% if 'send_alert' in entry.permissions %}
+            <button style="padding: 0.5rem 1rem;">🚨 Envoyer une alerte</button>
+          {% endif %}
+          {% if 'view_logs' in entry.permissions %}
+            <button style="padding: 0.5rem 1rem;">📊 Voir les logs</button>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>Aucun objet connecté disponible pour votre profil.</p>
+  {% endif %}
+</main>
+{% endblock %}

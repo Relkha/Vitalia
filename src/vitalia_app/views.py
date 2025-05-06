@@ -1,5 +1,6 @@
 import json
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
 from django.contrib.auth import authenticate, login, logout
@@ -24,6 +25,7 @@ from django.contrib import messages
 from .models.Alertes import Alert, Notification
 from .models import Visit
 from .models.Objets import ConnectedObject
+from .forms import ProfilForm
 from datetime import date, datetime, timedelta
 from .models.Objets import ObjectPermission, ConnectedObject, PermissionType
 from .models.planning_resident import PlanningEventResident
@@ -48,6 +50,16 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from .models import DossierMedical
 from .forms import DossierMedicalForm
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import force_str, force_bytes
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth import update_session_auth_hash
+
+
+from django.contrib.auth.views import PasswordChangeView
+from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 
 
 User = get_user_model()
@@ -92,6 +104,10 @@ def reservation_visite(request):
                 time=time_visite,
                 status='validated'
             )
+            if hasattr(request.user, 'profil'):
+                request.user.profil.points += 0.5
+                request.user.profil.update_niveau()
+
             return redirect(f'/reservation-visite/?resident={resident.id}')
 
     # Visites prévues
@@ -182,6 +198,10 @@ def dossiers_medical(request):
 @permission_required('vitalia_app.can_view_dossier', raise_exception=True)
 def document_patient(request, pk):
     patient = get_object_or_404(DossierMedical, pk=pk)
+    if hasattr(request.user, 'profil'):
+        request.user.profil.points += 0.5
+        request.user.profil.update_niveau()
+
     return render(request, 'vitalia_app/document_patient.html', {'patient': patient})
 
 
@@ -200,6 +220,10 @@ def modifier_patient(request, pk):
 
     if form.is_valid():
         form.save()
+        if hasattr(request.user, 'profil'):
+            request.user.profil.points += 0.75
+            request.user.profil.update_niveau()
+
         return redirect('document_patient', pk=dossier.pk)
 
     return render(request, 'vitalia_app/dossier_patient_modifier.html', {'form': form})
@@ -279,6 +303,9 @@ def index(request):
 def propos(request):
     return render(request, "a_propos.html")
 
+def nos_services(request):
+    return render(request, "nos_services.html")
+
 def deconnexion(request):
     logout(request)
     return render(request, 'deconnexion.html')
@@ -292,6 +319,12 @@ def connexion(request):
             user = authenticate(request, username=nom, password=mdp)
             if user is not None:
                 login(request, user)
+
+                # 🎯 Ajout des points pour la connexion
+                if hasattr(user, 'profil'):
+                    user.profil.points += 0.25
+                    user.profil.update_niveau()
+
                 return redirect('dashboard')
             else:
                 error = "Identifiants incorrects. Veuillez réessayer."
@@ -299,6 +332,7 @@ def connexion(request):
     else:
         form = ConnexionForm()
     return render(request, 'connexion.html', {'form': form})
+
 
 def contact(request):
     message_type = request.GET.get('type', '')
@@ -368,6 +402,10 @@ def repondre_message(request, message_id):
             from_email='matheo.arondeau@gmail.com',
             recipient_list=[message.email],
         )
+        if hasattr(request.user, 'profil'):
+            request.user.profil.points += 0.25
+            request.user.profil.update_niveau()
+
         return redirect('/messages/')
 
 @login_required
@@ -410,6 +448,10 @@ def connected_objects(request):
                 "permissions": set()
             }
         objets_affichables[obj.id]["permissions"].update(p.code for p in op.permissions.all())
+    if hasattr(request.user, 'profil'):
+        request.user.profil.points += 0.5
+        request.user.profil.update_niveau()
+
     return render(request, 'connected_objets.html', {"objets": objets_affichables.values()})
 
 
@@ -517,6 +559,9 @@ def planning_events_api(request):
                             'EmployeId': event.employe.id,
                             'IsAllDay': False
                         })
+                if hasattr(request.user, 'profil'):
+                    request.user.profil.points += 0.5
+                    request.user.profil.update_niveau()
 
                 # Traiter les modifications
                 if 'changed' in data and len(data['changed']) > 0:
@@ -1071,6 +1116,133 @@ def generate_test_alert(request):
     return render(request, 'vitalia_app/generate_test_alert.html')
 
 
+@login_required
+def mon_profil(request):
+    profil = request.user.profil
+    if request.method == "POST":
+        form = ProfilForm(request.POST, request.FILES, instance=profil)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profil mis à jour avec succès !")
+            return redirect("mon_profil")
+    else:
+        form = ProfilForm(instance=profil)
+
+    return render(request, "mon_profil.html", {"form": form})
+
+class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
+    template_name = 'change_password.html'
+    success_url = reverse_lazy('mon_profil')
+
+from .models.MessageContact import MessageContact
+from .forms import DemandeCompteForm
+
+def demande_compte(request):
+    if request.method == 'POST':
+        form = DemandeCompteForm(request.POST)
+        if form.is_valid():
+            nom = form.cleaned_data['nom']
+            prenom = form.cleaned_data['prenom']
+            email = form.cleaned_data['email']
+            raison = form.cleaned_data['raison']
+
+            objet = "Demande de création de compte"
+            message = (
+                f"Prénom : {prenom}\n"
+                f"Nom : {nom}\n"
+                f"Email : {email}\n"
+                f"Raison :\n{raison}"
+            )
+
+            # 💾 Enregistrement dans MessageContact (objet='autre' par défaut ici)
+            MessageContact.objects.create(
+                nom=f"{prenom} {nom}",
+                email=email,
+                objet="compte",
+                message=message
+            )
+
+            # 📧 Envoi de mail à l'admin
+            send_mail(
+                subject=f"Nouvelle demande de compte : {prenom} {nom}",
+                message=message,
+                from_email=email,
+                recipient_list=['matheo.arondeau@gmail.com'],
+            )
+
+            return render(request, 'vitalia_app/demande_compte.html', {
+                'form': DemandeCompteForm(),
+                'success': True
+            })
+    else:
+        form = DemandeCompteForm()
+
+    return render(request, 'vitalia_app/demande_compte.html', {'form': form})
+
+
+
+@csrf_exempt
+def formulaire_nouveau_mdp(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (User.DoesNotExist, ValueError, TypeError, OverflowError):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        if request.method == "POST":
+            mdp1 = request.POST.get("mdp1")
+            mdp2 = request.POST.get("mdp2")
+            if mdp1 == mdp2 and len(mdp1) >= 6:
+                user.set_password(mdp1)
+                user.save()
+                update_session_auth_hash(request, user)
+                return render(request, "vitalia_app/mdp_reinitialise.html")
+            else:
+                return render(request, "vitalia_app/set_new_password.html", {
+                    "error": "Les mots de passe ne correspondent pas ou sont trop courts.",
+                    "validlink": True
+                })
+        return render(request, "set_new_password.html", {"validlink": True})
+    else:
+        return render(request, "set_new_password.html", {"validlink": False})
+
+@csrf_exempt
+def envoi_lien_reinit_password(request):
+    message, error = "", ""
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+            lien = f"{settings.SITE_URL}/reinitialiser/{uid}/{token}/"
+
+            contenu = f"Bonjour,\n\nCliquez sur ce lien pour réinitialiser votre mot de passe :\n{lien}"
+            send_mail(
+                "🔐 Réinitialisation du mot de passe Vitalia",
+                contenu,
+                'matheo.arondeau@gmail.com',
+                [email]
+            )
+            message = "✅ Lien envoyé ! Vérifiez votre boîte mail."
+        except User.DoesNotExist:
+            error = "❌ Aucun compte trouvé avec cet email."
+
+    return render(request, "vitalia_app/reinit_password_form.html", {
+        "message": message,
+        "error": error
+    })
+@login_required
+def upgrade_niveau(request):
+    profil = request.user.profil
+    ancien_niveau = profil.niveau
+    profil.update_niveau()
+    if profil.niveau != ancien_niveau:
+        messages.success(request, f"Bravo ! Vous êtes maintenant au niveau : {profil.niveau}")
+    else:
+        messages.info(request, "Vous n'avez pas encore assez de points pour monter de niveau.")
+    return redirect('mon_profil')
 
 
 @login_required

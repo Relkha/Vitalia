@@ -3,26 +3,24 @@
   --nav-footer: #A8BCA1;
   --texte: #2E2E2E;
   --section: #F2E8CF;
-  --accent: #C3D8B2;
-  --danger: #E27D60;
-  --info: #84A59D;
 }
 
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 body {
   font-family: 'Inter', sans-serif;
   background-color: var(--fond);
   color: var(--texte);
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
 }
 
+/* Header */
 header {
   background-color: var(--nav-footer);
   padding: 1rem 2rem;
@@ -32,22 +30,11 @@ header {
   flex-wrap: wrap;
 }
 
-.container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
-header {
-  background-color: var(--nav-footer);
-  color: var(--texte);
-  padding: 1rem 2rem;
-}
-
-header h1 {
+.logo {
   font-family: 'Rufina', serif;
   font-size: 2rem;
 }
+
 nav ul {
   list-style: none;
   display: flex;
@@ -67,58 +54,109 @@ nav ul li a {
   display: inline-block;
 }
 
-main {
-  flex: 1;
-  padding: 2rem;
+/* Hero banner */
+.hero-banner {
+  position: relative;
+  height: 400px;
+  overflow: hidden;
 }
 
-h2 {
-  font-size: 1.4rem;
-  margin-bottom: 1.5rem;
+.hero-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.7);
+}
+
+.hero-text {
+  position: absolute;
+  top: 50%;
+  left: 5%;
+  transform: translateY(-50%);
+  color: white;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.hero-text h1 {
   font-family: 'Rufina', serif;
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
 }
 
-.card {
+.hero-text p {
+  font-size: 1.25rem;
+  max-width: 600px;
+}
+
+/* Main content – Nos Services */
+main.about {
+  max-width: 900px;
+  margin: auto;
+  padding: 3rem 2rem;
+  line-height: 1.8;
+}
+
+.about section {
+  margin-bottom: 3rem;
   background-color: var(--section);
-  border-left: 5px solid var(--accent);
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-  margin-bottom: 2rem;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
 }
 
-.card h2 {
+.about h2 {
+  font-size: 2rem;
+  font-family: 'Rufina', serif;
   margin-bottom: 1rem;
-  font-size: 1.2rem;
+  color: #4b4b4b;
 }
 
-.btn, button {
-  background-color: var(--nav-footer);
-  color: var(--texte);
-  text-decoration: none;
-  font-weight: bold;
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  display: inline-block;
-  margin-top: 0.5rem;
-  transition: background-color 0.2s;
-  border: none;
-  cursor: pointer;
+.about ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
 }
 
-.btn:hover, button:hover {
-  background-color: #96aa8e;
-}
-
+/* Footer */
 footer {
   background-color: var(--nav-footer);
   text-align: center;
   padding: 1rem;
-  margin-top: auto;
   font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
 }
 
-/* 🔄 RESPONSIVE – À AJOUTER À LA FIN DE CHAQUE CSS PAGE */
+footer p {
+  margin: 0;
+}
+
+footer a {
+  color: var(--texte);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.about h2 {
+  position: relative;
+  font-size: 2rem;
+  font-family: 'Rufina', serif;
+  margin-bottom: 1.5rem;
+  color: #2E2E2E;
+  padding-bottom: 0.5rem;
+}
+
+.about h2::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 60px;
+  height: 4px;
+  background-color: var(--nav-footer);
+  border-radius: 2px;
+}
 
 @media (max-width: 768px) {
   .container, .main-content, .assign-container, .form-container, .profil-container {
@@ -162,4 +200,3 @@ footer {
     word-break: break-word;
   }
 }
-

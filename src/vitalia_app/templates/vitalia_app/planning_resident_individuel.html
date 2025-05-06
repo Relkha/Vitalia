@@ -1,53 +1,21 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  {% load static %}
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mon Planning - Vitalia</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'vitalia_app/css/planning.css' %}">
-  <link href="https://cdn.syncfusion.com/ej2/25.1.35/material.css" rel="stylesheet" />
-</head>
-<body>
+{% extends 'vitalia_app/base.html' %}
+{% load static %}
 
-<header>
-  <div class="logo">Vitalia</div>
-  <button class="mobile-menu-button">☰</button>
-  <nav>
-    <ul>
-      <li><a href="/">Accueil</a></li>
-      <li><a href="/a_propos">À propos</a></li>
-      <li><a href="#">Nos services</a></li>
-      <li><a href="/contact">Contact</a></li>
+{% block title %}Mon Planning - Vitalia{% endblock %}
 
-      {% if user.is_authenticated %}
-        {% if user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
-          <li><a href="/admin">Admin</a></li>
-        {% endif %}
-        {% if user.groups.first.name != "Visiteur du site" %}
-          <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-        {% endif %}
-        <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
-      {% else %}
-        <li><a href="{% url 'connexion' %}">Connexion</a></li>
-      {% endif %}
-    </ul>
-  </nav>
-</header>
+{% block styles %}
+<link rel="stylesheet" href="{% static 'vitalia_app/css/planning.css' %}">
+<link href="https://cdn.syncfusion.com/ej2/25.1.35/material.css" rel="stylesheet" />
+{% endblock %}
 
+{% block content %}
 <main>
   <h1>Mon Planning</h1>
-
   <div id="schedule"></div>
 </main>
+{% endblock %}
 
-<footer>
-  <p>&copy; 2025 Vitalia. Tous droits réservés. Projet CY Tech.</p>
-  <p><small>Conçu avec bienveillance et modernité.</small></p>
-</footer>
-
-<!-- JS Syncfusion -->
+{% block scripts %}
 <script src="https://cdn.syncfusion.com/ej2/25.1.35/dist/ej2.min.js"></script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
@@ -70,7 +38,6 @@
       views: [
         { option: 'Agenda', displayName: 'Mon Agenda' },
       ],
-      // Configuration spécifique pour la vue Agenda
       agendaDaysCount: 30,
       showHeaderBar: true,
       showWeekend: true,
@@ -115,22 +82,16 @@
     });
 
     scheduleObj.appendTo('#schedule');
-
-    // Pour déboguer
-    //console.log("Events loaded:", scheduleObj.eventSettings.dataSource);
   });
 
   document.addEventListener('DOMContentLoaded', function() {
     const menuButton = document.querySelector('.mobile-menu-button');
     const nav = document.querySelector('nav');
-
     if (menuButton) {
-        menuButton.addEventListener('click', function() {
-            nav.classList.toggle('active');
-        });
+      menuButton.addEventListener('click', function() {
+        nav.classList.toggle('active');
+      });
     }
   });
 </script>
-
-</body>
-</html>
+{% endblock %}
