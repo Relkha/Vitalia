@@ -135,28 +135,49 @@ function initAlertManagement() {
   }
 
   function resolveAlert(alertId) {
-    fetch(`/api/alertes/${alertId}/resolve/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': getCookie('csrftoken')
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        // Mettre à jour l'interface
-        const card = document.querySelector(`.alert-card[data-id="${alertId}"]`);
-        card.dataset.status = 'resolved';
+  fetch(`/api/alertes/${alertId}/resolve/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Mettre à jour l'interface
+      const card = document.querySelector(`.alert-card[data-id="${alertId}"]`);
 
-        // Notification de succès
-        showNotification('Alerte marquée comme résolue');
+      card.style.borderLeftColor = 'var(--priority-low)';
+
+      card.classList.remove('priority-high', 'priority-medium', 'priority-low');
+      // Modifier le statut et ajouter la classe pour le style visuel
+      card.dataset.status = 'resolved';
+      card.classList.add('alert-resolved');
+
+      // Désactiver les boutons si nécessaire
+      const acknowledgeBtn = card.querySelector('.alert-acknowledge');
+      const resolveBtn = card.querySelector('.btn-resolve');
+
+      if (acknowledgeBtn) {
+        acknowledgeBtn.disabled = true;
+        acknowledgeBtn.classList.add('btn-disabled');
       }
-    })
-    .catch(error => {
-      console.error('Erreur:', error);
-    });
-  }
+
+      if (resolveBtn) {
+        resolveBtn.disabled = true;
+        resolveBtn.classList.add('btn-disabled');
+        resolveBtn.textContent = 'Résolu';
+      }
+
+      // Notification de succès
+      showNotification('Alerte marquée comme résolue');
+    }
+  })
+  .catch(error => {
+    console.error('Erreur:', error);
+  });
+}
 
   function showAlertDetails(alertId) {
     fetch(`/api/alertes/${alertId}/details/`)

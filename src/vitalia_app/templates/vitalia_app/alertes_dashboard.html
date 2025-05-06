@@ -105,7 +105,7 @@
   <div class="alerts-list">
     {% if alerts %}
       {% for alert in alerts %}
-        <div class="alert-card priority-{{ alert.priority|lower }}" data-type="{{ alert.type }}" data-status="{{ alert.status }}">
+        <div class="alert-card priority-{{ alert.priority|lower }} {% if alert.status == 'resolved' %}alert-resolved{% endif %}" data-type="{{ alert.type }}" data-status="{{ alert.status }}">
           <div class="alert-header">
             <div class="alert-icon">
               {% if alert.type == 'medical' %}
