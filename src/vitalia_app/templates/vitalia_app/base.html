@@ -10,60 +10,73 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'vitalia_app/css/base.css' %}">
 
-   {% block styles %}{% endblock %}
+  {% block styles %}{% endblock %}
 </head>
 <body>
   <header>
     <div class="logo">Vitalia</div>
-    <nav>
-      <ul>
-        <li><a href="/">Accueil</a></li>
-        <li><a href="/a_propos">À propos</a></li>
-        <li><a href="#">Nos services</a></li>
-        <li><a href="/contact">Contact</a></li>
+    <button class="mobile-menu-button" aria-label="Menu">&#9776;</button>
 
-        {% if user.is_authenticated and user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
-        <li><a href="/admin">Admin</a></li>
-        {% endif %}
-        {% if user.is_authenticated and user.groups.first.name != "Visiteur du site" %}
-        <li><a href="{%url 'dashboard'%}">Dashboard</a></li>
-        {% endif %}
-        {% if user.is_authenticated %}
-        <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
-        {% else %}
-        <li><a href="{% url 'connexion' %}">Connexion</a></li>
-        {% endif %}
-        {% if user.is_authenticated %}
-        <div class="profil-topbar">
-          <a href="{% url 'mon_profil' %}" title="Mon profil" class="profil-avatar">
-            {% if user.profil.photo %}
-              <img src="{{ user.profil.photo.url }}" alt="Photo de profil">
-            {% else %}
-              <img src="{% static 'vitalia_app/img/default_avatar.jpeg' %}" alt="Avatar par défaut">
-            {% endif %}
-          </a>
-        </div>
-        {% endif %}
-      </ul>
-    </nav>
+    <div class="nav-container">
+      <nav>
+        <ul id="main-menu">
+          <li><a href="/">Accueil</a></li>
+          <li><a href="/a_propos">À propos</a></li>
+          <li><a href="#">Nos services</a></li>
+          <li><a href="/contact">Contact</a></li>
+
+          {% if user.is_authenticated and user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
+          <li><a href="/admin">Admin</a></li>
+          {% endif %}
+          {% if user.is_authenticated and user.groups.first.name != "Visiteur du site" %}
+          <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+          {% endif %}
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
+          {% else %}
+          <li><a href="{% url 'connexion' %}">Connexion</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+
+      {% if user.is_authenticated %}
+      <div class="profil-topbar">
+        <a href="{% url 'mon_profil' %}" title="Mon profil" class="profil-avatar">
+          {% if user.profil.photo %}
+            <img src="{{ user.profil.photo.url }}" alt="Photo de profil">
+          {% else %}
+            <img src="{% static 'vitalia_app/img/default_avatar.jpeg' %}" alt="Avatar par défaut">
+          {% endif %}
+        </a>
+      </div>
+      {% endif %}
+    </div>
   </header>
 
-  <!-- CONTENU DE CHAQUE PAGE -->
   <main class="container">
     {% block content %}
     {% endblock %}
   </main>
 
-  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-content">
+      <span>© 2025 Vitalia. Tous droits réservés. Projet CY Tech.</span>
+      <span class="footer-right">Conçu avec bienveillance et modernité.</span>
+    </div>
+  </footer>
 
-<footer class="footer">
-  <div class="footer-content">
-    <span>© 2025 Vitalia. Tous droits réservés. Projet CY Tech.</span>
-    <span class="footer-right">Conçu avec bienveillance et modernité.</span>
-  </div>
-</footer>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const menuButton = document.querySelector('.mobile-menu-button');
+    const navList = document.querySelector('nav ul');
 
-
+    if (menuButton && navList) {
+      menuButton.addEventListener('click', function () {
+        navList.classList.toggle('show');
+      });
+    }
+  });
+</script>
 
 </body>
 </html>
