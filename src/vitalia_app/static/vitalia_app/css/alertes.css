@@ -544,3 +544,17 @@
     display: block !important;
   }
 }
+
+
+/* Styles pour les alertes résolues */
+.alert-card.alert-resolved {
+  border-left-color: var(--priority-low) !important;
+  opacity: 0.8 !important;
+  background-color: rgba(56, 161, 105, 0.05) !important;
+}
+
+/* Boutons désactivés */
+.btn-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
