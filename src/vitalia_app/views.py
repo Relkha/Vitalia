@@ -100,6 +100,10 @@ def reservation_visite(request):
                 time=time_visite,
                 status='validated'
             )
+            if hasattr(request.user, 'profil'):
+                request.user.profil.points += 0.5
+                request.user.profil.update_niveau()
+
             return redirect(f'/reservation-visite/?resident={resident.id}')
 
     # Visites prévues
@@ -190,6 +194,10 @@ def dossiers_medical(request):
 @permission_required('vitalia_app.can_view_dossier', raise_exception=True)
 def document_patient(request, pk):
     patient = get_object_or_404(DossierMedical, pk=pk)
+    if hasattr(request.user, 'profil'):
+        request.user.profil.points += 0.5
+        request.user.profil.update_niveau()
+
     return render(request, 'vitalia_app/document_patient.html', {'patient': patient})
 
 
@@ -208,6 +216,10 @@ def modifier_patient(request, pk):
 
     if form.is_valid():
         form.save()
+        if hasattr(request.user, 'profil'):
+            request.user.profil.points += 0.75
+            request.user.profil.update_niveau()
+
         return redirect('document_patient', pk=dossier.pk)
 
     return render(request, 'vitalia_app/dossier_patient_modifier.html', {'form': form})
@@ -300,6 +312,12 @@ def connexion(request):
             user = authenticate(request, username=nom, password=mdp)
             if user is not None:
                 login(request, user)
+
+                # 🎯 Ajout des points pour la connexion
+                if hasattr(user, 'profil'):
+                    user.profil.points += 0.25
+                    user.profil.update_niveau()
+
                 return redirect('dashboard')
             else:
                 error = "Identifiants incorrects. Veuillez réessayer."
@@ -307,6 +325,7 @@ def connexion(request):
     else:
         form = ConnexionForm()
     return render(request, 'connexion.html', {'form': form})
+
 
 def contact(request):
     message_type = request.GET.get('type', '')
@@ -376,6 +395,10 @@ def repondre_message(request, message_id):
             from_email='matheo.arondeau@gmail.com',
             recipient_list=[message.email],
         )
+        if hasattr(request.user, 'profil'):
+            request.user.profil.points += 0.25
+            request.user.profil.update_niveau()
+
         return redirect('/messages/')
 
 @login_required
@@ -418,6 +441,10 @@ def connected_objects(request):
                 "permissions": set()
             }
         objets_affichables[obj.id]["permissions"].update(p.code for p in op.permissions.all())
+    if hasattr(request.user, 'profil'):
+        request.user.profil.points += 0.5
+        request.user.profil.update_niveau()
+
     return render(request, 'connected_objets.html', {"objets": objets_affichables.values()})
 
 
@@ -525,6 +552,9 @@ def planning_events_api(request):
                             'EmployeId': event.employe.id,
                             'IsAllDay': False
                         })
+                if hasattr(request.user, 'profil'):
+                    request.user.profil.points += 0.5
+                    request.user.profil.update_niveau()
 
                 # Traiter les modifications
                 if 'changed' in data and len(data['changed']) > 0:
@@ -1201,5 +1231,15 @@ def envoi_lien_reinit_password(request):
         "message": message,
         "error": error
     })
+@login_required
+def upgrade_niveau(request):
+    profil = request.user.profil
+    ancien_niveau = profil.niveau
+    profil.update_niveau()
+    if profil.niveau != ancien_niveau:
+        messages.success(request, f"Bravo ! Vous êtes maintenant au niveau : {profil.niveau}")
+    else:
+        messages.info(request, "Vous n'avez pas encore assez de points pour monter de niveau.")
+    return redirect('mon_profil')
 
 

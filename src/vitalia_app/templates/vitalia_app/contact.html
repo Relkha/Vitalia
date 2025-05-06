@@ -1,54 +1,24 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  {% load static %}
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vitalia - Contact</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'vitalia_app/css/contact.css' %}">
-</head>
-<body>
-  <header>
-    <div class="logo">Vitalia</div>
-    <nav>
-      <ul>
-        <li><a href="/">Accueil</a></li>
-        <li><a href="/a_propos">À propos</a></li>
-        <li><a href="#">Nos services</a></li>
-        <li><a href="/contact">Contact</a></li>
-        {% if user.is_authenticated and user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
-        <li><a href="/admin">Admin</a></li>
-        {% endif %}
-        {% if user.is_authenticated and user.groups.first.name != "Visiteur du site" %}
-        <li><a href="{%url 'dashboard'%}">Dashboard</a></li>
-        {% endif %}
-        {% if user.is_authenticated %}
-        <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
-        {% else %}
-        <li><a href="{% url 'connexion' %}">Connexion</a></li>
-        {% endif %}
-      </ul>
-    </nav>
-  </header>
+{% extends "base.html" %}
+{% load static %}
 
-  <main>
-    <h1>Contactez-nous</h1>
-  
-    {% if success %}
-      <p style="color: green;">Votre message a bien été envoyé ! ✅</p>
-    {% endif %}
-  
-    <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit">Envoyer</button>
-    </form>
-  </main>
-  
+{% block title %}Vitalia - Contact{% endblock %}
 
-  <footer>
-    <p>&copy; 2025 Vitalia. Tous droits réservés. Projet CY Tech.</p>
-  </footer>
-</body>
-</html>
+{% block styles %}
+<link rel="stylesheet" href="{% static 'vitalia_app/css/contact.css' %}">
+{% endblock %}
+
+{% block content %}
+<main>
+  <h1>Contactez-nous</h1>
+
+  {% if success %}
+    <p style="color: green;">Votre message a bien été envoyé ! ✅</p>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Envoyer</button>
+  </form>
+</main>
+{% endblock %}

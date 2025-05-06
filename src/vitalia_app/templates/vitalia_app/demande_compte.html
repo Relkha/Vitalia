@@ -1,18 +1,13 @@
+{% extends "base.html" %}
 {% load static %}
+
+{% block title %}Demande de création de compte{% endblock %}
+
+{% block styles %}
 <link rel="stylesheet" href="{% static 'vitalia_app/css/mon_profil.css' %}">
+{% endblock %}
 
-<header>
-  <div class="logo">Vitalia</div>
-  <nav>
-    <ul>
-      <li><a href="/">Accueil</a></li>
-      <li><a href="/a_propos">À propos</a></li>
-      <li><a href="#">Nos services</a></li>
-      <li><a href="/contact">Contact</a></li>
-    </ul>
-  </nav>
-</header>
-
+{% block content %}
 <div class="profil-container">
   <h1>📄 Demande de création de compte</h1>
 
@@ -26,3 +21,4 @@
     <button type="submit">📩 Envoyer la demande</button>
   </form>
 </div>
+{% endblock %}

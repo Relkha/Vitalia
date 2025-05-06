@@ -1,62 +1,32 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  {% load static %}
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vitalia - Administration</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'vitalia_app/css/message_admin.css' %}">
-</head>
-<body>
-  <header>
-    <div class="logo">Vitalia</div>
-    <nav>
-      <ul>
-        <li><a href="/">Accueil</a></li>
-        <li><a href="/a_propos">À propos</a></li>
-        <li><a href="#">Services</a></li>
-        <li><a href="/contact">Contact</a></li>
-        {% if user.is_authenticated and user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
-        <li><a href="/admin">Admin</a></li>
-        {% endif %}
-        {% if user.is_authenticated and user.groups.first.name != "Visiteur du site" %}
-        <li><a href="{%url 'dashboard'%}">Dashboard</a></li>
-        {% endif %}
-        {% if user.is_authenticated %}
-        <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
-        {% else %}
-        <li><a href="{% url 'connexion' %}">Connexion</a></li>
-        {% endif %}
-      </ul>
-    </nav>
-  </header>
+{% extends 'vitalia_app/base.html' %}
+{% load static %}
 
-  <main>
-    <h1>Messages reçus</h1>
-    <div class="messages-container">
-      {% for msg in messages %}
-        <div class="message-card {% if msg.objet == 'compte' %}highlight-compte{% endif %}">
-          <p><strong>Nom :</strong> {{ msg.nom }}</p>
-          <p><strong>Email :</strong> {{ msg.email }}</p>
-          <p><strong>Objet :</strong> {{ msg.get_objet_display }}</p>
-          <p><strong>Message :</strong> {{ msg.message }}</p>
-          <p class="date">{{ msg.date_envoi|date:"d/m/Y H:i" }}</p>
-          <form method="post" action="{% url 'repondre_message' msg.id %}">
-            {% csrf_token %}
-            <textarea name="reponse" placeholder="Votre réponse..."></textarea>
-            <button type="submit">Envoyer la réponse</button>
-          </form>
-        </div>
-      {% empty %}
-        <p>Aucun message reçu pour le moment.</p>
-      {% endfor %}
-    </div>
-  </main>
+{% block title %}Vitalia - Administration{% endblock %}
 
-  <footer>
-    <p>&copy; 2025 Vitalia. Tous droits réservés. Projet CY Tech.</p>
-    <a href="/messages">Admin</a>
-  </footer>
-</body>
-</html>
+{% block styles %}
+<link rel="stylesheet" href="{% static 'vitalia_app/css/message_admin.css' %}">
+{% endblock %}
+
+{% block content %}
+<main>
+  <h1>Messages reçus</h1>
+  <div class="messages-container">
+    {% for msg in messages %}
+      <div class="message-card {% if msg.objet == 'compte' %}highlight-compte{% endif %}">
+        <p><strong>Nom :</strong> {{ msg.nom }}</p>
+        <p><strong>Email :</strong> {{ msg.email }}</p>
+        <p><strong>Objet :</strong> {{ msg.get_objet_display }}</p>
+        <p><strong>Message :</strong> {{ msg.message }}</p>
+        <p class="date">{{ msg.date_envoi|date:"d/m/Y H:i" }}</p>
+        <form method="post" action="{% url 'repondre_message' msg.id %}">
+          {% csrf_token %}
+          <textarea name="reponse" placeholder="Votre réponse..."></textarea>
+          <button type="submit">Envoyer la réponse</button>
+        </form>
+      </div>
+    {% empty %}
+      <p>Aucun message reçu pour le moment.</p>
+    {% endfor %}
+  </div>
+</main>
+{% endblock %}

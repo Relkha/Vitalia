@@ -32,3 +32,12 @@ def save_user_profil(sender, instance, **kwargs):
     if hasattr(instance, 'profil'):
         instance.profil.save()
 
+from django.contrib.auth.signals import user_logged_in
+from django.dispatch import receiver
+
+@receiver(user_logged_in)
+def ajouter_points_connexion(sender, user, request, **kwargs):
+    if hasattr(user, "profil"):
+        user.profil.points += 0.25
+        user.profil.update_niveau()
+

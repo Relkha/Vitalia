@@ -1,0 +1,89 @@
+
+:root {
+  --fond: #F9F5EC;
+  --nav-footer: #A8BCA1;
+  --texte: #2E2E2E;
+  --section: #F2E8CF;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: var(--nav-footer);
+  padding: 0.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.logo {
+  font-family: 'Rufina', serif;
+  font-size: 2rem;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+nav ul li {
+  margin-left: 1.5rem;
+  display: flex;
+  align-items: center;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: var(--texte);
+  font-weight: 500;
+  padding: 0;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+
+footer {
+  background-color: var(--nav-footer);
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+footer p {
+  margin: 0;
+}
+
+footer a {
+  text-align: right;
+}
+
+.profil-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0.5rem 1rem;
+}
+
+.profil-avatar img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.profil-avatar:hover img {
+  transform: scale(1.05);
+}

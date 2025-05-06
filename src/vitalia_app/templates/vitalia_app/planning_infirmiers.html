@@ -1,41 +1,15 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  {% load static %}
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vitalia - Planning des Infirmiers</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'vitalia_app/css/planning.css' %}">
-  <link href="https://cdn.syncfusion.com/ej2/25.1.35/material.css" rel="stylesheet" />
-  <script src="https://cdn.syncfusion.com/ej2/25.1.35/dist/ej2.min.js"></script>
-</head>
-<body>
+{% extends 'vitalia_app/base.html' %}
+{% load static %}
 
-<header>
-  <div class="logo">Vitalia</div>
-  <button class="mobile-menu-button">☰</button>
-  <nav>
-    <ul>
-      <li><a href="/">Accueil</a></li>
-      <li><a href="/a_propos">À propos</a></li>
-      <li><a href="#">Nos services</a></li>
-      <li><a href="/contact">Contact</a></li>
-      {% if user.is_authenticated and user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
-      <li><a href="/admin">Admin</a></li>
-      {% endif %}
-      {% if user.is_authenticated and user.groups.first.name != "Visiteur du site" %}
-      <li><a href="{%url 'dashboard'%}">Dashboard</a></li>
-      {% endif %}
-      {% if user.is_authenticated %}
-      <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
-      {% else %}
-      <li><a href="{% url 'connexion' %}">Connexion</a></li>
-      {% endif %}
-    </ul>
-  </nav>
-</header>
+{% block title %}Vitalia - Planning des Infirmiers{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="{% static 'vitalia_app/css/planning.css' %}">
+<link href="https://cdn.syncfusion.com/ej2/25.1.35/material.css" rel="stylesheet" />
+<script src="https://cdn.syncfusion.com/ej2/25.1.35/dist/ej2.min.js"></script>
+{% endblock %}
+
+{% block content %}
 <main>
   <h1>Planning des Infirmiers</h1>
   <div id="schedule" class="planning-multi"></div>
@@ -46,7 +20,6 @@
     ej.base.registerLicense('Ngo9BigBOggjHTQxAR8/V1NBaF1cWmhIfEx1RHxQdld5ZFRHallYTnNWUj0eQnxTdEBjXX1ecH1XRmVYUkZzW0lfZg==');
     ej.base.enableRipple(true);
 
-    // les dépendances nécessaires
     ej.schedule.Schedule.Inject(
       ej.schedule.Day,
       ej.schedule.Week,
@@ -59,14 +32,12 @@
       ej.schedule.Resize
     );
 
-    // Palette de couleurs pour les utilisateurs
     const colorPalette = [
       '#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#f1c40f',
       '#e74c3c', '#34495e', '#16a085', '#27ae60', '#2980b9',
       '#8e44ad', '#f39c12', '#d35400', '#c0392b', '#7f8c8d'
     ];
 
-    // Tableau des utilisateurs avec couleurs distinctes
     var users = [
       {% for user in users %}
         {
@@ -77,7 +48,6 @@
       {% endfor %}
     ];
 
-    // Configuration du DataManager
     var dataManager = new ej.data.DataManager({
       url: "/api/planning_events/",
       adaptor: new ej.data.UrlAdaptor(),
@@ -85,7 +55,6 @@
       batchUrl: "/api/planning_events/"
     });
 
-    // Configuration du planning
     var scheduleObj = new ej.schedule.Schedule({
       height: '650px',
       width: '100%',
@@ -126,12 +95,9 @@
         if (args.data.EmployeId) {
           const user = users.find(u => u.id === args.data.EmployeId);
           if (user) {
-            // Utiliser setProperty pour s'assurer que les styles sont appliqués
             args.element.style.setProperty('background-color', user.color, 'important');
             args.element.style.setProperty('border-left', `5px solid ${user.color}`, 'important');
             args.element.style.setProperty('color', '#ffffff', 'important');
-
-            // Ajouter une classe pour identifier les événements par employé
             args.element.classList.add('employe-event');
             args.element.dataset.employeId = args.data.EmployeId;
           }
@@ -147,7 +113,6 @@
       }
     });
 
-    // Initialiser le planning
     scheduleObj.appendTo('#schedule');
   });
 
@@ -162,10 +127,4 @@
     }
   });
 </script>
-
-<footer>
-  <p>&copy; 2025 Vitalia. Tous droits réservés. Projet CY Tech.</p>
-  <p><small>Conçu avec bienveillance et modernité.</small></p>
-</footer>
-</body>
-</html>
+{% endblock %}

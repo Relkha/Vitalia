@@ -1,44 +1,19 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  {% load static %}
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vitalia - Tableau de bord des alertes</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Vitalia - Tableau de bord des alertes{% endblock %}
+
+{% block styles %}
   <link rel="stylesheet" href="{% static 'vitalia_app/css/contact.css' %}">
   <link rel="stylesheet" href="{% static 'vitalia_app/css/alertes.css' %}">
-</head>
-<body>
+{% endblock %}
 
-<header>
-  <div class="logo">Vitalia</div>
-  <button class="mobile-menu-button">☰</button>
-  <nav>
-    <ul>
-      <li><a href="/">Accueil</a></li>
-      <li><a href="/a_propos">À propos</a></li>
-      <li><a href="#">Nos services</a></li>
-      <li><a href="/contact">Contact</a></li>
-      {% if user.is_authenticated and user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
-      <li><a href="/admin">Admin</a></li>
-      {% endif %}
-      {% if user.is_authenticated and user.groups.first.name != "Visiteur du site" %}
-      <li><a href="{%url 'dashboard'%}">Dashboard</a></li>
-      {% endif %}
-      {% if user.is_authenticated %}
-      <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
-      {% else %}
-      <li><a href="{% url 'connexion' %}">Connexion</a></li>
-      {% endif %}
-    </ul>
-  </nav>
-</header>
-
+{% block content %}
 <main>
   <h1>Tableau de bord des alertes</h1>
 
   <div class="alert-filters">
+    <!-- Filtres -->
     <div class="filter-group">
       <label for="filter-severity">Niveau de gravité :</label>
       <select id="filter-severity">
@@ -83,6 +58,7 @@
     <button class="btn-clear-filters">Réinitialiser les filtres</button>
   </div>
 
+  <!-- Statistiques -->
   <div class="alert-stats">
     <div class="stat-card stat-high">
       <h3>Alertes critiques</h3>
@@ -102,6 +78,7 @@
     </div>
   </div>
 
+  <!-- Liste des alertes -->
   <div class="alerts-list">
     {% if alerts %}
       {% for alert in alerts %}
@@ -137,15 +114,9 @@
             {% endif %}
           </div>
           <div class="alert-actions">
-            <button class="btn btn-primary alert-acknowledge" data-id="{{ alert.id }}">
-              Prendre en charge
-            </button>
-            <button class="btn btn-resolve" data-id="{{ alert.id }}">
-              Marquer comme résolu
-            </button>
-            <button class="btn btn-details" data-id="{{ alert.id }}">
-              Détails
-            </button>
+            <button class="btn btn-primary alert-acknowledge" data-id="{{ alert.id }}">Prendre en charge</button>
+            <button class="btn btn-resolve" data-id="{{ alert.id }}">Marquer comme résolu</button>
+            <button class="btn btn-details" data-id="{{ alert.id }}">Détails</button>
           </div>
         </div>
       {% endfor %}
@@ -156,27 +127,27 @@
     {% endif %}
   </div>
 
+  <!-- Pagination -->
   <div class="pagination">
     {% if alerts.has_previous %}
       <a href="?page={{ alerts.previous_page_number }}" class="pagination-prev">Précédent</a>
     {% endif %}
-
     <span class="pagination-current">
       Page {{ alerts.number }} sur {{ alerts.paginator.num_pages }}
     </span>
-
     {% if alerts.has_next %}
       <a href="?page={{ alerts.next_page_number }}" class="pagination-next">Suivant</a>
     {% endif %}
   </div>
 </main>
 
+<!-- Modal Détail alerte -->
 <div id="alert-detail-modal" class="modal">
   <div class="modal-content">
     <span class="close">&times;</span>
     <h2>Détails de l'alerte</h2>
     <div id="alert-detail-content">
-      <!-- Le contenu sera injecté par JavaScript -->
+      <!-- Injecté dynamiquement -->
     </div>
     <div class="modal-actions">
       <button class="btn btn-primary" id="modal-acknowledge">Prendre en charge</button>
@@ -189,23 +160,7 @@
 <script src="{% static 'vitalia_app/js/alertes.js' %}"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const menuButton = document.querySelector('.mobile-menu-button');
-    const nav = document.querySelector('nav');
-
-    if (menuButton) {
-      menuButton.addEventListener('click', function() {
-        nav.classList.toggle('active');
-      });
-    }
-
-    // Initialiser la gestion des alertes
     initAlertManagement();
   });
 </script>
-
-<footer>
-  <p>&copy; 2025 Vitalia. Tous droits réservés. Projet CY Tech.</p>
-  <p><small>Conçu avec bienveillance et modernité.</small></p>
-</footer>
-</body>
-</html>
+{% endblock %}

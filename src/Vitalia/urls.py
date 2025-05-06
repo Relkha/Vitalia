@@ -20,7 +20,7 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 
 from vitalia_app import views
-from vitalia_app.views import index, propos, contact, connexion, message_admin, dashboard, connected_objects, event_list, planning_events_api, liste_chambres, connected_objects, surveillance_view, alertes_dashboard, alert_details, acknowledge_alert, resolve_alert, notifications, unread_notifications, mon_profil, CustomPasswordChangeView, demande_compte, envoi_lien_reinit_password, formulaire_nouveau_mdp
+from vitalia_app.views import index, propos, contact, connexion, message_admin, dashboard, connected_objects, event_list, planning_events_api, liste_chambres, connected_objects, surveillance_view, alertes_dashboard, alert_details, acknowledge_alert, resolve_alert, notifications, unread_notifications, mon_profil, CustomPasswordChangeView, demande_compte, envoi_lien_reinit_password, formulaire_nouveau_mdp, upgrade_niveau
 
 
 urlpatterns = [
@@ -61,8 +61,7 @@ urlpatterns = [
     path("mot-de-passe-oublie/", envoi_lien_reinit_password, name="reinit_password_custom"),
     path("reinitialiser/<uidb64>/<token>/", formulaire_nouveau_mdp, name="reinit_password_confirm"),
     path('demande-compte/', demande_compte, name='demande_compte'),
-
-
-]
+    path("profil/upgrade-niveau/", upgrade_niveau, name="upgrade_niveau"),
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

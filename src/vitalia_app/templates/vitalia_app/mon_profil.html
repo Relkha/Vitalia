@@ -1,31 +1,13 @@
+{% extends 'vitalia_app/base.html' %}
 {% load static %}
-<header>
-  <div class="logo">Vitalia</div>
-  <nav>
-    <ul>
-      <li><a href="/">Accueil</a></li>
-      <li><a href="/a_propos">À propos</a></li>
-      <li><a href="#">Nos services</a></li>
-      <li><a href="/contact">Contact</a></li>
-      <li><a href="{% url 'dossiers_medical' %}" class="active">Soins</a></li>
 
-      {% if user.is_authenticated and user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
-      <li><a href="/admin">Admin</a></li>
-      {% endif %}
-      {% if user.is_authenticated and user.groups.first.name != "Visiteur du site" %}
-      <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-      {% endif %}
-      {% if user.is_authenticated %}
-      <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
-      {% else %}
-      <li><a href="{% url 'connexion' %}">Connexion</a></li>
-      {% endif %}
-    </ul>
-  </nav>
-</header>
+{% block title %}Mon profil - Vitalia{% endblock %}
 
+{% block styles %}
 <link rel="stylesheet" href="{% static 'vitalia_app/css/mon_profil.css' %}">
+{% endblock %}
 
+{% block content %}
 <div class="profil-container">
   <h1>👤 Mon profil</h1>
 
@@ -42,6 +24,11 @@
       <p><em>Aucune photo de profil</em></p>
     {% endif %}
   </div>
+
+  <form method="post" action="{% url 'upgrade_niveau' %}">
+    {% csrf_token %}
+    <button type="submit">🔄 Mettre à jour mon niveau</button>
+  </form>
 
   <!-- 🔐 Bouton changement de mot de passe -->
   <div style="margin-top: 2rem;">
@@ -67,3 +54,4 @@
     </div>
   {% endif %}
 </div>
+{% endblock %}

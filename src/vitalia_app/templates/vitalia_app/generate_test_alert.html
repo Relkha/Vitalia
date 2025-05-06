@@ -11,19 +11,40 @@
 <body>
 
     <header>
-        <div class="container">
-            <h1>Vitalia - Générateur d'alertes de test</h1>
+    <div class="logo">Vitalia</div>
+    <nav>
+      <ul>
+        <li><a href="/">Accueil</a></li>
+        <li><a href="/a_propos">À propos</a></li>
+        <li><a href="#">Nos services</a></li>
+        <li><a href="/contact">Contact</a></li>
+        <li><a href="{% url 'dossiers_medical' %}" class="active">Soins</a></li>
+
+        {% if user.is_authenticated and user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
+        <li><a href="/admin">Admin</a></li>
+        {% endif %}
+        {% if user.is_authenticated and user.groups.first.name != "Visiteur du site" %}
+        <li><a href="{%url 'dashboard'%}">Dashboard</a></li>
+        {% endif %}
+        {% if user.is_authenticated %} >
+        <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
+        {% else %}
+        <li><a href="{% url 'connexion' %}">Connexion</a></li>
+        {% endif %}
+        {% if user.is_authenticated %}
+        <div class="profil-topbar">
+          <a href="{% url 'mon_profil' %}" title="Mon profil" class="profil-avatar">
+            {% if user.profil.photo %}
+              <img src="{{ user.profil.photo.url }}" alt="Photo de profil">
+            {% else %}
+              <img src="{% static 'vitalia_app/img/default_avatar.jpeg' %}" alt="Avatar par défaut">
+            {% endif %}
+          </a>
         </div>
-        <nav>
-            <ul>
-                <li><a href="{% url 'dashboard' %}">Retour au tableau de bord</a></li>
-                {% if user.is_authenticated and user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
-                <li><a href="/admin">Admin</a></li>
-                {% endif %}
-                <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
-            </ul>
-        </nav>
-    </header>
+        {% endif %}
+      </ul>
+    </nav>
+  </header>
 
     <main class="container">
         <h2>Générer des alertes de test</h2>

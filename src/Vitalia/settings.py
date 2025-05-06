@@ -153,3 +153,4 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 SITE_URL = 'http://127.0.0.1:8000/'
+

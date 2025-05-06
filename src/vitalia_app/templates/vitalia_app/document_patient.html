@@ -2,9 +2,11 @@
 {% load static %}
 
 {% block title %}Dossier – {{ patient.patient.get_full_name }}{% endblock %}
+
 {% block styles %}
 <link rel="stylesheet" href="{% static 'vitalia_app/css/document_patient.css' %}">
 {% endblock %}
+
 {% block content %}
 <div class="page-header">
   <h1>Dossier de {{ patient.patient.get_full_name }}</h1>

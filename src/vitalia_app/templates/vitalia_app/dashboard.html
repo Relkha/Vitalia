@@ -1,42 +1,13 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <title>Tableau de bord - Vitalia</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'vitalia_app/css/dashboard.css' %}">
-</head>
-<body>
+{% extends "base.html" %}
+{% load static %}
 
-<header>
-    <div class="container">
-        <h1>Vitalia - Tableau de bord</h1>
-    </div>
-    <nav>
-        <ul>
-            {% if user.is_authenticated and user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}
-                <li><a href="/admin">Admin</a></li>
-                {% endif %}
+{% block title %}Tableau de bord - Vitalia{% endblock %}
 
-                <!-- Ajout du lien vers les notifications -->
-                {% if user.is_authenticated %}
-                <li class="nav-item notification-indicator">
-                    <a href="{% url 'notifications' %}">
-                        <i class="icon-bell"></i>
-                        <span class="notification-icon-badge"></span>
-                    </a>
-                </li>
-                {% endif %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'vitalia_app/css/dashboard.css' %}">
+{% endblock %}
 
-                <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
-            </ul>
-        </nav>
-
-    </header>
-    <!NE PAS OUBLIER DE MODIFIER TOUS LES URL DE REDIRECTION>
-
+{% block content %}
 <main class="container mt-4">
   <h2>Bienvenue, {{ user.username }} ({{ role }})</h2>
 
@@ -67,7 +38,7 @@
     <section class="dashboard-section">
       <h3>👥 Gestion administrative</h3>
       <div class="card"><h4>Générateur d'alertes</h4><a href="{% url 'generate_test_alert' %}" class="btn">Tester</a></div>
-      <div class="card"><h4>Utilisateurs</h4><a href="{% url 'index' %}" class="btn">Gérer</a></div>
+      <div class="card"><h4>Administration</h4><a href="/admin" class="btn">Gérer</a></div>
       <div class="card"><h4>Messages</h4><a href="{% url 'message_admin' %}" class="btn">Voir</a></div>
     </section>
   {% endif %}
@@ -105,9 +76,9 @@
     <h3>🩺 Dossiers médicaux</h3>
     {% if is_admin or is_directeur or is_chef_infirmier or is_infirmier %}
       <div class="card"><h4>Dossiers patients</h4><a href="{% url 'dossiers_medical' %}" class="btn">Consulter</a></div>
-    {% elif is_infirmier or is_chef_infirmier or is_infirmier %}
+    {% elif is_infirmier or is_chef_infirmier %}
       <div class="card"><h4>Notes médicales</h4><a href="{% url 'dossiers_medical' %}" class="btn">Ajouter</a></div>
-    {% elif is_aide_soignant or is_chef_infirmier or is_infirmier  %}
+    {% elif is_aide_soignant or is_chef_infirmier or is_infirmier %}
       <div class="card"><h4>Observations</h4><a href="{% url 'dossiers_medical' %}" class="btn">Voir</a></div>
     {% endif %}
   </section>
@@ -123,7 +94,7 @@
       <div class="card"><h4>Surveillance</h4><a href="{% url 'surveillance' %}" class="btn">Caméras</a></div>
     {% endif %}
 
-    {% if is_admin or is_directeur or is_chef_infirmier or is_reception or is_infirmier%}
+    {% if is_admin or is_directeur or is_chef_infirmier or is_reception or is_infirmier %}
       <div class="card"><h4>Surveillance des chambres</h4><a href="{% url 'surveillance' %}" class="btn">Voir les capteurs</a></div>
     {% endif %}
   </section>
@@ -142,21 +113,16 @@
       <h3>🔔 Notifications</h3>
       <div class="card"><h4>Mes notifications</h4><a href="{% url 'notifications' %}" class="btn">Voir tout</a></div>
     </section>
-  {% endif%}
+  {% endif %}
 </main>
 
+{% endblock %}
 
-<footer>
-    <p>© 2025 Vitalia. Tous droits réservés.</p>
-</footer>
-
-    <!-- Ajout du script de notifications -->
-    <script src="{% static 'vitalia_app/js/notifications.js' %}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialiser le système de notifications
-            initNotificationSystem();
-        });
-    </script>
-</body>
-</html>
+{% block extra_js %}
+<script src="{% static 'vitalia_app/js/notifications.js' %}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    initNotificationSystem();
+  });
+</script>
+{% endblock %}
