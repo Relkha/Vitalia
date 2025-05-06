@@ -15,11 +15,11 @@ def create_dossier_for_retiree(sender, instance, created, **kwargs):
     if created:
         try:
             groupe_retraite = Group.objects.get(name="Retraité")
-            if groupe_retraite in instance.groups.all():
+            # Vérifie le groupe ET si l'utilisateur a un prénom ou nom
+            if (groupe_retraite in instance.groups.all()) and (instance.first_name or instance.last_name):
                 DossierMedical.objects.get_or_create(patient=instance)
         except Group.DoesNotExist:
-            # Si le groupe "retraité" n'existe pas encore
-            pass
+            pass  # Groupe "Retraité" inexistant
 
 
 @receiver(post_save, sender=User)

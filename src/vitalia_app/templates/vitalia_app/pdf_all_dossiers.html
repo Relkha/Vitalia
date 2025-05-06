@@ -1,30 +1,105 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-      {% load static %}
   <meta charset="UTF-8">
-    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'vitalia_app/css/pdf_all_dossiers.css' %}">
+  <style>
+    body {
+      font-family: DejaVu Sans, sans-serif;
+      font-size: 12px;
+      color: #333;
+      background-color: #fff;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 22px;
+      margin-bottom: 30px;
+      color: #2c3e50;
+      border-bottom: 2px solid #a2c4a2;
+      padding-bottom: 10px;
+    }
+
+    .dossier {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 40px;
+      page-break-after: always;
+      background-color: #f9f9f9;
+    }
+
+    h2 {
+      font-size: 18px;
+      color: #2e5e2e;
+      margin-bottom: 10px;
+    }
+
+    .label {
+      font-weight: bold;
+      color: #2e5e2e;
+    }
+
+    .value {
+      margin-left: 5px;
+    }
+
+    .info-group {
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      font-size: 15px;
+      margin-top: 18px;
+      margin-bottom: 6px;
+      color: #2e5e2e;
+      text-decoration: underline;
+    }
+
+    .box {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 10px;
+      background-color: #fff;
+      margin-bottom: 12px;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 10px;
+      color: #aaa;
+      margin-top: 40px;
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+    }
+  </style>
 </head>
 <body>
+
   <h1>Liste complète des dossiers médicaux</h1>
+
   {% for dossier in dossiers %}
     <div class="dossier">
       <h2>{{ dossier.patient.get_full_name }}</h2>
+
       <div class="info-group"><span class="label">Identifiant :</span><span class="value">{{ dossier.patient.id }}</span></div>
       <div class="info-group"><span class="label">Infirmier :</span><span class="value">
         {% if dossier.infirmier %}{{ dossier.infirmier.get_full_name }}{% else %}Non assigné{% endif %}
       </span></div>
       <div class="info-group"><span class="label">État :</span><span class="value">{{ dossier.etat|default:"-" }}</span></div>
-      <div class="info-group"><span class="label">Date d'entrée :</span><span class="value">{{ dossier.date_entree|date:"d/m/Y" }}</span></div>
+      <div class="info-group"><span class="label">Date d’entrée :</span><span class="value">{{ dossier.date_entree|date:"d/m/Y" }}</span></div>
+
       <div class="section-title">Consultation</div>
       <div class="box">{{ dossier.consultation|default:"Aucune consultation." }}</div>
+
       <div class="section-title">Observations</div>
       <div class="box">{{ dossier.observations|default:"Aucune observation." }}</div>
     </div>
   {% endfor %}
+
   <div class="footer">
     © 2025 Vitalia — Export de tous les dossiers médicaux
   </div>
+
 </body>
 </html>
