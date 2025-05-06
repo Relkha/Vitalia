@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+{% block content %}
+
+<h1>🧠 Objets connectés interactifs</h1>
+
+<form method="post">
+    {% csrf_token %}
+
+    {% for salle, objets in objets_par_salle.items %}
+        <h2>🏠 Salle : {{ salle }}</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Valeur</th>
+                    <th>Modifier</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for obj in objets %}
+                    {% with form=forms|get_item:obj.id %}
+                        <tr>
+                            <td>{{ form.name }}</td>
+                            <td>{{ form.type }}</td>
+                            <td>{{ form.description }}</td>
+                            <td>{{ form.status }}</td>
+                            <td>{{ form.value }}</td>
+                            <td>
+                                <button type="submit" name="form-{{ obj.id }}">💾</button>
+                            </td>
+                        </tr>
+                    {% endwith %}
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endfor %}
+
+</form>
+
+<hr>
+<h2>📊 Graphiques par type</h2>
+{% for type, data in chart_data.items %}
+    <div style="margin-bottom: 50px;">
+        <h4>{{ type|capfirst }}</h4>
+        <canvas id="chart_{{ forloop.counter }}"></canvas>
+        <script>
+            const ctx{{ forloop.counter }} = document.getElementById('chart_{{ forloop.counter }}').getContext('2d');
+            new Chart(ctx{{ forloop.counter }}, {
+                type: 'bar',
+                data: {
+                    labels: {{ data.labels|safe }},
+                    datasets: [{
+                        label: '{{ type }}',
+                        data: {{ data.values|safe }},
+                        backgroundColor: 'rgba(0, 123, 255, 0.6)',
+                        borderColor: 'rgba(0, 123, 255, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: { scales: { y: { beginAtZero: true } } }
+            });
+        </script>
+    </div>
+{% endfor %}
+
+{% endblock %}

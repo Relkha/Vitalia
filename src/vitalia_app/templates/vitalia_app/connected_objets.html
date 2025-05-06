@@ -1,23 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
 <h1>Objets connectés accessibles</h1>
 
-{% for entry in objets %}
-  <div style="border:1px solid #ccc; margin:10px; padding:10px;">
-    <h2>{{ entry.objet.name }}</h2>
-    <p>{{ entry.objet.description }}</p>
+<!-- Inclusion de Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <div>
-      {% if 'read' in entry.permissions %}
-        <button>📖 Consulter</button>
-      {% endif %}
-      {% if 'configure' in entry.permissions %}
-        <button>⚙️ Configurer</button>
-      {% endif %}
-      {% if 'send_alert' in entry.permissions %}
-        <button>🚨 Envoyer une alerte</button>
-      {% endif %}
-      {% if 'view_logs' in entry.permissions %}
-        <button>📊 Voir les logs</button>
-      {% endif %}
-    </div>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nom</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Status</th>
+      <th>Salle</th>
+      <th>Valeur</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for obj in objets %}
+    <tr>
+      <td>{{ obj.id }}</td>
+      <td>{{ obj.name }}</td>
+      <td>{{ obj.type }}</td>
+      <td>{{ obj.description }}</td>
+      <td>{{ obj.status }}</td>
+      <td>
+        {% if obj.room %}
+          {{ obj.room.numero }}
+        {% else %}
+          Aucun numéro
+        {% endif %}
+      </td>
+      <td>{{ obj.value }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h3>Graphiques par type</h3>
+
+{% for type, data in chart_data.items %}
+  <div style="margin-bottom: 50px;">
+    <h4>{{ type|capfirst }}</h4>
+    <canvas id="chart_{{ forloop.counter }}"></canvas>
+    <script>
+      const ctx{{ forloop.counter }} = document.getElementById('chart_{{ forloop.counter }}').getContext('2d');
+      new Chart(ctx{{ forloop.counter }}, {
+        type: 'line',
+        data: {
+          labels: {{ data.labels|safe }},
+          datasets: [{
+            label: '{{ type }}',
+            data: {{ data.values|safe }},
+            fill: false,
+            tension: 0.1,
+            borderColor: 'blue'
+          }]
+        }
+      });
+    </script>
   </div>
 {% endfor %}
+{% endblock %}

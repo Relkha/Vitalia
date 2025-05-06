@@ -131,8 +131,12 @@
         {% if is_admin or is_directeur or is_chef_infirmier or is_infirmier or is_menage or is_retraite %}
         <div class="card">
             <h2>Objets connectés</h2>
-            <a href="{% url 'index' %}" class="btn">Gérer ou consulter</a>
+
+            <a href="{% url 'objets_connectes' %}" class="btn">Gérer ou consulter</a>
+
         </div>
+
+
         {% endif %}
 
         <!-- Modifier cette section pour le système d'alertes -->

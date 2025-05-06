@@ -7,3 +7,6 @@ from .Alertes import Alert, AlertHistory, Notification
 
 
 from .DossierMedical import DossierMedical
+from .Objets import ConnectedObject
+from .Room import Room  # Ajoute cette ligne si Room est défini dans Room.py
+
