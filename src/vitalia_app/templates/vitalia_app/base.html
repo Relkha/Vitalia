@@ -22,7 +22,7 @@
         <ul id="main-menu">
           <li><a href="/">Accueil</a></li>
           <li><a href="/a_propos">À propos</a></li>
-          <li><a href="#">Nos services</a></li>
+          <li><a href="/services">Nos services</a></li>
           <li><a href="/contact">Contact</a></li>
 
           {% if user.is_authenticated and user.is_superuser or user.groups.first.name == "Directeur" or user.groups.first.name == "Responsable du site" %}

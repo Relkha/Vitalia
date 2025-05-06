@@ -299,6 +299,9 @@ def index(request):
 def propos(request):
     return render(request, "a_propos.html")
 
+def nos_services(request):
+    return render(request, "nos_services.html")
+
 def deconnexion(request):
     logout(request)
     return render(request, 'deconnexion.html')
