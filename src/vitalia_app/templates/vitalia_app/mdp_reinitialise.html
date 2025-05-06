@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mot de passe réinitialisé</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'vitalia_app/css/mdp_oublie.css' %}">
+</head>
+<body>
+  <header>
+    <div class="logo">Vitalia</div>
+    <nav>
+      <ul>
+        <li><a href="/">Accueil</a></li>
+        <li><a href="/connexion">Connexion</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>✅ Mot de passe modifié avec succès</h1>
+    <p>Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.</p>
+    <a href="{% url 'connexion' %}" class="btn">Se connecter</a>
+  </main>
+
+  <footer>
+    <p>© 2025 Vitalia. Tous droits réservés.</p>
+  </footer>
+</body>
+</html>

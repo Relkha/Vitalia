@@ -17,8 +17,11 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
+from django.contrib.auth import views as auth_views
+
 from vitalia_app import views
-from vitalia_app.views import index, propos, contact, connexion, message_admin, dashboard, connected_objects, event_list, planning_events_api, liste_chambres, connected_objects, surveillance_view, alertes_dashboard, alert_details, acknowledge_alert, resolve_alert, notifications, unread_notifications
+from vitalia_app.views import index, propos, contact, connexion, message_admin, dashboard, connected_objects, event_list, planning_events_api, liste_chambres, connected_objects, surveillance_view, alertes_dashboard, alert_details, acknowledge_alert, resolve_alert, notifications, unread_notifications, mon_profil, CustomPasswordChangeView, demande_compte, envoi_lien_reinit_password, formulaire_nouveau_mdp
+
 
 urlpatterns = [
     path('admin/', admin.site.urls, name = 'admin'),
@@ -53,6 +56,13 @@ urlpatterns = [
     path('notifications/', views.notifications, name='notifications'),
     path('api/notifications/unread/', views.unread_notifications, name='unread_notifications'),
     path('generate-test-alert/', views.generate_test_alert, name='generate_test_alert'),
+    path("profil/", mon_profil, name="mon_profil"),
+    path('profil/password/', CustomPasswordChangeView.as_view(), name='change_password'),
+    path("mot-de-passe-oublie/", envoi_lien_reinit_password, name="reinit_password_custom"),
+    path("reinitialiser/<uidb64>/<token>/", formulaire_nouveau_mdp, name="reinit_password_confirm"),
+    path('demande-compte/', demande_compte, name='demande_compte'),
+
+
 ]
 
 

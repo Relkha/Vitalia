@@ -124,3 +124,13 @@ footer p {
 footer a {
   text-align: right; /* Assure que le lien est aligné à droite */
 }
+
+.forgot-link {
+  font-size: 0.95rem;
+  color: var(--texte);
+  text-decoration: underline;
+}
+
+.forgot-link:hover {
+  color: #555;
+}

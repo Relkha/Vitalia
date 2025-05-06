@@ -27,10 +27,10 @@
         <li><a href="{%url 'dashboard'%}">Dashboard</a></li>
         {% endif %}
         {% if user.is_authenticated %}
+        <li><a href="{% url 'mon_profil' %}">Mon profil</a></li>
         <li><a href="{% url 'deconnexion' %}">Déconnexion</a></li>
         {% else %}
         <li><a href="{% url 'connexion' %}">Connexion</a></li>
-        <li></li><a href="{% url 'reservation_visite' %}" class="btn-reservation">Réserver une visite</a></li>
 
         {% endif %}
 
@@ -47,7 +47,7 @@
 
     <div class="cta-buttons">
       <a href="/a_propos">Découvrir nos services</a>
-      <a href="#">Créer un compte</a>
+      <a href="/demande-compte">Demander un compte</a>
     </div>
   </div>
 </main>
