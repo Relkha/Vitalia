@@ -1,66 +1,127 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'vitalia_app/css/connected_objects.css' %}">
+{% endblock %}
 
 {% block content %}
-<h1>Objets connectés accessibles</h1>
+<div class="container">
+  <h1>Objets connectés accessibles</h1>
 
-<!-- Inclusion de Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<table>
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Nom</th>
-      <th>Type</th>
-      <th>Description</th>
-      <th>Status</th>
-      <th>Salle</th>
-      <th>Valeur</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for obj in objets %}
-    <tr>
-      <td>{{ obj.id }}</td>
-      <td>{{ obj.name }}</td>
-      <td>{{ obj.type }}</td>
-      <td>{{ obj.description }}</td>
-      <td>{{ obj.status }}</td>
-      <td>
-        {% if obj.room %}
-          {{ obj.room.numero }}
-        {% else %}
-          Aucun numéro
-        {% endif %}
-      </td>
-      <td>{{ obj.value }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-
-<h3>Graphiques par type</h3>
-
-{% for type, data in chart_data.items %}
-  <div style="margin-bottom: 50px;">
-    <h4>{{ type|capfirst }}</h4>
-    <canvas id="chart_{{ forloop.counter }}"></canvas>
-    <script>
-      const ctx{{ forloop.counter }} = document.getElementById('chart_{{ forloop.counter }}').getContext('2d');
-      new Chart(ctx{{ forloop.counter }}, {
-        type: 'line',
-        data: {
-          labels: {{ data.labels|safe }},
-          datasets: [{
-            label: '{{ type }}',
-            data: {{ data.values|safe }},
-            fill: false,
-            tension: 0.1,
-            borderColor: 'blue'
-          }]
-        }
-      });
-    </script>
+  <!-- Table Section -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h2 class="h5 m-0">Liste des objets</h2>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead class="table-dark">
+            <tr>
+              <th>ID</th>
+              <th>Nom</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Status</th>
+              <th>Salle</th>
+              <th>Valeur</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for obj in objets %}
+            <tr>
+              <td>{{ obj.id }}</td>
+              <td>{{ obj.name }}</td>
+              <td>{{ obj.type }}</td>
+              <td>{{ obj.description }}</td>
+              <td>
+                <span class="badge {% if obj.status == 'actif' %}bg-success{% elif obj.status == 'inactif' %}bg-danger{% else %}bg-warning{% endif %}">
+                  {{ obj.status }}
+                </span>
+              </td>
+              <td>
+                {% if obj.room %}
+                  {{ obj.room.numero }}
+                {% else %}
+                  <em class="text-muted">Non assigné</em>
+                {% endif %}
+              </td>
+              <td>{{ obj.value }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
-{% endfor %}
+
+  <!-- Charts Section -->
+  <div class="row">
+    <div class="col-12">
+      <h2 class="mb-4">Graphiques par type</h2>
+    </div>
+
+    {% for type, data in chart_data.items %}
+    <div class="col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-header">
+          <h3 class="h5 m-0">{{ type|capfirst }}</h3>
+        </div>
+        <div class="card-body">
+          <div class="chart-container">
+            <canvas id="chart_{{ forloop.counter }}"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    {% for type, data in chart_data.items %}
+    const ctx{{ forloop.counter }} = document.getElementById('chart_{{ forloop.counter }}').getContext('2d');
+    new Chart(ctx{{ forloop.counter }}, {
+      type: 'line',
+      data: {
+        labels: {{ data.labels|safe }},
+        datasets: [{
+          label: '{{ type }}',
+          data: {{ data.values|safe }},
+          fill: false,
+          tension: 0.1,
+          borderColor: 'rgb(75, 192, 192)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          pointBackgroundColor: 'rgb(75, 192, 192)',
+          pointBorderColor: '#fff',
+          pointRadius: 5,
+          pointHoverRadius: 7
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          title: {
+            display: false,
+            text: '{{ type|capfirst }}'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+    {% endfor %}
+  });
+</script>
 {% endblock %}

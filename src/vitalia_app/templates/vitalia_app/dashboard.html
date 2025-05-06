@@ -64,6 +64,7 @@
     <h3>🏠 Chambres & Objets</h3>
     {% if is_admin or is_directeur or is_chef_infirmier or is_infirmier or is_aide_soignant or is_menage or is_retraite %}
       <div class="card"><h4>Chambres</h4><a href="{% url 'liste_chambres' %}" class="btn">Accéder</a></div>
+      <div class="card"><h2>Objets connectés</h2><a href="{% url 'objets_connectes' %}" class="btn">Gérer ou consulter</a></div>
     {% endif %}
 
     {% if is_retraite %}
