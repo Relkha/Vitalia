@@ -140,7 +140,7 @@ def surveillance_view(request):
     if not hasattr(request.user, 'profil') or request.user.profil.get_role() not in [
         'Responsable du site', 'Directeur', 'Chef des infirmiers', 'Réceptionniste'
     ]:
-        return redirect('/')
+        return redirect('surveillance')
 
     chambres = Chambre.objects.all()
     chambre_id = request.GET.get('chambre')

@@ -91,11 +91,11 @@
     {% endif %}
 
     {% if is_reception or is_directeur or is_responsable_site or is_infirmier or is_retraite %}
-      <div class="card"><h4>Surveillance</h4><a href="{% url 'surveillance' %}" class="btn">Caméras</a></div>
+      <div class="card"><h4>Surveillance</h4><a href="/surveillance" class="btn">Caméras</a></div>
     {% endif %}
 
     {% if is_admin or is_directeur or is_chef_infirmier or is_reception or is_infirmier %}
-      <div class="card"><h4>Surveillance des chambres</h4><a href="{% url 'surveillance' %}" class="btn">Voir les capteurs</a></div>
+      <div class="card"><h4>Surveillance des chambres</h4><a href="/surveillance" class="btn">Voir les capteurs</a></div>
     {% endif %}
   </section>
 
