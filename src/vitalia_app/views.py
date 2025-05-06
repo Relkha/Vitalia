@@ -138,17 +138,16 @@ def reservation_visite(request):
 
 @login_required
 def surveillance_view(request):
-    if not hasattr(request.user, 'profil') or request.user.profil.get_role() not in [
-        'Responsable du site', 'Directeur', 'Chef des infirmiers', 'Réceptionniste'
-    ]:
-        return redirect('surveillance')
 
+
+    # Récupère toutes les chambres
     chambres = Chambre.objects.all()
+
     chambre_id = request.GET.get('chambre')
     objets_connectes = []
-
     selected_chambre = None
-    if chambre_id:
+
+    if chambre_id and chambre_id.isdigit():
         try:
             selected_chambre = Chambre.objects.prefetch_related('objets_connectes').get(id=chambre_id)
             objets_connectes = selected_chambre.objets_connectes.all()
@@ -160,8 +159,6 @@ def surveillance_view(request):
         'selected_chambre': selected_chambre,
         'objets_connectes': objets_connectes,
     })
-
-
 
 logger = logging.getLogger(__name__)
 
