@@ -9,6 +9,8 @@
   <!-- Polices et CSS commun -->
   <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'vitalia_app/css/base.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 
   {% block styles %}{% endblock %}
 </head>
@@ -70,6 +72,7 @@
     const menuButton = document.querySelector('.mobile-menu-button');
     const navList = document.querySelector('nav ul');
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     if (menuButton && navList) {
       menuButton.addEventListener('click', function () {
         navList.classList.toggle('show');

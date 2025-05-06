@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Modifier l’objet connecté : {{ obj.name }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">💾 Enregistrer</button>
+</form>
+
+<a href="{% url 'connected_objets' %}">← Retour à la liste</a>
+{% endblock %}

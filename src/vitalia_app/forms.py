@@ -7,6 +7,14 @@ from .models.Profil import Profil
 
 from .models import DossierMedical
 
+from django import forms
+from .models import ConnectedObject
+
+class ConnectedObjectForm(forms.ModelForm):
+    class Meta:
+        model = ConnectedObject
+        fields = ['name', 'type', 'description', 'status', 'value', 'room']
+
 class DossierMedicalForm(forms.ModelForm):
     class Meta:
         model = DossierMedical

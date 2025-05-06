@@ -1,43 +1,124 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    {% load static %}
   <meta charset="UTF-8">
-    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Rufina:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'vitalia_app/css/pdf_template.css' %}">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: DejaVu Sans, sans-serif;
+      font-size: 12px;
+      color: #2c3e50;
+      background-color: #fff;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 40px;
+    }
+
+    .content {
+      flex: 1;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 22px;
+      margin-bottom: 25px;
+      color: #1d3b1d;
+      border-bottom: 2px solid #a2c4a2;
+      padding-bottom: 8px;
+    }
+
+    .info-section {
+      display: flex;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px dashed #ccc;
+    }
+
+    .label {
+      width: 140px;
+      font-weight: bold;
+      color: #2e5e2e;
+    }
+
+    .value {
+      flex: 1;
+      color: #333;
+    }
+
+    .section-title {
+      margin-top: 20px;
+      font-size: 15px;
+      color: #235923;
+      border-bottom: 1px solid #bbb;
+      padding-bottom: 4px;
+    }
+
+    .box {
+      background-color: #eef6ee;
+      border: 1px solid #b5d6b5;
+      border-radius: 4px;
+      padding: 10px;
+      margin-top: 6px;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .footer {
+      font-size: 10px;
+      color: #aaa;
+      text-align: center;
+      border-top: 1px solid #ddd;
+      padding-top: 8px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Dossier Médical – {{ dossier.patient.get_full_name }}</h1>
 
-  <div class="info-section">
-    <span class="label">Identifiant :</span><span class="value">{{ dossier.patient.id }}</span>
+  <div class="content">
+    <h1>Dossier Médical – {{ dossier.patient.get_full_name }}</h1>
+
+    <div class="info-section">
+      <span class="label">Identifiant :</span>
+      <span class="value">{{ dossier.patient.id }}</span>
+    </div>
+
+    <div class="info-section">
+      <span class="label">Infirmier :</span>
+      <span class="value">
+        {% if dossier.infirmier %}
+          {{ dossier.infirmier.get_full_name }}
+        {% else %}
+          Aucun infirmier assigné
+        {% endif %}
+      </span>
+    </div>
+
+    <div class="info-section">
+      <span class="label">État :</span>
+      <span class="value">{{ dossier.etat|default:"-" }}</span>
+    </div>
+
+    <div class="info-section">
+      <span class="label">Date d’entrée :</span>
+      <span class="value">{{ dossier.date_entree|date:"d/m/Y" }}</span>
+    </div>
+
+    <div class="section-title">Consultation</div>
+    <div class="box">{{ dossier.consultation|default:"Aucune consultation enregistrée." }}</div>
+
+    <div class="section-title">Observations</div>
+    <div class="box">{{ dossier.observations|default:"Aucune observation." }}</div>
   </div>
 
-  <div class="info-section">
-    <span class="label">Infirmier :</span>
-    <span class="value">
-      {% if dossier.infirmier %}
-        {{ dossier.infirmier.get_full_name }}
-      {% else %}
-        Aucun infirmier assigné
-      {% endif %}
-    </span>
+  <div class="footer">
+    © 2025 Vitalia – Export automatique du dossier médical. Projet CY Tech.
   </div>
 
-  <div class="info-section">
-    <span class="label">État :</span><span class="value">{{ dossier.etat|default:"-" }}</span>
-  </div>
-
-  <div class="info-section">
-    <span class="label">Date d'entrée :</span><span class="value">{{ dossier.date_entree|date:"d/m/Y" }}</span>
-  </div>
-
-  <div class="section-title">Consultation</div>
-  <div class="box">{{ dossier.consultation|default:"Aucune consultation enregistrée." }}</div>
-
-  <div class="section-title">Observations</div>
-  <div class="box">{{ dossier.observations|default:"Aucune observation." }}</div>
-
-  <div class="footer">© 2025 Vitalia – Export automatique du dossier médical</div>
 </body>
 </html>

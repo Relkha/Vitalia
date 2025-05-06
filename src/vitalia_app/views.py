@@ -61,6 +61,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
+from vitalia_app.models.Room import Room
 
 User = get_user_model()
 
@@ -177,6 +178,145 @@ def group_required(*group_names):
 
 
 #Ajout
+
+from django.shortcuts import render
+
+def connected_objet_view(request):
+    return render(request, 'vitalia_app/connected_objet.html')
+
+from django.shortcuts import render
+from .models import ConnectedObject  # Assure-toi que c’est le bon nom de modèle
+
+def connected_objet_view(request):
+    objets = ConnectedObject.objects.all().order_by('id')
+    context = {
+        'objets': objets
+    }
+    return render(request, 'vitalia_app/connected_objets.html', context)
+
+from django.shortcuts import render
+from .models import ConnectedObject
+from collections import defaultdict
+
+def connected_objet_view(request):
+    objets = ConnectedObject.objects.all()
+
+    chart_data = defaultdict(lambda: {'labels': [], 'values': []})
+
+    for obj in objets:
+        try:
+            val = float(obj.value)
+            chart_data[obj.type]['labels'].append(f"ID {obj.id}")
+            chart_data[obj.type]['values'].append(val)
+        except (ValueError, TypeError):
+            continue
+
+    context = {
+        'objets': objets,
+        'chart_data': dict(chart_data)  # Convertir defaultdict en dict normal pour le template
+    }
+    return render(request, 'vitalia_app/connected_objets.html', context)
+
+from collections import defaultdict
+
+from collections import defaultdict
+
+from collections import defaultdict
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from .models import ConnectedObject
+
+@login_required
+def connected_objet_view(request):
+    objets = ConnectedObject.objects.all().order_by('id')
+    chart_data = defaultdict(lambda: {'labels': [], 'values': []})
+
+    for obj in objets:
+        try:
+            value = float(obj.value)
+            chart_data[obj.type]['labels'].append(f"ID {obj.id}")
+            chart_data[obj.type]['values'].append(value)
+        except (ValueError, TypeError):
+            print(f"Obj {obj.id} ignoré: value={obj.value}")
+            continue
+
+    return render(request, 'vitalia_app/connected_objets.html', {
+        'objets': objets,
+        'chart_data': dict(chart_data)
+    })
+
+from .forms import ConnectedObjectForm
+from django.shortcuts import get_object_or_404
+
+@login_required
+def update_connected_object(request, pk):
+    obj = get_object_or_404(ConnectedObject, pk=pk)
+    if request.method == 'POST':
+        form = ConnectedObjectForm(request.POST, instance=obj)
+        if form.is_valid():
+            form.save()
+            return redirect('connected_objets')  # Change selon le nom de ta route
+    else:
+        form = ConnectedObjectForm(instance=obj)
+    return render(request, 'vitalia_app/update_connected_object.html', {'form': form, 'obj': obj})
+
+from collections import defaultdict
+from django.forms import modelform_factory
+from .models import ConnectedObject, Chambre as Room
+
+
+@login_required
+def objets_interactifs_view(request):
+    # 1. Préparer les formulaires dynamiques
+    ConnectedObjectForm = modelform_factory(ConnectedObject, fields=['name', 'type', 'description', 'status', 'value', 'room'])
+
+    if request.method == 'POST':
+        for key in request.POST:
+            if key.startswith('form-'):
+                obj_id = key.split('-')[1]
+                instance = ConnectedObject.objects.get(pk=obj_id)
+                form = ConnectedObjectForm(request.POST, instance=instance, prefix=f'form-{obj_id}')
+                if form.is_valid():
+                    form.save()
+
+        return redirect('objets_interactifs')
+
+    # 2. Organiser les objets par salle
+    objets = ConnectedObject.objects.select_related('room').all()
+    objets_par_salle = defaultdict(list)
+    forms = {}
+
+    for obj in objets:
+        salle = obj.room.numero if obj.room else "Sans salle"
+        objets_par_salle[salle].append(obj)
+        forms[obj.id] = ConnectedObjectForm(instance=obj, prefix=f'form-{obj.id}')
+
+    # 3. Préparer les données du graphe (comme avant)
+    chart_data = defaultdict(lambda: {'labels': [], 'values': []})
+    for obj in objets:
+        if obj.value is not None:
+            chart_data[obj.type]['labels'].append(f"{obj.name}")
+            chart_data[obj.type]['values'].append(obj.value)
+
+    context = {
+        'objets_par_salle': dict(objets_par_salle),
+        'forms': forms,
+        'chart_data': dict(chart_data)
+    }
+    return render(request, 'vitalia_app/objets_interactifs.html', context)
+from django.shortcuts import render
+
+def objets_interactifs_view(request):
+    return render(request, 'vitalia_app/objets_interactifs.html')
+
+def objets_interactifs_view(request):
+    objets = ConnectedObject.objects.all()
+    forms = {obj.id: InteractifForm(instance=obj) for obj in objets}
+    context = {
+        'objets': objets,
+        'forms': forms,
+    }
+    return render(request, 'vitalia_app/objets_interactifs.html', context)
 
 
 # === LISTE DES DOSSIERS MÉDICAUX ===
